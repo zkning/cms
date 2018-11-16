@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/code-generator/code-generator.iml" filepath="$PROJECT_DIR$/code-generator/code-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-admin.iml" filepath="$PROJECT_DIR$/fast-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-framework/fast-framework.iml" filepath="$PROJECT_DIR$/fast-framework/fast-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-jwt/fast-jwt.iml" filepath="$PROJECT_DIR$/fast-jwt/fast-jwt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" filepath="$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-orm/fast-orm.iml" filepath="$PROJECT_DIR$/fast-orm/fast-orm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-rbac/fast-rbac.iml" filepath="$PROJECT_DIR$/fast-rbac/fast-rbac.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-sm/fast-sm.iml" filepath="$PROJECT_DIR$/fast-sm/fast-sm.iml" />
+    </modules>
+  </component>
+</project>

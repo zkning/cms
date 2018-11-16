@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="code-generator" />
+        <module name="fast-framework" />
+        <module name="fast-jwt" />
+        <module name="fast-oauth2-client" />
+        <module name="fast-orm" />
+        <module name="fast-rbac" />
+        <module name="fast-sm" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="code-generator" target="1.5" />
+      <module name="fast-admin" target="1.5" />
+      <module name="fast-framework" target="1.8" />
+      <module name="fast-jwt" target="1.8" />
+      <module name="fast-oauth2-client" target="1.8" />
+      <module name="fast-orm" target="1.8" />
+      <module name="fast-rbac" target="1.8" />
+      <module name="fast-sm" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
