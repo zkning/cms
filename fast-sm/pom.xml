@@ -28,7 +28,7 @@
         <plugins>
             <!--<plugin>-->
                 <!--<groupId>com.fast.admin</groupId>-->
-                <!--<artifactId>code-generator</artifactId>-->
+                <!--<artifactId>fast-code-generator</artifactId>-->
                 <!--<version>1.0.0</version>-->
                 <!--<configuration>-->
                     <!--<name>${project.build.directory}</name>-->

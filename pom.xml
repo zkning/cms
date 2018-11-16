@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>code-generator</module>
+        <module>fast-code-generator</module>
         <module>fast-framework</module>
         <module>fast-orm</module>
         <module>fast-jwt</module>

@@ -4,7 +4,7 @@
 
     <groupId>com.fast.admin</groupId>
     <version>1.0.0</version>
-    <artifactId>code-generator</artifactId>
+    <artifactId>fast-code-generator</artifactId>
     <packaging>maven-plugin</packaging>
     <name>code-generator Maven Mojo</name>
     <url>http://maven.apache.org</url>

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/code-generator/code-generator.iml" filepath="$PROJECT_DIR$/code-generator/code-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-admin.iml" filepath="$PROJECT_DIR$/fast-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-code-generator/fast-code-generator.iml" filepath="$PROJECT_DIR$/fast-code-generator/fast-code-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-framework/fast-framework.iml" filepath="$PROJECT_DIR$/fast-framework/fast-framework.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-jwt/fast-jwt.iml" filepath="$PROJECT_DIR$/fast-jwt/fast-jwt.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" filepath="$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" />
