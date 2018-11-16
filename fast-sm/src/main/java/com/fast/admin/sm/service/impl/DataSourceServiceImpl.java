@@ -6,11 +6,12 @@ import com.fast.admin.framework.util.SpringContextUtil;
 import com.fast.admin.orm.model.Pager;
 import com.fast.admin.orm.repository.NamedParameterJdbcRepository;
 import com.fast.admin.orm.utils.SQLHelper;
+import com.fast.admin.rbac.constants.CacheableConstants;
+import com.fast.admin.sm.domain.DataSource;
+import com.fast.admin.sm.model.DataSourceEditModel;
 import com.fast.admin.sm.model.DataSourceFetchModel;
 import com.fast.admin.sm.model.DataSourceSearchModel;
 import com.fast.admin.sm.repository.DataSourceRepository;
-import com.fast.admin.sm.domain.DataSource;
-import com.fast.admin.sm.model.DataSourceEditModel;
 import com.fast.admin.sm.service.DataSourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.assertj.core.util.Lists;
@@ -103,13 +104,13 @@ public class DataSourceServiceImpl implements DataSourceService {
     }
 
     @Override
-    @Cacheable(key = "#id", value = "dataSourceServiceImpl-findById")
+    @Cacheable(cacheNames = CacheableConstants.CacheableName, unless = "#result != null")
     public DataSource findById(Long id) {
         return dataSourceRepository.findOne(id);
     }
 
     @Override
-    @CacheEvict(key = "#id", value = "dataSourceServiceImpl-findById")
+    @CacheEvict(cacheNames = CacheableConstants.CacheableName, key = "#id")
     public void deleteCacheId(Long id) {
     }
 }
