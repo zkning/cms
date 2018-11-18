@@ -10,32 +10,32 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-public class OAuth2User implements UserDetails {
+public class OAuth2Principal implements UserDetails {
     private static final long serialVersionUID = 5846117211846153374L;
 
     @JsonIgnore
     private String password;
 
     @ApiModelProperty(value = "id")
-    private String id;
+    private Long id;
 
     @ApiModelProperty(value = "用户名")
     private String userName;
 
-    @JsonIgnore
     @ApiModelProperty(value = "姓名")
     private String name;
 
-    @JsonIgnore
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @JsonIgnore
     @ApiModelProperty(value = "头像")
     private String avatar;
 
     @ApiModelProperty(value = "所属组别id")
     private Long groupId;
+
+    @ApiModelProperty(value = "所属组别名称")
+    private String groupName;
 
     @JsonIgnore
     @ApiModelProperty(value = "是否可用")

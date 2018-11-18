@@ -55,13 +55,13 @@ public class SecurityUserDetailService implements UserDetailsService {
                 auths.add(simpleGrantedAuthority);
             }
         }
-        OAuth2User oAuth2User = new OAuth2User();
-        oAuth2User.setAuthorities(auths);
-        oAuth2User.setEnables(true);
-        oAuth2User.setAccountNonLocked(true);
-        oAuth2User.setAccountNonExpired(true);
-        oAuth2User.setCredentialsNonExpired(true);
-        new ModelMapper().map(userInfo, oAuth2User);
-        return oAuth2User;
+        OAuth2Principal oAuth2Principal = new OAuth2Principal();
+        oAuth2Principal.setAuthorities(auths);
+        oAuth2Principal.setEnables(true);
+        oAuth2Principal.setAccountNonLocked(true);
+        oAuth2Principal.setAccountNonExpired(true);
+        oAuth2Principal.setCredentialsNonExpired(true);
+        new ModelMapper().map(userInfo, oAuth2Principal);
+        return oAuth2Principal;
     }
 }

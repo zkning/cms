@@ -3,7 +3,6 @@ package com.fast.admin.rbac.service;
 import com.fast.admin.framework.response.Response;
 import com.fast.admin.framework.util.BeanUtils;
 import com.fast.admin.rbac.constants.ResourceTypeEnum;
-import com.fast.admin.rbac.domain.RbacUserInfo;
 import com.fast.admin.rbac.domain.Resources;
 import com.fast.admin.rbac.domain.RoleResourcesRelation;
 import com.fast.admin.rbac.domain.UserRoleRelation;
@@ -11,6 +10,7 @@ import com.fast.admin.rbac.model.*;
 import com.fast.admin.rbac.repository.ResourcesRepository;
 import com.fast.admin.rbac.repository.RoleResourcesRelationRepository;
 import com.fast.admin.rbac.repository.UserRoleRelationRepository;
+import com.fast.admin.rbac.security.OAuth2Principal;
 import com.fast.admin.rbac.utils.RecursiveTools;
 import com.fast.admin.rbac.utils.SessionContextHolder;
 import org.apache.commons.collections.CollectionUtils;
@@ -305,11 +305,11 @@ public class ResourcesService {
         AccountInfoModel accountInfoModel = new AccountInfoModel();
 
         //读取用户信息
-        RbacUserInfo rbacUserInfo = SessionContextHolder.getCurrentUser();
-        accountInfoModel.setUser(rbacUserInfo);
+        OAuth2Principal oAuth2Principal = SessionContextHolder.getPrincipal();
+        accountInfoModel.setUser(oAuth2Principal);
 
         //登录返回菜单列表
-        Response<GetMenuModel> resultResponse = getMenuItems(rbacUserInfo);
+        Response<GetMenuModel> resultResponse = getMenuItems(oAuth2Principal.getId(), oAuth2Principal.getUsername());
         accountInfoModel.setMenu(resultResponse.getResult().getResources());
 
         // 返回用户所有权限
@@ -332,15 +332,15 @@ public class ResourcesService {
         return accountInfoModel;
     }
 
-    public Response<GetMenuModel> getMenuItems(RbacUserInfo rbacUserInfo) {
+    public Response<GetMenuModel> getMenuItems(Long userId, String userName) {
         GetMenuModel getMenuResult = new GetMenuModel();
 
         // 查找用户指定类型资源列表
         List<Resources> resources = Lists.newArrayList();
-        if (ADMINISTRATOR.equalsIgnoreCase(rbacUserInfo.getUserName())) {
+        if (ADMINISTRATOR.equalsIgnoreCase(userName)) {
             resources = resourcesRepository.findByResourceType(ResourceTypeEnum.MENU.getCode());
         } else {
-            resources = this.findResourcesByUserIdAndType(rbacUserInfo.getId(), ResourceTypeEnum.MENU.getCode());
+            resources = this.findResourcesByUserIdAndType(userId, ResourceTypeEnum.MENU.getCode());
         }
         if (CollectionUtils.isEmpty(resources)) {
             return Response.SUCCESS(getMenuResult);

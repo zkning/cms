@@ -93,7 +93,7 @@ public class RbacUserController {
     @ApiOperation(value = "用户解锁")
     @PostMapping(value = "/unlock")
     public Response unlock(@RequestBody @Valid UnLockModel unLockModel) {
-        return rbacUserService.findByUserNameAndPassword(SessionContextHolder.getCurrentUser().getUserName(),
+        return rbacUserService.findByUserNameAndPassword(SessionContextHolder.getPrincipal().getUsername(),
                 unLockModel.getPassword());
     }
 }

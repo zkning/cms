@@ -2,6 +2,7 @@ package com.fast.admin.rbac.utils;
 
 import com.fast.admin.rbac.domain.RbacUserInfo;
 import com.fast.admin.rbac.security.AdditionalInfo;
+import com.fast.admin.rbac.security.OAuth2Principal;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.modelmapper.ModelMapper;
@@ -15,11 +16,11 @@ public class SessionContextHolder {
         return (RbacUserInfo) subject.getPrincipals().getPrimaryPrincipal();
     }
 
-    public static RbacUserInfo getCurrentUser() {
+    public static OAuth2Principal getPrincipal() {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
 
-        if (null != oAuth2Authentication.getUserAuthentication()) {
-            return new ModelMapper().map(oAuth2Authentication.getUserAuthentication().getPrincipal(), RbacUserInfo.class);
+        if (null != oAuth2Authentication) {
+            return (OAuth2Principal) oAuth2Authentication.getPrincipal();
         }
         /* jwt
         if (null != oAuth2Authentication.getUserAuthentication()) {
