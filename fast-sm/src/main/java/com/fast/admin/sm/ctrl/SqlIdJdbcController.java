@@ -98,11 +98,32 @@ public class SqlIdJdbcController {
     }
 
     /**
+     * dataViewCode  根据SQLID返回bootstrapTable数据格式
+     *
+     * @return
+     */
+    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_list')")
+    @ResponseBody
+    @RequestMapping(value = "/list/{sqlId}", method = RequestMethod.POST)
+    public Response<BootstrapPageResult> getBootatrapTableResponse(@PathVariable Long sqlId,
+                                                                   Integer pageSize, Integer pageNumber, String searchText, String sortName, String sortOrder,
+                                                                   @RequestBody BootstrapSearchParam bootstrapSearchParam) throws UnsupportedEncodingException {
+        if (RequestMethod.GET.name().equals(httpServletRequest.getMethod())) {
+            //当查询条件中包含中文时，get请求默认会使用ISO-8859-1编码请求参数，在服务端需要对其解码
+            if (!StringUtils.isEmpty(searchText)) {
+                searchText = new String(searchText.getBytes("ISO-8859-1"), "UTF-8");
+            }
+            return sqlIdJdbcService.
+                    getBootstrapTableResponse(pageSize, pageNumber, searchText, sortName, sortOrder, sqlId, bootstrapSearchParam);
+        }
+        return sqlIdJdbcService.getBootstrapTableResponse(bootstrapSearchParam, sqlId);
+    }
+
+    /**
      * Ztree
      *
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_ztree')")
     @ResponseBody
     @RequestMapping(value = "/ztree", method = RequestMethod.POST)
     public Object ztree(ZtreeModel ztreeModel) {
@@ -115,36 +136,10 @@ public class SqlIdJdbcController {
      *
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_getTree')")
     @ResponseBody
     @GetMapping(value = "/getTree")
     public Response getTree(ZtreeModel ztreeModel) {
         Response response = sqlIdJdbcService.getTree(ztreeModel);
-        return response;
-    }
-
-    /**
-     * dataViewCode  根据SQLID返回bootstrapTable数据格式
-     *
-     * @return
-     */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_list')")
-    @ResponseBody
-    @RequestMapping(value = "/list/{sqlId}", method = RequestMethod.POST)
-    public Response<BootstrapPageResult> getBootatrapTableResponse(Integer pageSize, Integer pageNumber, String searchText,
-                                                                   String sortName, String sortOrder, @PathVariable Long sqlId,
-                                                                   @RequestBody BootstrapSearchParam bootstrapSearchParam) throws UnsupportedEncodingException {
-        Response<BootstrapPageResult> response;
-        if (RequestMethod.GET.name().equals(httpServletRequest.getMethod())) {
-            //当查询条件中包含中文时，get请求默认会使用ISO-8859-1编码请求参数，在服务端需要对其解码
-            if (!StringUtils.isEmpty(searchText)) {
-                searchText = new String(searchText.getBytes("ISO-8859-1"), "UTF-8");
-            }
-            response = sqlIdJdbcService.getBootstrapTableResponse(pageSize, pageNumber, searchText, sortName, sortOrder,
-                    sqlId, bootstrapSearchParam);
-        } else {
-            response = sqlIdJdbcService.getBootstrapTableResponse(bootstrapSearchParam, sqlId);
-        }
         return response;
     }
 }

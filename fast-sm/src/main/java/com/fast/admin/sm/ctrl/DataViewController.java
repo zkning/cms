@@ -55,14 +55,12 @@ public class DataViewController {
     /**
      * 根据视图编号查询
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_fetch')")
     @ResponseBody
     @RequestMapping(value = "/fetch/{id}", method = RequestMethod.POST)
     public Response<DataViewFetchModel> fetch(@ApiParam(value = "视图id") @PathVariable Long id) {
         return Response.SUCCESS(dataViewService.fetch(id));
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @GetMapping(value = "/list")
     public Response<Pager<DataViewModel>> list(DataViewSearchModel dataViewSearchModel) {
@@ -76,7 +74,6 @@ public class DataViewController {
         return dataViewService.toRes(toResModel);
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_refreshId')")
     @ResponseBody
     @GetMapping(value = "/refreshId")
     public Response refreshId() {
