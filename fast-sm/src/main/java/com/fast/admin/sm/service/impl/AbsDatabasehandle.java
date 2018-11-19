@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.fast.admin.framework.response.Response;
 import com.fast.admin.sm.constant.DataViewConstant;
 import com.fast.admin.sm.constant.FieldTypeEnum;
-import com.fast.admin.sm.model.*;
-import com.fast.admin.sm.repository.SqlDefineRepository;
 import com.fast.admin.sm.domain.DataView;
 import com.fast.admin.sm.domain.SqlDefine;
+import com.fast.admin.sm.model.*;
+import com.fast.admin.sm.repository.SqlDefineRepository;
 import com.fast.admin.sm.service.DataViewService;
 import com.fast.admin.sm.utils.SimpleUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -119,7 +119,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     }
 
     public String getShowFullColumnsSql(String sql) {
-        return new StringBuffer(" select t.* from (").append(sql).append(") t where 1=2 ").toString();
+        return String.format(" select t.* from ( %s ) t where 1 = 2", sql);
     }
 
     public List<FieldModel> showFullColumns(SqlDefine sqlDefine, Map<String, Object> fieldMap, Map<String, String> commentMap)
@@ -179,13 +179,8 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
 
 
     protected String getFetchSql(SqlDefine sqlDefine) {
-        return new StringBuilder("select t.* from (")
-                .append(sqlDefine.getSelectSql())
-                .append(") t ")
-                .append(" where ")
-                .append(sqlDefine.getPri())
-                .append("=")
-                .append(":id").toString();
+        String sqlformat = "select t.* from ( %s ) t where t.%s = :id ";
+        return String.format(sqlformat, sqlDefine.getSelectSql(), sqlDefine.getPri());
     }
 
     public Response fetch(Long sqlId, Long recordId) {
@@ -246,17 +241,19 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         if (!field.isDuplicated()) {
             return false;
         }
-        StringBuffer checkSql = new StringBuffer("select count(1) from ").append(sqlDefine.getTableName());
+        String sql = String.format(" select count(1) from  %s t ", sqlDefine.getTableName());
+        StringBuffer checkSql = new StringBuffer(sql);
 
         //新增
         Map<String, Object> checkParams = new HashedMap();
         if (insert) {
-            checkSql.append(" t where ").append(" t.").append(field.getField()).append(" = :").append(field.getField());
+            String whereSql = String.format(" where  t.%s =:%s ", field.getField(), field.getField());
+            checkSql.append(whereSql);
             checkParams.put(field.getField(), rowValue.get(field.getField()));
         } else {
-            checkSql.append(" t where t.").append(sqlDefine.getPri())
-                    .append(" <> :").append(sqlDefine.getPri())
-                    .append(" and t.").append(field.getField()).append(" = :").append(field.getField());
+            String whereSql = String.format(" where  t.%s <>:%s  and t.%s = :%s ", sqlDefine.getPri(), sqlDefine.getPri(),
+                    field.getField(), field.getField());
+            checkSql.append(whereSql);
             checkParams.put(sqlDefine.getPri(), rowValue.get(sqlDefine.getPri()));
             checkParams.put(field.getField(), rowValue.get(field.getField()));
         }
@@ -270,29 +267,22 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         if (!checkResp.checkSuccess()) {
             return checkResp;
         }
-
         //update SQL
-        StringBuffer updateSql = new StringBuffer(" update ").append(sqlDefine.getTableName()).append(" set ");
-
-        //参数绑定
+        StringBuffer updateSql = new StringBuffer(String.format(" update  %s  set ", sqlDefine.getTableName()));
         Map<String, Object> paramMap = new HashMap<>();
         for (FieldModel fieldModel : checkResp.getResult()) {
             if (DataViewConstant.MODIFTY_ENABLE.equals(fieldModel.getUpdateType())) {
                 if (this.unduplicated(fieldModel, sqlDefine, rowValue, false)) {
                     return Response.FAILURE(fieldModel.getTitle() + "数据重复");
                 }
-                updateSql.append(fieldModel.getField()).append("= :")
-                        .append(fieldModel.getField()).append(",");
+                updateSql.append(String.format(" %s = :%s ,", fieldModel.getField(), fieldModel.getField()));
                 paramMap.put(fieldModel.getField(), rowValue.get(fieldModel.getField()));
             }
         }
-
-        //sql整理
         updateSql.deleteCharAt(updateSql.lastIndexOf(","));
 
         //sql条件处理
-        StringBuffer whereSql = new StringBuffer().append(" where ")
-                .append(sqlDefine.getPri()).append("= :").append(sqlDefine.getPri());
+        StringBuffer whereSql = new StringBuffer(String.format(" where %s = :%s ", sqlDefine.getPri(), sqlDefine.getPri()));
         paramMap.put(sqlDefine.getPri(), rowValue.get(sqlDefine.getPri()));
 
         //获取参数配置
@@ -303,13 +293,11 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
             int version = (Integer) rowValue.get(optionsModel.getVersion()) + 1;
 
             //修改版本号
-            updateSql.append(", ").append(optionsModel.getVersion()).append("  = :")
-                    .append(optionsModel.getVersion());
+            updateSql.append(String.format(", %s = :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
             paramMap.put(optionsModel.getVersion(), version);
 
             //where条件添加版本
-            whereSql.append(" and ").append(optionsModel.getVersion()).append("  < :")
-                    .append(optionsModel.getVersion());
+            whereSql.append(String.format(" and %s < :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
             paramMap.put(optionsModel.getVersion(), version);
         }
         updateSql = updateSql.append(whereSql);
@@ -320,12 +308,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     }
 
     protected String getDeleteSql(SqlDefine sqlDefine) {
-        return new StringBuffer(" delete from ")
-                .append(sqlDefine.getTableName())
-                .append(" where ")
-                .append(sqlDefine.getPri())
-                .append(" = :")
-                .append(sqlDefine.getPri()).toString();
+        return String.format(" delete from %s where %s = :%s ", sqlDefine.getTableName(), sqlDefine.getPri(), sqlDefine.getPri());
     }
 
     public Response deleteByDataViewId(Long id, JSONObject rowValue) {
@@ -353,12 +336,11 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         if (!checkResponse.checkSuccess()) {
             return checkResponse;
         }
-
         //create sql
-        StringBuffer createsql = new StringBuffer("insert into ").append(sqlDefine.getTableName()).append("(");
+        StringBuffer createsql = new StringBuffer(String.format(" insert into %s ( ", sqlDefine.getTableName()));
 
         //列表达式
-        StringBuffer expressionsql = new StringBuffer(") values (");
+        StringBuffer expressionsql = new StringBuffer(" ) values ( ");
 
         //参数绑定
         Map<String, Object> paramMap = new HashMap<>();
@@ -366,7 +348,6 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
             if (!fieldModel.isInsert()) {
                 continue;
             }
-
             if (this.unduplicated(fieldModel, sqlDefine, rowValue, true)) {
                 return Response.FAILURE(fieldModel.getTitle() + "数据重复");
             }
@@ -376,7 +357,6 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         }
         createsql = createsql.deleteCharAt(createsql.lastIndexOf(","));
         expressionsql = expressionsql.deleteCharAt(expressionsql.lastIndexOf(",")).append(")");
-
         //end sql
         String sql = createsql.append(expressionsql).toString();
         if (update(sqlDefine.getDatasource(), sql, paramMap)) {
