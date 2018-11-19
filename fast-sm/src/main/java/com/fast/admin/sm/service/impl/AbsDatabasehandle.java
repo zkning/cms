@@ -241,8 +241,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         if (!field.isDuplicated()) {
             return false;
         }
-        String sql = String.format(" select count(1) from  %s t ", sqlDefine.getTableName());
-        StringBuffer checkSql = new StringBuffer(sql);
+        StringBuffer checkSql = new StringBuffer(String.format(" select count(1) from  %s t ", sqlDefine.getTableName()));
 
         //新增
         Map<String, Object> checkParams = new HashedMap();
@@ -294,7 +293,6 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
 
             //修改版本号
             updateSql.append(String.format(", %s = :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
-            paramMap.put(optionsModel.getVersion(), version);
 
             //where条件添加版本
             whereSql.append(String.format(" and %s < :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
