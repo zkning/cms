@@ -89,7 +89,7 @@ public class SqlIdJdbcController {
         return sqlIdJdbcService.deleteByDataViewId(dataViewId, record);
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
+//    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @GetMapping(value = "/fetch/{sqlId}")
     public Response fetch(@PathVariable Long sqlId, Long id) {
