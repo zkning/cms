@@ -59,7 +59,7 @@ public class SqlIdJdbcController {
      * @param formParam
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_create')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @RequestMapping(value = "/create/{dataViewId}", method = RequestMethod.POST)
     public Object createView(@PathVariable Long dataViewId, @RequestBody JSONObject formParam) {
@@ -70,7 +70,7 @@ public class SqlIdJdbcController {
     /**
      * 修改视图的数据
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_modfity')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @RequestMapping(value = "/modfity/{dataViewId}", method = RequestMethod.POST)
     public Object modfityView(@PathVariable Long dataViewId, @RequestBody JSONObject formParam) {
@@ -82,14 +82,14 @@ public class SqlIdJdbcController {
      *
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_delete')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @RequestMapping(value = "/delete/{dataViewId}", method = RequestMethod.POST)
     public Object deleteView(@PathVariable Long dataViewId, @RequestBody JSONObject record) {
         return sqlIdJdbcService.deleteByDataViewId(dataViewId, record);
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_fetch')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @GetMapping(value = "/fetch/{sqlId}")
     public Response fetch(@PathVariable Long sqlId, Long id) {
@@ -102,7 +102,7 @@ public class SqlIdJdbcController {
      *
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqlId_list')")
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @RequestMapping(value = "/list/{sqlId}", method = RequestMethod.POST)
     public Response<BootstrapPageResult> getBootatrapTableResponse(@PathVariable Long sqlId,
