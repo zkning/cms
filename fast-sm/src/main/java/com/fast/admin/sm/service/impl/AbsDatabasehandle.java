@@ -3,13 +3,18 @@ package com.fast.admin.sm.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.admin.framework.response.Response;
+import com.fast.admin.rbac.model.TreeNodeModel;
+import com.fast.admin.rbac.utils.RecursiveTools;
 import com.fast.admin.sm.constant.DataViewConstant;
 import com.fast.admin.sm.constant.FieldTypeEnum;
+import com.fast.admin.sm.constant.SqlExpression;
+import com.fast.admin.sm.constant.TreeNodeHandleType;
 import com.fast.admin.sm.domain.DataView;
 import com.fast.admin.sm.domain.SqlDefine;
 import com.fast.admin.sm.model.*;
 import com.fast.admin.sm.repository.SqlDefineRepository;
 import com.fast.admin.sm.service.DataViewService;
+import com.fast.admin.sm.utils.DataFilter;
 import com.fast.admin.sm.utils.SimpleUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,6 +36,10 @@ import java.util.*;
 
 @Slf4j
 public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
+
+    //默认空字符串
+    private static final String BLANK_STR = "-1";
+    private static final String default_top = "0";
 
     @Autowired
     SqlDefineRepository sqlDefineRepository;
@@ -361,5 +370,212 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
             return Response.FAILURE(sql);
         }
         return Response.SUCCESS();
+    }
+
+    public Response<BootstrapPageResult> getBootstrapTableResponse(Integer pageSize, Integer pageNumber,
+                                                                   String searchText,
+                                                                   String sortName, String sortOrder, Long sqlId,
+                                                                   BootstrapSearchParam bootstrapSearchParam) {
+        BootstrapPageResult pageResultForBootstrap = new BootstrapPageResult();
+        SqlDefine sqlDefine = sqlDefineRepository.findOne(sqlId);
+        DataFilter dataFilter = DataFilter.getInstance();
+        dataFilter.setQuerySql(sqlDefine.getSelectSql());
+        dataFilter.setSortName(sortName);
+        dataFilter.setSortOrder(sortOrder);
+
+        // 条件
+        List<ConditionModel> conditionModelList = bootstrapSearchParam.getSearchArray();
+        if (CollectionUtils.isEmpty(conditionModelList)) {
+            conditionModelList = new ArrayList<>();
+        }
+
+        // 解析ztree
+        ConditionModel ztreeConditionModel = this.getTreeNode(bootstrapSearchParam.getTreeOptions());
+        if (null != ztreeConditionModel) {
+            conditionModelList.add(ztreeConditionModel);
+        }
+        dataFilter.addCondition(conditionModelList);
+        List<Map<String, Object>> list =
+                this.query(sqlDefine.getDatasource(), dataFilter.createPager(pageNumber, pageSize), dataFilter.getParams(), buildColumnMapRowMapper());
+        pageResultForBootstrap.setRows(list);
+
+        // 查询总数
+        Long count = this.queryForObject(sqlDefine.getDatasource(), dataFilter.countSql(), dataFilter.getParams(), Long.class);
+        pageResultForBootstrap.setTotal(count);
+        return Response.SUCCESS(pageResultForBootstrap);
+    }
+
+    /**
+     * 获取树节点条件
+     */
+    private ConditionModel getTreeNode(TreeOptionsFilterModel treeOptionsModel) {
+        if (null == treeOptionsModel || !treeOptionsModel.isVisible()) {
+            return null;
+        }
+
+        //获取sqlDefine
+        SqlDefine sqlDefine = findOne(treeOptionsModel.getSqlId());
+
+        //默认是空字符串
+        String idValue = StringUtils.isNotBlank(treeOptionsModel.getNodeValue()) ? treeOptionsModel.getNodeValue() : BLANK_STR;
+        List<Map<String, Object>> result = new ArrayList();
+
+        // 构建获取下级sql
+        String sql = buildChildSql(sqlDefine.getSelectSql(), treeOptionsModel.getPidKey());
+        Map<String, Object> paramMap = new HashMap();
+        switch (treeOptionsModel.getScope()) {
+            case TreeNodeHandleType.TREEHANDLETYPE_ALL:
+                paramMap.put(treeOptionsModel.getPidKey(), idValue);
+                List<Map<String, Object>> items = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
+                result = RecursiveTools.forEachItems(items, (Map<String, Object> item) -> {
+                    Map<String, Object> paraMap = new HashMap<>();
+                    paraMap.put(treeOptionsModel.getPidKey(), item.get(treeOptionsModel.getIdKey()));
+                    return this.queryForList(sqlDefine.getDatasource(), sql, paraMap);
+                });
+                result.addAll(items);
+                break;
+            case TreeNodeHandleType.TREEHANDLETYPE_CHILD:
+                paramMap.put(treeOptionsModel.getPidKey(), idValue);
+                result = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
+                break;
+            case TreeNodeHandleType.TREEHANDLETYPE_SELF:
+                paramMap.put(treeOptionsModel.getPidKey(), idValue);
+                result = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
+                break;
+            default:
+        }
+
+        ConditionModel conditionDto = new ConditionModel();
+        conditionDto.setField(treeOptionsModel.getForeignKey());
+        conditionDto.setExpression(SqlExpression.IN);
+        conditionDto.setValue(appendIdIn(result, treeOptionsModel.getIdKey()));
+        return conditionDto;
+    }
+
+    /**
+     * 拼接in字符
+     */
+    private List appendIdIn(List<Map<String, Object>> mapList, String key) {
+        List<Object> idIn = Lists.newArrayList();
+        for (Map<String, Object> item : mapList) {
+            idIn.add(item.get(key));
+        }
+        return idIn;
+    }
+
+    /**
+     * tree查询SQL
+     */
+    private String buildChildSql(String sql, String field) {
+        return String.format("select t.* from ( %s ) t where t.%s = :%s ", sql, field, field);
+    }
+
+    /**
+     * 根据nodeId获取所有子节点
+     */
+    private List<Map<String, Object>> findAllNode(String sql, Object pId, TreeOptionsModel treeVo, Long dataSourceId) {
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put(treeVo.getPidKey(), pId);
+        List<Map<String, Object>> queryResult = Lists.newArrayList();
+        List<Map<String, Object>> result = this.query(dataSourceId, sql, paramMap, buildColumnMapRowMapper());
+        if (!CollectionUtils.isEmpty(result)) {
+            List<Map<String, Object>> subResult = null;
+            for (Map<String, Object> subMap : result) {
+                subResult = findAllNode(sql, subMap.get(treeVo.getIdKey()), treeVo, dataSourceId);
+                if (!CollectionUtils.isEmpty(subResult)) {
+                    queryResult.addAll(subResult);
+                }
+            }
+            queryResult.addAll(result);
+        }
+        return queryResult;
+    }
+
+    public Response ztree(ZtreeModel ztreeModel) {
+        SqlDefine sqlDefine = findOne(ztreeModel.getSqlId());
+        StringBuilder sqlBuilder = new StringBuilder(String.format("select t.* from ( %s ) t ", sqlDefine.getSelectSql()));
+        Map<String, Object> paraMap = new HashedMap();
+
+        //异步加载
+        if (ztreeModel.isEnable()) {
+            sqlBuilder.append(" where t.");
+            if (null == ztreeModel.getId()) {
+                sqlBuilder.append(ztreeModel.getPidKey()).append(" = ''");
+            } else {
+                sqlBuilder.append(ztreeModel.getPidKey()).append("= :parent");
+                paraMap.put("parent", ztreeModel.getId());
+            }
+        }
+        List<Map<String, Object>> dataList = query(sqlDefine.getDatasource(), sqlBuilder.toString(), paraMap, buildColumnMapRowMapper());
+
+        //异步加载判断是否parent
+        if (ztreeModel.isEnable()) {
+            for (Map<String, Object> node : dataList) {
+                node.put("isParent", this.isParent(node.get(ztreeModel.getIdKey()).toString(), sqlDefine,
+                        ztreeModel));
+            }
+        }
+        return Response.SUCCESS(dataList);
+    }
+
+    /**
+     * TODO leaf 优化
+     * 判断是否上级节点
+     */
+    private boolean isParent(String parent, SqlDefine sqlDefine, ZtreeModel ztreeModel) {
+        String sql = String.format("select t.* from ( %s ) t where t.%s = :parent ", sqlDefine.getSelectSql(), ztreeModel.getPidKey());
+        Map<String, Object> paraMap = new HashedMap();
+        paraMap.put("parent", parent);
+        List<Map<String, Object>> dataList = this.queryForList(sqlDefine.getDatasource(), sql, paraMap);
+        return dataList.size() > 0;
+    }
+
+    public Response getTree(ZtreeModel ztreeModel) {
+        SqlDefine sqlDefine = findOne(ztreeModel.getSqlId());
+        String sql = String.format("select t.* from ( %s ) t ", sqlDefine.getSelectSql());
+        Map<String, Object> paraMap = new HashedMap();
+        List<Map<String, Object>> dataList = this.getNamedParameterJdbcTemplate(sqlDefine.getDatasource()).query(sql, paraMap, buildColumnMapRowMapper());
+        List<TreeNodeModel> dataSource = Lists.newArrayList();
+        List<TreeNodeModel> parentNodeItemList = Lists.newArrayList();
+        TreeNodeModel nodeItemModel;
+        for (Map<String, Object> item : dataList) {
+            nodeItemModel = TreeNodeModel.builder()
+                    .key(toString(item.get(ztreeModel.getIdKey())))
+                    .title(toString(item.get(ztreeModel.getName())))
+                    .pid(toString(item.get(ztreeModel.getPidKey())))
+                    .id(toString(item.get(sqlDefine.getPri())))
+                    .build();
+            dataSource.add(nodeItemModel);
+            if (nodeItemModel.getPid().equalsIgnoreCase(default_top)) {
+                nodeItemModel.setExpanded(true);
+                parentNodeItemList.add(nodeItemModel);
+            }
+        }
+        List<TreeNodeModel> nodeModelList = RecursiveTools.forEachTreeItems(parentNodeItemList, (TreeNodeModel item) -> {
+            List<TreeNodeModel> nodeItemModelList = getChildMapList(item.getId(), dataSource);
+            item.setChildren(nodeItemModelList);
+            if (CollectionUtils.isEmpty(nodeItemModelList)) {
+                item.setLeaf(true);
+            }
+            return nodeItemModelList;
+        });
+        return Response.SUCCESS(nodeModelList);
+    }
+
+    private String toString(Object value) {
+        if (null != value) {
+            return value.toString();
+        }
+        return "";
+    }
+
+    private List<TreeNodeModel> getChildMapList(Object pid, List<TreeNodeModel> dataList) {
+        List<TreeNodeModel> mapList = Lists.newArrayList();
+        for (TreeNodeModel item : dataList) {
+            if (StringUtils.isNotBlank(item.getPid()) && item.getPid().equals(pid)) {
+                mapList.add(item);
+            }
+        }
+        return mapList;
     }
 }
