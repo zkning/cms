@@ -70,7 +70,7 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
      * @param userId
      * @return
      */
-    @Query(value = "SELECT t.* FROM t_rbac_group t join t_rbac_user_info r on t.id = r.group_id where r.id = ?1"
+    @Query(value = "SELECT t.* FROM t_rbac_group t join t_rbac_user r on t.id = r.group_id where r.id = ?1"
             , nativeQuery = true)
     Group findByUserId(Long userId);
 }

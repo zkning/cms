@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "t_rbac_user_info")
+@Table(name = "t_rbac_user")
 public class RbacUserInfo extends Auditable {
 
     @JsonIgnore

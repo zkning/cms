@@ -185,7 +185,7 @@ public class RbacUserService {
     public Pager<RbacUserInfoFetchModel> list(RbacUserInfoSearchModel rbacUserInfoSearchModel) {
         StringBuffer sqlBuffer = new StringBuffer("select trui.id as id,trui.user_name as userName,trui.name as name,trui.mobile as mobile,trui.version," +
                 "trui.create_time as createTime,trui.create_user as createUser,trg.group_name as groupName " +
-                "from t_rbac_user_info trui left join t_rbac_group trg on trui.group_id = trg.id " +
+                "from t_rbac_user trui left join t_rbac_group trg on trui.group_id = trg.id " +
                 "where 1 = 1 ");
 
         SQLHelper sqlHelper = SQLHelper.getInstnce(sqlBuffer, new HashMap<>())
