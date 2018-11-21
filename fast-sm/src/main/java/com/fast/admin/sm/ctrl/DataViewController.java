@@ -31,21 +31,21 @@ public class DataViewController {
      * @param request
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_insert')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @PostMapping(value = "/insert")
     public Response insert(@RequestBody @Valid DataViewEditModel request) {
         return dataViewService.edit(request, false);
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_update')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @PostMapping(value = "/update")
     public Response update(@RequestBody @Valid DataViewEditModel request) {
         return dataViewService.edit(request, true);
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_delete')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @GetMapping(value = "/delete")
     public Response delete(Long id) {
@@ -67,7 +67,7 @@ public class DataViewController {
         return Response.SUCCESS(dataViewService.list(dataViewSearchModel));
     }
 
-    @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_dataView_toRes')")
+    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @ResponseBody
     @PostMapping(value = "/toRes")
     public Response toRes(@RequestBody @Valid ToResModel toResModel) {
