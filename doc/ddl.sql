@@ -119,3 +119,56 @@ CREATE TABLE `oauth_client_details` (
   `autoapprove` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`client_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `t_sm_datasource` (
+  `id` bigint(20) NOT NULL,
+  `driver_class_name` varchar(50) DEFAULT NULL COMMENT '驱动名',
+  `url` varchar(255) DEFAULT NULL,
+  `db_username` varchar(50) DEFAULT NULL COMMENT '用户名',
+  `db_password` varchar(20) DEFAULT NULL COMMENT '密码',
+  `remark` varchar(255) DEFAULT NULL COMMENT '描述',
+  `name` varchar(50) DEFAULT NULL COMMENT '名称',
+  `version` bigint(20) NOT NULL,
+  `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `create_user` varchar(255) DEFAULT NULL,
+  `last_update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `last_update_user` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `t_sm_dataview` (
+  `id` bigint(20) NOT NULL,
+  `sql_id` bigint(20) DEFAULT NULL,
+  `data_view_name` varchar(50) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
+  `options` text,
+  `fields` text,
+  `buttons` text,
+  `tree_options` text,
+  `data_filters` text,
+  `version` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `create_user` varchar(255) DEFAULT NULL,
+  `last_update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `last_update_user` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `t_sm_sqldefine` (
+  `id` bigint(20) NOT NULL,
+  `sql_name` varchar(255) DEFAULT NULL,
+  `select_sql` text,
+  `sql_extra` text,
+  `datasource` varchar(255) DEFAULT NULL,
+  `is_cache` int(11) DEFAULT NULL COMMENT '是否缓存',
+  `state` int(11) DEFAULT NULL COMMENT '1-编辑,2-发布',
+  `remark` varchar(255) DEFAULT NULL COMMENT '功能描述',
+  `table_name` varchar(255) DEFAULT NULL COMMENT '主表',
+  `pri` varchar(255) DEFAULT NULL COMMENT '主表对应的ID',
+  `version` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `create_user` varchar(255) DEFAULT NULL,
+  `last_update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `last_update_user` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
