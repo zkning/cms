@@ -10,20 +10,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "t_sm_sqldefine")
 public class SqlDefine extends Auditable {
-
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
     private String sqlName;
-
     private String selectSql;
-
+    private String manipulate;
     private String sqlExtra;
-
     private Long datasource;
-
     /**
      * 是否缓存
      */

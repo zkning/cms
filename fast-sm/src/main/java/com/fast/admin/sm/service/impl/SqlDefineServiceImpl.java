@@ -45,6 +45,7 @@ public class SqlDefineServiceImpl implements SqlDefineService {
         sqlDefine.setSqlName(sqlDefineEditModel.getSqlName());
         sqlDefine.setTableName(sqlDefineEditModel.getTableName());
         sqlDefine.setPri(sqlDefineEditModel.getPri());
+        sqlDefine.setManipulate(sqlDefineEditModel.getManipulate());
         sqlDefine.setSelectSql(sqlDefineEditModel.getSelectSql());
         sqlDefineRepository.save(sqlDefine);
         return Response.SUCCESS();
@@ -72,6 +73,7 @@ public class SqlDefineServiceImpl implements SqlDefineService {
         model.setSqlName(entity.getSqlName());
         model.setTableName(entity.getTableName());
         model.setPri(entity.getPri());
+        model.setManipulate(entity.getManipulate());
         model.setSelectSql(entity.getSelectSql());
         model.setId(entity.getId());
         return Response.SUCCESS(model);
@@ -81,7 +83,7 @@ public class SqlDefineServiceImpl implements SqlDefineService {
     public Pager<SqlDefineFetchModel> list(SqlDefineSearchModel sqlDefineSearchModel) {
         StringBuffer sqlbuffer = new StringBuffer(" select t.id as id, t.sql_name as sqlName , t.select_sql as selectSql, " +
                 "t.sql_extra as sqlExtra , t.datasource as datasource , t.version as version , t.create_time as createTime, t.is_cache as isCache, " +
-                "state as state, remark as remark,table_name as tableName,pri as pri from t_sm_sqldefine t where 1=1 ");
+                "state as state, remark as remark,table_name as tableName,pri as pri, manipulate as manipulate from t_sm_sqldefine t where 1=1 ");
 
         SQLHelper.ConditionModel conditionModel = SQLHelper.getInstnce(sqlbuffer, new HashMap<>())
                 .like("t", "id", sqlDefineSearchModel.getId())

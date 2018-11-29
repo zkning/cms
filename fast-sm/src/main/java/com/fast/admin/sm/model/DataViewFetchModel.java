@@ -13,6 +13,7 @@ public class DataViewFetchModel{
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sqlId;
     private String remark;
+    private String manipulate;
     private OptionsModel options;
     private List<FieldModel> fields;
     private List<ButtonModel> buttons;

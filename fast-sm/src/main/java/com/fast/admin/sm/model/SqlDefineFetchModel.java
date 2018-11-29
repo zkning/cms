@@ -45,6 +45,8 @@ public class SqlDefineFetchModel {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "类型")
+    private String manipulate;
     /**
      * 主表
      */

@@ -39,6 +39,7 @@ public class DataView {
 
     private String dataViewName;
     private Long sqlId;
+    private String manipulate;
     private String remark;
     private String options;
     private String fields;

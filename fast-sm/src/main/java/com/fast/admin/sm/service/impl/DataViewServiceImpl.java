@@ -72,6 +72,7 @@ public class DataViewServiceImpl implements DataViewService {
         }
         dataView.setId(request.getId());
         dataView.setSqlId(request.getSqlId());
+        dataView.setManipulate(request.getManipulate());
         dataView.setRemark(request.getRemark());
         dataView.setDataViewName(request.getDataViewName());
         dataView.setButtons(FastJsonUtils.toJSONString(request.getButtons()));
@@ -103,6 +104,7 @@ public class DataViewServiceImpl implements DataViewService {
         dataViewFetchModel.setId(dataView.getId());
         dataViewFetchModel.setSqlId(dataView.getSqlId());
         dataViewFetchModel.setRemark(dataView.getRemark());
+        dataViewFetchModel.setManipulate(dataView.getManipulate());
         dataViewFetchModel.setDataViewName(dataView.getDataViewName());
         dataViewFetchModel.setButtons(JSONArray.parseArray(dataView.getButtons(), ButtonModel.class));
         dataViewFetchModel.setFields(JSONArray.parseArray(dataView.getFields(), FieldModel.class));

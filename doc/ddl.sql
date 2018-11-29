@@ -139,6 +139,7 @@ CREATE TABLE `t_sm_datasource` (
 CREATE TABLE `t_sm_dataview` (
   `id` bigint(20) NOT NULL,
   `sql_id` bigint(20) DEFAULT NULL,
+  `manipulate` varchar(10) NOT NULL COMMENT 'QUERY,CRUD',
   `data_view_name` varchar(50) DEFAULT NULL,
   `remark` varchar(255) DEFAULT NULL,
   `options` text,
@@ -159,6 +160,7 @@ CREATE TABLE `t_sm_sqldefine` (
   `sql_name` varchar(255) DEFAULT NULL,
   `select_sql` text,
   `sql_extra` text,
+  `manipulate` varchar(10) DEFAULT 'QUERY' COMMENT 'QUERY,CRUD',
   `datasource` varchar(255) DEFAULT NULL,
   `is_cache` int(11) DEFAULT NULL COMMENT '是否缓存',
   `state` int(11) DEFAULT NULL COMMENT '1-编辑,2-发布',
@@ -172,3 +174,4 @@ CREATE TABLE `t_sm_sqldefine` (
   `last_update_user` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

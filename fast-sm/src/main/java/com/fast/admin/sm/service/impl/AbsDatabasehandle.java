@@ -41,6 +41,8 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     private static final String BLANK_STR = "-1";
     private static final String default_top = "0";
 
+    private static final String manipulate_query = "QUERY";
+
     @Autowired
     SqlDefineRepository sqlDefineRepository;
 
@@ -50,6 +52,16 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     public SqlDefine findOne(Long sqlId) {
         return sqlDefineRepository.getOne(sqlId);
     }
+
+
+    // 获取字段SQL
+    public String getFieldSql(SqlDefine sqlDefine) {
+        if (manipulate_query.equals(sqlDefine.getManipulate())) {
+            return String.format("select * from ( %s ) t where 1=2 ", sqlDefine.getSelectSql());
+        }
+        return String.format("select * from  %s  where 1=2 ", sqlDefine.getTableName());
+    }
+
 
     public Map<String, Object> getFieldUpperCaseMap(SqlRowSet resultSet) {
         SqlRowSetMetaData srsmd = resultSet.getMetaData();

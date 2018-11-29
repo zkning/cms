@@ -27,11 +27,8 @@ public class SqlIdJdbcServiceImpl extends AbsDatabasehandle implements SqlIdJdbc
     public List<FieldModel> showFullColumnsBySqlId(Long sqlId) throws Exception {
         SqlDefine sqlDefine = findOne(sqlId);
 
-        //获取主表实际列用来过滤
-        String resultSql = String.format("select * from  %s  where 1=2 ", sqlDefine.getTableName());
-
         // 获取table sqlRowSet信息
-        SqlRowSet resultSet = getSqlRowSet(sqlDefine.getDatasource(), resultSql, new HashMap<>());
+        SqlRowSet resultSet = getSqlRowSet(sqlDefine.getDatasource(), getFieldSql(sqlDefine), new HashMap<>());
 
         // 表列map
         Map<String, Object> fieldMap = getFieldUpperCaseMap(resultSet);
