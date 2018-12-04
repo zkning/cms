@@ -3,7 +3,7 @@
 
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
     <springProperty scope="context" name="appName" source="server.contextPath"/>
-    <property name="logHome" value="/logs/hzed-sm"/>
+    <property name="logHome" value="/logs/fast"/>
     <!--测试日志的地址/home/hzed-dev/creditaudit/logs/hzed-admin-->
 
     <!-- 控制台输出 -->
