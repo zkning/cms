@@ -24,9 +24,9 @@ public class LoggerAspectConfig {
     public void doBefore(JoinPoint joinPoint) {
         String requestId = String.valueOf(System.currentTimeMillis());
         MDC.put("TRACE_ID", requestId);
-//        String method = joinPoint.getTarget().getClass().getSimpleName() + "." + joinPoint.getSignature().getName();
         if (null != joinPoint.getArgs() && joinPoint.getArgs().length > 0) {
-            log.info("Request：{}", JSONObject.toJSONString(joinPoint.getArgs()));
+            String method = joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName();
+            log.info("{} Request：{}", method, JSONObject.toJSONString(joinPoint.getArgs()));
         }
     }
 
