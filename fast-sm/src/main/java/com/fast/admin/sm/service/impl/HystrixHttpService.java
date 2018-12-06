@@ -10,13 +10,11 @@ public class HystrixHttpService {
 
     @HystrixCommand(fallbackMethod = "httpRequestForHttpFallback")
     public String httpRequestForBaidu(String params) {
-        log.info(this.getClass().getSimpleName());
         try {
             Thread.sleep(1000 * 3L);
         } catch (InterruptedException e) {
             log.error("httpRequestForBaidu休眠异常");
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>");
         return "baidu";
     }
 
@@ -28,7 +26,6 @@ public class HystrixHttpService {
         } catch (InterruptedException e) {
             log.error("httpRequestForGoogle休眠异常");
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>");
         return "google";
     }
 
