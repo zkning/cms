@@ -30,6 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         antPatterns.add("/swagger-resources/**");
         antPatterns.add("/webjars/**");
         antPatterns.add("/v2/api-docs/**");
+        antPatterns.add("/uflo/**");
     }
 
     /**

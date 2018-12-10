@@ -16,6 +16,7 @@
         <module>fast-jwt</module>
         <module>fast-rbac</module>
         <module>fast-sm</module>
+        <module>fast-uflo2</module>
         <module>fast-oauth2-client</module>
     </modules>
 

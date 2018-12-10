@@ -22,6 +22,11 @@
             <artifactId>fast-rbac</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.fast.admin</groupId>
+            <artifactId>fast-uflo2</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

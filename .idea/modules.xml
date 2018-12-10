@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/fast-orm/fast-orm.iml" filepath="$PROJECT_DIR$/fast-orm/fast-orm.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-rbac/fast-rbac.iml" filepath="$PROJECT_DIR$/fast-rbac/fast-rbac.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-sm/fast-sm.iml" filepath="$PROJECT_DIR$/fast-sm/fast-sm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-uflo2/fast-uflo2.iml" filepath="$PROJECT_DIR$/fast-uflo2/fast-uflo2.iml" />
     </modules>
   </component>
 </project>
