@@ -14,7 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Aspect
 @Configuration
-public class LoggerAspectConfig {
+public class LoggerAop {
+
+    private static String CONNECTOR = ".";
 
     @Pointcut("execution(* com.fast.admin.*.ctrl..*.*(..))")
     public void executionContoller() {
@@ -25,7 +27,7 @@ public class LoggerAspectConfig {
         String requestId = String.valueOf(System.currentTimeMillis());
         MDC.put("TRACE_ID", requestId);
         if (null != joinPoint.getArgs() && joinPoint.getArgs().length > 0) {
-            String method = joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName();
+            String method = joinPoint.getTarget().getClass().getName() + CONNECTOR + joinPoint.getSignature().getName();
             log.info("{} Request：{}", method, JSONObject.toJSONString(joinPoint.getArgs()));
         }
     }

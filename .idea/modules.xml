@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/fast-code-generator/fast-code-generator.iml" filepath="$PROJECT_DIR$/fast-code-generator/fast-code-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-framework/fast-framework.iml" filepath="$PROJECT_DIR$/fast-framework/fast-framework.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-jwt/fast-jwt.iml" filepath="$PROJECT_DIR$/fast-jwt/fast-jwt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fast-mybatis-plus/fast-mybatis-plus.iml" filepath="$PROJECT_DIR$/fast-mybatis-plus/fast-mybatis-plus.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" filepath="$PROJECT_DIR$/fast-oauth2-client/fast-oauth2-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-orm/fast-orm.iml" filepath="$PROJECT_DIR$/fast-orm/fast-orm.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-rbac/fast-rbac.iml" filepath="$PROJECT_DIR$/fast-rbac/fast-rbac.iml" />

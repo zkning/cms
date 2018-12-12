@@ -9,6 +9,7 @@
         <module name="fast-code-generator" />
         <module name="fast-framework" />
         <module name="fast-jwt" />
+        <module name="fast-mybatis-plus" />
         <module name="fast-oauth2-client" />
         <module name="fast-orm" />
         <module name="fast-rbac" />
@@ -21,6 +22,7 @@
       <module name="fast-code-generator" target="1.5" />
       <module name="fast-framework" target="1.8" />
       <module name="fast-jwt" target="1.8" />
+      <module name="fast-mybatis-plus" target="1.8" />
       <module name="fast-oauth2-client" target="1.8" />
       <module name="fast-orm" target="1.8" />
       <module name="fast-rbac" target="1.8" />

@@ -18,6 +18,7 @@
         <module>fast-sm</module>
         <module>fast-uflo2</module>
         <module>fast-oauth2-client</module>
+        <module>fast-mybatis-plus</module>
     </modules>
 
     <build>
