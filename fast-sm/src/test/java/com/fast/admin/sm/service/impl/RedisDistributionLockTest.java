@@ -48,13 +48,14 @@ public class RedisDistributionLockTest {
         for (int i = 0; i < threadCount; i++) {
             exec.execute(() -> {
                 try {
-                    log.info(Thread.currentThread().getId() + "申请锁时间:" + System.currentTimeMillis());
+                    long tId = Thread.currentThread().getId();
+                    log.info(tId + "申请锁时间:" + System.currentTimeMillis());
                     Boolean lockResult = redisDistributionLock.acquire(lock, 5 * 60 * 1000, 3, 1000 * 10);
                     if (lockResult) {
-                        log.info(Thread.currentThread().getId() + "锁已获取..." + System.currentTimeMillis());
+                        log.info(tId + "锁已获取..." + System.currentTimeMillis());
                         Thread.sleep(1000 * 5);
                         redisDistributionLock.release(lock);
-                        log.info(Thread.currentThread().getId() + "锁已释放..." + System.currentTimeMillis());
+                        log.info(tId + "锁已释放..." + System.currentTimeMillis());
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
