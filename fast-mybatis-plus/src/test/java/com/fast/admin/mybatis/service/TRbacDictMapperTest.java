@@ -55,5 +55,12 @@ public class TRbacDictMapperTest {
         tRbacDictService.transactional();
     }
 
+    @Test
+    public void insertSelective() {
+        TRbacDict tRbacDict = new TRbacDict();
+        tRbacDict.setRemark("当前数据是新添加的数据");
+        int result = tRbacDictMapper.insertSelective(tRbacDict);
+        log.info("insert record: {} , id:{}", result, tRbacDict.getId());
+    }
 
 } 

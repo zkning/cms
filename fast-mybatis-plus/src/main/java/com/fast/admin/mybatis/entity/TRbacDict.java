@@ -1,11 +1,18 @@
 package com.fast.admin.mybatis.entity;
 
+import com.fast.admin.mybatis.GenerateWorkId;
+import tk.mybatis.mapper.annotation.KeySql;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "t_rbac_dict")
 public class TRbacDict {
-    @GeneratedValue(generator = "JDBC")
+
+    @Id
+    @KeySql(genId = GenerateWorkId.class)
     private Long id;
 
     /**

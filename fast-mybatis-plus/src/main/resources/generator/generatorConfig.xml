@@ -10,7 +10,7 @@
         <property name="endingDelimiter" value="`"/>
 
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+            <property name="mappers" value="com.fast.admin.mybatis.BasicMapper"/>
             <property name="caseSensitive" value="true"/>
         </plugin>
 
@@ -31,7 +31,7 @@
                              type="XMLMAPPER"/>
 
         <table tableName="t_rbac_dict">
-            <generatedKey column="id" sqlStatement="JDBC"/>
+            <!--<generatedKey column="id" sqlStatement="JDBC"/>-->
         </table>
     </context>
 </generatorConfiguration>
