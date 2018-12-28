@@ -46,23 +46,20 @@ public class RedisDistributionLockTest {
         ExecutorService exec = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         for (int i = 0; i < threadCount; i++) {
-            exec.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        log.info(Thread.currentThread().getId() + "申请锁时间:" + System.currentTimeMillis());
-                        Boolean lockResult = redisDistributionLock.acquire(lock, 5 * 60 * 1000 ,3,1000 * 10);
-                        if (lockResult) {
-                            log.info(Thread.currentThread().getId() + "锁已获取..." + System.currentTimeMillis());
-                            Thread.sleep(1000 * 5);
-                            redisDistributionLock.release(lock);
-                            log.info(Thread.currentThread().getId() + "锁已释放..." + System.currentTimeMillis());
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            exec.execute(() -> {
+                try {
+                    log.info(Thread.currentThread().getId() + "申请锁时间:" + System.currentTimeMillis());
+                    Boolean lockResult = redisDistributionLock.acquire(lock, 5 * 60 * 1000, 3, 1000 * 10);
+                    if (lockResult) {
+                        log.info(Thread.currentThread().getId() + "锁已获取..." + System.currentTimeMillis());
+                        Thread.sleep(1000 * 5);
+                        redisDistributionLock.release(lock);
+                        log.info(Thread.currentThread().getId() + "锁已释放..." + System.currentTimeMillis());
                     }
-                    countDownLatch.countDown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                countDownLatch.countDown();
             });
         }
         countDownLatch.await();
