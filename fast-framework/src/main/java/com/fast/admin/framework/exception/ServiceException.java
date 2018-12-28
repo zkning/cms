@@ -9,10 +9,15 @@ public class ServiceException extends RuntimeException {
 
     public ServiceException() {
     }
-    
+
     public ServiceException(String message) {
-        super(" Service:"+message);
+        super(" Service:" + message);
     }
+
+    public ServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public ServiceException(Object obj, String message) {
         this(obj.getClass().getName() + message);
     }
