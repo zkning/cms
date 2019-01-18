@@ -6,27 +6,27 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="cms-framework" />
+        <module name="cms-oauth2-client" />
+        <module name="cms-orm" />
+        <module name="cms-rbac" />
+        <module name="cms-sm" />
         <module name="fast-code-generator" />
-        <module name="fast-framework" />
         <module name="fast-jwt" />
         <module name="fast-mybatis-plus" />
-        <module name="fast-oauth2-client" />
-        <module name="fast-orm" />
-        <module name="fast-rbac" />
-        <module name="fast-sm" />
         <module name="fast-uflo2" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="cms-framework" target="1.8" />
+      <module name="cms-oauth2-client" target="1.8" />
+      <module name="cms-orm" target="1.8" />
+      <module name="cms-rbac" target="1.8" />
+      <module name="cms-sm" target="1.8" />
       <module name="fast-admin" target="1.5" />
       <module name="fast-code-generator" target="1.5" />
-      <module name="fast-framework" target="1.8" />
       <module name="fast-jwt" target="1.8" />
       <module name="fast-mybatis-plus" target="1.8" />
-      <module name="fast-oauth2-client" target="1.8" />
-      <module name="fast-orm" target="1.8" />
-      <module name="fast-rbac" target="1.8" />
-      <module name="fast-sm" target="1.8" />
       <module name="fast-uflo2" target="1.6" />
     </bytecodeTargetLevel>
   </component>

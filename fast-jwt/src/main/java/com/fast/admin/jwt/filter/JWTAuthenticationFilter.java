@@ -1,11 +1,11 @@
 package com.fast.admin.jwt.filter;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fast.admin.framework.constants.StatusCodeEnum;
-import com.fast.admin.framework.response.Response;
+import com.sophia.cms.framework.constants.StatusCodeEnum;
+import com.sophia.cms.framework.response.Response;
 import com.fast.admin.jwt.config.WebSecurityConfig;
 import com.fast.admin.jwt.service.TokenAuthenticationService;
-import com.fast.admin.framework.util.SpringContextUtil;
+import com.sophia.cms.framework.util.SpringContextUtil;
 import org.apache.commons.codec.CharEncoding;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;

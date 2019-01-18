@@ -1,6 +1,6 @@
 package com.fast.admin.mybatis;
 
-import com.fast.admin.framework.exception.ServiceException;
+import com.sophia.cms.framework.exception.ServiceException;
 import com.fast.admin.mybatis.entity.TRbacDict;
 import com.fast.admin.mybatis.mapper.TRbacDictMapper;
 import lombok.extern.slf4j.Slf4j;

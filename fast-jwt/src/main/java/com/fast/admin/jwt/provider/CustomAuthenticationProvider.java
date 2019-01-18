@@ -1,7 +1,7 @@
 package com.fast.admin.jwt.provider;
 
-import com.fast.admin.framework.response.Response;
-import com.fast.admin.framework.util.SpringContextUtil;
+import com.sophia.cms.framework.response.Response;
+import com.sophia.cms.framework.util.SpringContextUtil;
 import com.fast.admin.jwt.service.JwtLoginService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

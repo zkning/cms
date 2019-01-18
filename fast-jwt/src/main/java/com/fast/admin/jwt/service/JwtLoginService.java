@@ -1,6 +1,6 @@
 package com.fast.admin.jwt.service;
 
-import com.fast.admin.framework.response.Response;
+import com.sophia.cms.framework.response.Response;
 import com.fast.admin.jwt.model.AccountCredentials;
 
 import java.io.Serializable;

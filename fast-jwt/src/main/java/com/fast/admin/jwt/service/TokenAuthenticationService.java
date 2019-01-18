@@ -1,8 +1,8 @@
 package com.fast.admin.jwt.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fast.admin.framework.constants.StatusCodeEnum;
-import com.fast.admin.framework.response.Response;
+import com.sophia.cms.framework.constants.StatusCodeEnum;
+import com.sophia.cms.framework.response.Response;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

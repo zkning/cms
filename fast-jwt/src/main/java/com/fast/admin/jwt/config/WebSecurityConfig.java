@@ -1,5 +1,5 @@
 package com.fast.admin.jwt.config;
-import com.fast.admin.framework.cors.BootstrapCorsConfigurationSource;
+import com.sophia.cms.framework.cors.BootstrapCorsConfigurationSource;
 import com.fast.admin.jwt.filter.JWTLoginFilter;
 import com.fast.admin.jwt.filter.JWTAuthenticationFilter;
 import com.fast.admin.jwt.provider.CustomAuthenticationProvider;

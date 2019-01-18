@@ -2,11 +2,11 @@ package com.fast.admin.jwt.filter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fast.admin.framework.response.Response;
+import com.sophia.cms.framework.response.Response;
 import com.fast.admin.jwt.model.AccountCredentials;
 import com.fast.admin.jwt.service.JwtLoginService;
 import com.fast.admin.jwt.service.TokenAuthenticationService;
-import com.fast.admin.framework.util.SpringContextUtil;
+import com.sophia.cms.framework.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.CharEncoding;
 import org.springframework.http.MediaType;

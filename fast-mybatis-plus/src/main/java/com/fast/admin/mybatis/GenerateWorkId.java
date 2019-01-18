@@ -1,6 +1,6 @@
 package com.fast.admin.mybatis;
 
-import com.fast.admin.orm.idworker.SnowflakeId;
+import com.sophia.cms.orm.idworker.SnowflakeId;
 import tk.mybatis.mapper.genid.GenId;
 
 /**
