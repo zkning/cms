@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sophia.cms.sm.mapper.DataSourceMapper">
+
+    <select id="list" parameterType="com.sophia.cms.sm.model.DataSourceSearchModel"
+            resultType="com.sophia.cms.sm.model.DataSourceFetchModel">
+        select t.id as id, t.driver_class_name as driverClassName , t.url as url,
+        t.db_username as dbUsername , t.db_password as dbPassword , t.version as version , t.create_time as createTime,
+        t.name as name,
+        remark as remark from t_sm_datasource t
+        <where>
+            1 = 1
+            <if test="params.id != null">
+                and t.id=#{params.id}
+            </if>
+            <if test="params.name != null">
+                and t.name=#{params.name}
+            </if>
+            <if test="params.dbUsername != null">
+                and t.db_username=#{params.dbUsername}
+            </if>
+            <if test="params.url != null">
+                and t.url like concat(#{params.url},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

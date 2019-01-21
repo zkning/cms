@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sophia.cms.rbac.mapper.DictMapper">
+
+    <select id="list" parameterType="com.sophia.cms.rbac.model.DictSearchModel"
+            resultType="com.sophia.cms.rbac.model.DictFetchModel">
+        select t.id as id ,
+        t.value as value,
+        t.sort as sort,
+        t.text as text ,
+        t.pid as pid ,
+        t.version as version ,
+        t.create_time as createTime,
+        t.remark as remark,
+        s.text as pidText
+        from t_rbac_dict t
+        left join t_rbac_dict s on t.pid = s.id
+        <where>
+            1 = 1
+            <if test="params.text != null">
+                and t.text=#{params.text}
+            </if>
+            <if test="params.value != null">
+                and t.value=#{params.value}
+            </if>
+            <if test="params.pidText != null">
+                and s.text=#{params.pidText}
+            </if>
+            <if test="params.pidText != null">
+                and t.pid=#{params.pid}
+            </if>
+        </where>
+        order by t.pid desc,t.create_time desc
+    </select>
+</mapper>

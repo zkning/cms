@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sophia.cms.sm.mapper.SqlDefineMapper">
+
+    <select id="list" parameterType="com.sophia.cms.sm.model.SqlDefineSearchModel"
+            resultType="com.sophia.cms.sm.model.SqlDefineFetchModel">
+        select t.id as id, t.sql_name as sqlName , t.select_sql as selectSql,
+        t.sql_extra as sqlExtra , t.datasource as datasource , t.version as version , t.create_time as createTime,
+        t.is_cache as isCache,
+        state as state, remark as remark,table_name as tableName,pri as pri, manipulate as manipulate from
+        t_sm_sqldefine t
+        <where>
+            1 = 1
+            <if test="params.id != null">
+                and t.id like  concat(#{params.id},'%')
+            </if>
+            <if test="params.sqlName != null">
+                and t.sql_name like concat(#{params.sqlName},'%')
+            </if>
+            <if test="params.tableName != null">
+                and t.table_name like  concat(#{params.tableName},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

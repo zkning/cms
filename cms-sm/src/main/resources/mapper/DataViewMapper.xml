@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sophia.cms.sm.mapper.DataViewMapper">
+
+    <select id="list" parameterType="com.sophia.cms.sm.model.DataViewSearchModel"
+            resultType="com.sophia.cms.sm.model.DataViewModel">
+        select t.id,t.sql_id as sqlId,t.data_view_name as dataViewName,t.remark,t.options,
+        t.fields,t.buttons,t.tree_options as treeOptions,t.data_filters as dataFilters,t.version,t.create_time as createTime,t.create_user as createUser,t.last_update_time,t.last_update_user
+        from t_sm_dataview t
+        <where>
+            1 = 1
+            <if test="params.sqlId != null">
+                and t.sql_id=#{params.sqlId}
+            </if>
+            <if test="params.dataViewName != null">
+                and t.data_view_name=#{params.dataViewName}
+            </if>
+        </where>
+        order by t.create_time desc
+    </select>
+</mapper>
