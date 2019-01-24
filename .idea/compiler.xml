@@ -11,10 +11,6 @@
         <module name="cms-orm" />
         <module name="cms-rbac" />
         <module name="cms-sm" />
-        <module name="fast-code-generator" />
-        <module name="fast-jwt" />
-        <module name="fast-mybatis-plus" />
-        <module name="fast-uflo2" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

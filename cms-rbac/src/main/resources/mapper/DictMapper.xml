@@ -26,7 +26,7 @@
             <if test="params.pidText != null">
                 and s.text=#{params.pidText}
             </if>
-            <if test="params.pidText != null">
+            <if test="params.pid != null">
                 and t.pid=#{params.pid}
             </if>
         </where>
