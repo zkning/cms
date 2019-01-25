@@ -11,6 +11,7 @@
         <module name="cms-orm" />
         <module name="cms-rbac" />
         <module name="cms-sm" />
+        <module name="fast-oauth2-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="fast-code-generator" target="1.5" />
       <module name="fast-jwt" target="1.8" />
       <module name="fast-mybatis-plus" target="1.8" />
+      <module name="fast-oauth2-client" target="1.8" />
       <module name="fast-uflo2" target="1.6" />
     </bytecodeTargetLevel>
   </component>

@@ -10,10 +10,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>fast-code-generator</module>
-        <module>fast-jwt</module>
-        <module>fast-mybatis-plus</module>
-        <module>fast-uflo2</module>
         <module>cms-framework</module>
         <module>cms-orm</module>
         <module>cms-rbac</module>

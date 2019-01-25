@@ -3,11 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cms-framework/cms-framework.iml" filepath="$PROJECT_DIR$/cms-framework/cms-framework.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cms-oauth2-client/fast-oauth2-client.iml" filepath="$PROJECT_DIR$/cms-oauth2-client/fast-oauth2-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cms-oauth2-client/cms-oauth2-client.iml" filepath="$PROJECT_DIR$/cms-oauth2-client/cms-oauth2-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/cms-orm/cms-orm.iml" filepath="$PROJECT_DIR$/cms-orm/cms-orm.iml" />
       <module fileurl="file://$PROJECT_DIR$/cms-rbac/cms-rbac.iml" filepath="$PROJECT_DIR$/cms-rbac/cms-rbac.iml" />
       <module fileurl="file://$PROJECT_DIR$/cms-sm/cms-sm.iml" filepath="$PROJECT_DIR$/cms-sm/cms-sm.iml" />
       <module fileurl="file://$PROJECT_DIR$/fast-admin.iml" filepath="$PROJECT_DIR$/fast-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cms-oauth2-client/fast-oauth2-client.iml" filepath="$PROJECT_DIR$/cms-oauth2-client/fast-oauth2-client.iml" />
     </modules>
   </component>
 </project>

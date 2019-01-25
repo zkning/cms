@@ -1,7 +1,7 @@
 package com.sophia.cms.sm.factory;
 
-import com.sophia.cms.sm.model.DataSourceCacheModel;
 import com.sophia.cms.sm.domain.DataSource;
+import com.sophia.cms.sm.model.DataSourceCacheModel;
 import com.sophia.cms.sm.service.DataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,7 +37,7 @@ public class JdbcTemplateFactory {
         // 构建缓存id
         String cacheId = getCacheId(dataSourceId, dataSourceCacheModel.getVersion());
         if (jdbcTemplateCache.containsKey(cacheId)) {
-            jdbcTemplateCache.get(cacheId);
+            return jdbcTemplateCache.get(cacheId);
         }
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourceCacheModel.getDriverManagerDataSource());
         jdbcTemplateCache.put(cacheId, jdbcTemplate);
@@ -50,7 +50,7 @@ public class JdbcTemplateFactory {
         // 构建缓存id
         String cacheId = getCacheId(dataSourceId, dataSourceCacheModel.getVersion());
         if (namedParameterJdbcTemplateCache.containsKey(cacheId)) {
-            namedParameterJdbcTemplateCache.get(cacheId);
+            return namedParameterJdbcTemplateCache.get(cacheId);
         }
         NamedParameterJdbcTemplate namedParameterJdbcTemplate =
                 new NamedParameterJdbcTemplate(dataSourceCacheModel.getDriverManagerDataSource());

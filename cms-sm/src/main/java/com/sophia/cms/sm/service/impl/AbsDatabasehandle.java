@@ -57,7 +57,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     // 获取字段SQL
     public String getFieldSql(SqlDefine sqlDefine) {
         if (manipulate_query.equals(sqlDefine.getManipulate())) {
-            return String.format("select * from ( %s ) t where 1=2 ", sqlDefine.getSelectSql());
+            return String.format("select _t.* from ( %s ) as _t  where 1=2 ", sqlDefine.getSelectSql());
         }
         return String.format("select * from  %s  where 1=2 ", sqlDefine.getTableName());
     }
