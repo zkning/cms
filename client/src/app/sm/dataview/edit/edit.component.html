@@ -1,0 +1,753 @@
+<div class="modal-header">
+    <div class="modal-title">编辑视图</div>
+</div>
+<form class="form-horizontal" role="form" [formGroup]="ngbForm" (ngSubmit)="onSubmit()">
+<nz-tabset>
+    <nz-tab nzTitle="基本设置">
+         <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="dataViewName" class="sm-title">ID</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                  <input class="form-control"  placeholder="ID" formControlName="id" (click)="refreshId(id)"  readonly  #id />
+                  <nz-form-explain *ngIf="ngbForm.get('id').dirty && ngbForm.get('id').errors">请输入ID</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="dataViewName" class="sm-title">DataView Name</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                  <input class="form-control"  placeholder="DataView Name" formControlName="dataViewName" />
+                  <nz-form-explain *ngIf="ngbForm.get('dataViewName').dirty && ngbForm.get('dataViewName').errors">请输入别名</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="sqlId" class="sm-title">SqlId</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                <!-- <input class="form-control"  placeholder="sqlId" formControlName="sqlId" /> -->
+                <input class="form-control"  placeholder="sqlId" formControlName="sqlId" (click)="openSelector()" readonly/>
+                <nz-form-explain *ngIf="ngbForm.get('sqlId').dirty && ngbForm.get('sqlId').errors">sqlId</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="manipulate" class="sm-title">Manipulate</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                  <input class="form-control"  placeholder="manipulate" formControlName="manipulate" readonly="readonly"/>
+                  <nz-form-explain *ngIf="ngbForm.get('manipulate').dirty && ngbForm.get('manipulate').errors">请输入操纵类型</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3"  nzFor="remark" class="sm-title">Remark</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+              <textarea style="width: 100%;" placeholder="备注" formControlName="remark"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+    </nz-tab>
+
+
+    <nz-tab nzTitle="查询配置" formGroupName="options">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired class="sm-title">Url</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <input  class="form-control" class="form-control"  placeholder="url" formControlName="url" />
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" nzRequired class="sm-title">Method</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select formControlName="method" placeholder="method">
+                      <option *ngFor="let method of methods" [value]="method.value" >{{method.text}}</option>
+                </select>
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">UndefinedText</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <input  class="form-control" class="form-control" placeholder="undefinedText" formControlName="undefinedText" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="!isManipulateQuery()">
+                <nz-form-label nzXs="24" nzSm="3" nzRequired class="sm-title">IdField</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="idField" formControlName="idField" readonly="readonly"/>
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3"  class="sm-title">Version</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="version" formControlName="version" />
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">UniqueId</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="uniqueId" formControlName="uniqueId" />
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">Pagination</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                    <input type="checkbox" formControlName="pagination">
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">PageSize</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control" class="form-control"  placeholder="pageSize" formControlName="pageSize" />
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">PageNumber</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="pageNumber" formControlName="pageNumber" />
+               </nz-form-control>
+              </nz-form-item>
+
+            <nz-form-item>
+                <!-- <label class="col-sm-2 control-label">totalField</label>
+                <div class="col-sm-4">
+                  <input  class="form-control"  placeholder="totalField" formControlName="totalField" />
+                </div> -->
+
+                <nz-form-label nzXs="24" nzSm="3"  class="sm-title">DetailView</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                    <input type="checkbox" formControlName="detailView">
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">SelectItemName</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="selectItemName" formControlName="selectItemName" />
+                </nz-form-control>
+
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">SearchTimeOut</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="searchTimeOut" formControlName="searchTimeOut" />
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowExport</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="showExport">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ExportDataType</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select  formControlName="exportDataType" placeholder="exportDataType">
+                          <option *ngFor="let et of exportDataType" [value]="et.value">{{et.text}}</option>
+                </select>
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowPaginationSwitch</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="showPaginationSwitch">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <!--<label class="col-sm-2 control-label">dataField</label>
+              <div class="col-sm-4">
+                <input  class="form-control"  placeholder="dataField" formControlName="dataField" />
+              </div>-->
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Sortable</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                    <input type="checkbox" formControlName="sortable">
+                </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowToggle</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="showToggle">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">PageList</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <!-- <input type="checkbox" formControlName="escape"> -->
+                  <input  class="form-control"  placeholder="pageList" formControlName="pageList" />
+              </nz-form-control>
+            </nz-form-item>
+
+           <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SmartDisplay</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="smartDisplay">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SearchOnEnterKey</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="searchOnEnterKey">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">StrictSearch</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="strictSearch">
+              </nz-form-control>
+            </nz-form-item>
+
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" class="sm-title">TrimOnSearch</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="trimOnSearch" formControlName="trimOnSearch" />
+                </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowHeader</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="showHeader">
+              </nz-form-control>
+
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowFooter</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="showFooter">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowColumns</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <!--<input  class="form-control"  placeholder="showColumns" formControlName="showColumns" />-->
+                  <input type="checkbox" formControlName="showColumns">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ShowRefresh</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="showRefresh">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title" >SidePagination</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                    <select  formControlName="sidePagination" placeholder="sidePagination">
+                      <option *ngFor="let sidePagination of sidePaginations" [value]="sidePagination.value">{{sidePagination.text}}</option>
+                    </select>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">ClickToSelect</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="clickToSelect">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SingleSelect</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="singleSelect">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">CardView</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="cardView">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SortStable</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input type="checkbox" formControlName="sortStable">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">QueryParamsType</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select  formControlName="queryParamsType" placeholder="queryParamsType">
+                      <option *ngFor="let queryParamsType of createQueryParamsTypes" [value]="queryParamsType.value">{{queryParamsType.text}}</option>
+                </select>
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Search</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="search">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SearchText</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <input class="form-control"  placeholder="searchText" formControlName="searchText" />
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">CheckboxHeader</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="checkboxHeader">
+              </nz-form-control>
+
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">MaintainSelected</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  type="checkbox" formControlName="maintainSelected">
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- <p></p>
+            <div nz-row>
+                Bootstrap : <a href="http://bootstrap-table.wenzhixin.net.cn/zh-cn/documentation/">http://bootstrap-table.wenzhixin.net.cn/zh-cn/documentation/</a>
+            </div> -->
+    </nz-tab>
+
+    <nz-tab nzTitle="字段管理" >
+        <div class="form-group row">
+            <div class="col-sm-12">
+
+              <div class="card-box">
+
+                <button type="button" nz-button nzType="primary" (click)="createColumnList()">
+                    <i class="anticon anticon-plus"></i>
+                    <span>生成列表</span>
+                </button>
+
+                <!-- <button type="button" nz-button nzType="primary" (click)="formCheckRule()">
+                    <i class="anticon anticon-plus"></i>
+                    <span>模式匹配</span>
+                </button> -->
+              </div>
+              <p></p>
+              <div class="card-box overflow">
+                <table>
+                  <!--formGroupName 作用域-->
+                  <thead>
+                    <tr class="trnowrap">
+                      <th>Name</th>
+                      <th>Field</th>
+                      <th>DataType</th>
+                      <th>Length</th>
+                      <th *ngIf="!isManipulateQuery()">Element</th>
+                      <th *ngIf="!isManipulateQuery()">Update Item</th>
+                      <th *ngIf="!isManipulateQuery()">Enable View</th>
+                      <th *ngIf="!isManipulateQuery()">Enable Add</th>
+                      <th>View List</th>
+                      <th>Sort</th>
+                      <th *ngIf="!isManipulateQuery()">UnDuplicated</th>
+                      <th>Align</th>
+                      <!-- <th>排序</th> -->
+                      <!--<th>序号</th>-->
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="fields">
+                    <tr class="tr-center" *ngFor="let columOptions of fieldsControls; let idx=index" [formGroupName]="idx">
+                      <td><input  class="form-control"  placeholder="名称" formControlName="title" /></td>
+                      <td>
+                        <label>{{columOptions.controls.field.value}}</label>
+                      </td>
+                      <td>
+                        <label>{{columOptions.controls.dataType.value}}</label>
+                      </td>
+                      <td style="text-align: center">
+                          <label>{{columOptions.controls.maxlength.value}}</label>
+                      </td>
+                      <td *ngIf="!isManipulateQuery()">
+                          <select  formControlName="fieldType" placeholder="字段类型">
+                               <option *ngFor="let fieldType of fieldTypes" [value]="fieldType.value">{{fieldType.text}}</option>
+                             </select>
+                        </td>
+                      <td *ngIf="!isManipulateQuery()">
+                          <select  formControlName="updateType" placeholder="修改方式">
+                             <option *ngFor="let updateType of updateTypes" [value]="updateType.value">{{updateType.text}}</option>
+                           </select>
+                      </td>
+                      <td *ngIf="!isManipulateQuery()">
+                        <div class="checkbox checkbox-primary">
+                          <input type="checkbox" formControlName="view">
+                        </div>
+                      </td>
+                      <td *ngIf="!isManipulateQuery()">
+                        <div class="checkbox checkbox-primary">
+                          <input  type="checkbox" formControlName="insert">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="checkbox checkbox-primary">
+                          <input type="checkbox" formControlName="visible">
+                        </div>
+                      </td>
+                      <td >
+                        <div class="checkbox checkbox-primary">
+                          <input type="checkbox" formControlName="sortable">
+                        </div>
+                      </td>
+                      <td *ngIf="!isManipulateQuery()">
+                        <div class="checkbox checkbox-primary">
+                          <input type="checkbox" formControlName="duplicated">
+                        </div>
+                      </td>
+                      <td>
+                          <select  formControlName="align" placeholder="align">
+                              <option *ngFor="let align of aligns" [value]="align.value">{{align.text}}</option>
+                            </select>
+                      </td>
+                      <!-- <td>
+                        <select  formControlName="order" placeholder="order">
+                            <option *ngFor="let order of orderList" [value]="order.value">{{order.text}}</option>
+                          </select>
+                      </td> -->
+                      <td>
+
+                        <!--更多设置-->
+                        <ng-template #content let-c="close" let-d="dismiss">
+                          <div class="modal-header">
+                            <h4 class="modal-title">Options</h4>
+                          </div>
+
+
+                          <div class="modal-body">
+                            <!-- <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3">align</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                                    <select  formControlName="align" placeholder="align">
+                                      <option *ngFor="let align of aligns" [value]="align.value">{{align.text}}</option>
+                                    </select>
+                                </nz-form-control>
+                            </nz-form-item> -->
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Halign</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                 <select  formControlName="halign" placeholder="halign">
+                                    <option *ngFor="let align of aligns" [value]="align.value">{{align.text}}</option>
+                                  </select>
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Valign</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                   <select  formControlName="valign" placeholder="valign">
+                                     <option *ngFor="let valign of valigns" [value]="valign.value">{{valign.text}}</option>
+                                   </select>
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Falign</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <select  formControlName="falign" placeholder="falign">
+                                      <option *ngFor="let valign of valigns" [value]="valign.value">{{valign.text}}</option>
+                                    </select>
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <!--<div class="form-group row">
+                              <label class="col-sm-2 control-label">radio</label>
+                              <div class="col-sm-10">
+                                <div class="checkbox checkbox-info">
+                                  <input id="{{columOptions.controls.field.value}}radio" type="checkbox" formControlName="radio">
+                                  <label for="{{columOptions.controls.field.value}}radio"></label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-group row">
+                              <label class="col-sm-2 control-label">checkbox</label>
+                              <div class="col-sm-10">
+                                <div class="checkbox checkbox-warning">
+                                  <input id="{{columOptions.controls.field.value}}checkbox" type="checkbox" formControlName="checkbox">
+                                  <label for="{{columOptions.controls.field.value}}checkbox"></label>
+                                </div>
+                              </div>
+                            </div>-->
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">CardVisible</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                  <input type="checkbox" formControlName="cardVisible">
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Switchable</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                  <input type="checkbox" formControlName="switchable">
+                                </nz-form-control>
+                            </nz-form-item>
+
+                            <!-- <div class="form-group row">
+                              <label class="col-sm-2 control-label">duplicated</label>
+                              <div class="col-sm-10">
+                                <div class="checkbox checkbox-warning">
+                                  <input id="{{columOptions.controls.field.value}}duplicated" type="checkbox" formControlName="duplicated">
+                                  <label for="{{columOptions.controls.field.value}}duplicated"></label>
+                                </div>
+                              </div>
+                            </div> -->
+
+                            <!--<div class="form-group row">
+                              <label class="col-sm-2 control-label">clickToSelect</label>
+                              <div class="col-sm-10">
+                                <div class="checkbox checkbox-pink">
+                                  <input id="{{columOptions.controls.field.value}}clickToSelect" type="checkbox" formControlName="clickToSelect">
+                                  <label for="{{columOptions.controls.field.value}}clickToSelect"></label>
+                                </div>
+                              </div>
+                            </div>-->
+
+                            <!-- <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3">sortable</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                  <input  type="checkbox" formControlName="sortable">
+                                </nz-form-control>
+                           </nz-form-item> -->
+
+                           <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">SortName</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <input  class="form-control"  placeholder="sortName" formControlName="sortName" />
+                              </nz-form-control>
+                           </nz-form-item>
+
+                           <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Searchable</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                  <input type="checkbox" formControlName="searchable">
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Width</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <input  class="form-control"  placeholder="width" formControlName="width" />
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Formatter</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <textarea  placeholder="formatter" formControlName="formatter" ></textarea>
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">TitleTooltip</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <textarea  placeholder="titleTooltip" formControlName="titleTooltip" ></textarea>
+                              </nz-form-control>
+                            </nz-form-item>
+                          </div>
+                        </ng-template>
+
+                        <!--更多设置-->
+                        <a href="javascript:void(0)" (click)="formCheckRule(columOptions)" *ngIf="!isManipulateQuery()">validator</a>
+                        <nz-divider nzType="vertical" *ngIf="!isManipulateQuery()"></nz-divider>
+                        <a href="javascript:void(0)" (click)="openMore(content)" style="margin-left: 5px;">more</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+    </nz-tab>
+
+    <nz-tab nzTitle="条件过滤" >
+        <div nz-row style="width: 100%;">
+
+            <!--列表数据-->
+            <div style="overflow: auto;height: 500px;width: 50%;float: left;">
+                <table>
+                  <!--formGroupName 作用域-->
+                  <thead>
+                    <tr class="trnowrap">
+                      <th>Name</th>
+                      <th>Field</th>
+                      <th>DataType</th>
+                      <th>Length</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="tr-center" *ngFor="let columOptions of fieldsControls;" (click)="filterSelected(columOptions)">
+                      <td style="text-align: left">{{columOptions.controls.title.value}}</td>
+                      <td>{{columOptions.controls.field.value}}</td>
+                      <td>{{columOptions.controls.dataType.value}}</td>
+                      <td style="text-align: center">{{columOptions.controls.maxlength.value}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+
+            <!--列表字段-->
+            <div  style="margin-left: 10px;width: 49%;float: left;">
+                <table>
+                  <!--formGroupName 作用域-->
+                  <thead>
+                    <tr class="trnowrap">
+                      <th>Name</th>
+                      <th>Field</th>
+                      <th>Relation</th>
+                      <th>Element</th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="dataFilters">
+                    <tr class="tr-center" *ngFor="let datafilter of dataFiltersControls; let idx=index" [formGroupName]="idx" (dblclick)="removeControls(ngbForm.controls.dataFilters,idx)">
+                      <td style="text-align: left">{{datafilter.controls.title.value}}</td>
+                      <td>{{datafilter.controls.field.value}}</td>
+                      <td>
+                        <select  formControlName="expression" placeholder="表达式">
+                             <option *ngFor="let expression of expressions" [value]="expression.value">{{expression.text}}</option>
+                           </select>
+                      </td>
+                      <td>
+                        <select  formControlName="fieldType" placeholder="字段类型">
+                             <option *ngFor="let fieldType of fieldTypes" [value]="fieldType.value">{{fieldType.text}}</option>
+                           </select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+          </div>
+    </nz-tab>
+
+    <nz-tab nzTitle="按钮管理" *ngIf="!isManipulateQuery()">
+        <div nz-row>
+            <div nz-col nzSpan="3">
+              <button type="button" nz-button nzType="primary" (click)="openAdd()">
+                  <i class="anticon anticon-plus"></i>
+                  <span>新建</span>
+              </button>
+            </div>
+
+            <div nz-col nzSpan="10" *ngIf="id.value">
+              <nz-radio-group>
+                  <label nz-radio-button nzType="primary" (click)="defaultBtn(1)">增加</label>
+                  <label nz-radio-button nzType="dashed" (click)="defaultBtn(2)">修改</label>
+                  <label nz-radio-button nzType="default" (click)="defaultBtn(3)">删除</label>
+                  <label nz-radio-button nzType="danger" (click)="defaultBtn(4)">查看</label>
+                </nz-radio-group>
+              </div>
+        </div>
+        <p></p>
+
+        <div nz-row>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>View</th>
+                          <th>Object</th>
+                          <th>Position</th>
+                          <!-- <th>Index</th> -->
+                      </tr>
+                  </thead>
+                  <tbody formArrayName="buttons">
+                      <tr *ngFor="let buttonItem of buttonsControls; let i = index" class="tr-center"
+                            [formGroupName]="i"  (dblclick)="removeControls(ngbForm.controls.buttons, i)">
+                          <td>
+                                <button type="button" nz-button nzType="primary" (click)="openAdd(buttonItem)">
+                                    <i class="{{buttonItem.controls.icon.value}}"></i>
+                                    <span>{{buttonItem.controls.title.value}}</span>
+                                </button>
+                          </td>
+                          <td>{{buttonItem.controls.option.value}}</td>
+                          <td>{{buttonItem.controls.position.value}}</td>
+                          <!-- <td>{{buttonItem.controls.sort.value}}</td> -->
+                      </tr>
+                </tbody>
+            </table>
+          </div>
+    </nz-tab>
+
+    <nz-tab nzTitle="Tree" formGroupName="treeOptions">
+
+         <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">Enabled</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <input type="checkbox" formControlName="visible" (click)="showTreeCheck()">
+            </nz-form-control>
+          </nz-form-item>
+          <!--<div class="form-group row">
+            <label class="col-sm-2 control-label">enable</label>
+            <div class="col-sm-10">
+              <div class="checkbox checkbox-purple">
+                <input id="enable" type="checkbox" formControlName="enable">
+                <label for="enable"></label>
+              </div>
+            </div>
+          </div>-->
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">SqlId</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+              <input  class="form-control"  placeholder="sqlId" formControlName="sqlId" (click)="openZtreeSqlDefine()" readonly/>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">IdKey
+                <em>
+                    <nz-tooltip nzTitle="节点id对应的字段">
+                      <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                    </nz-tooltip>
+                  </em>
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select  formControlName="idKey" placeholder="idKey" style="width: 100%;">
+                  <option *ngFor="let col of ztreeSqlDefineFields" [value]="col.field">{{col.field}}</option>
+                </select>
+              </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">Name
+                <em>
+                    <nz-tooltip nzTitle="节点label对应的字段">
+                      <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                    </nz-tooltip>
+                  </em>
+            </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <select  formControlName="name" placeholder="name" style="width: 100%;">
+                    <option *ngFor="let col of ztreeSqlDefineFields" [value]="col.field" >{{col.field}}</option>
+                  </select>
+              </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">PidKey
+                <em>
+                    <nz-tooltip nzTitle="节点上下级字段">
+                      <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                    </nz-tooltip>
+                  </em>
+            </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select  formControlName="pidKey" placeholder="pidKey">
+                  <option *ngFor="let col of ztreeSqlDefineFields" [value]="col.field" >{{col.field}}</option>
+                </select>
+              </nz-form-control>
+          </nz-form-item>
+
+          <!--<div class="form-group row">
+            <label class="col-sm-2 control-label">url</label>
+            <div class="col-sm-10">
+                <input  class="form-control"  placeholder="url" formControlName="url" />
+            </div>
+          </div>-->
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">Scope</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                <select  formControlName="scope" placeholder="scope">
+                  <option *ngFor="let scope of scopes" [value]="scope.value"  >{{scope.text}}</option>
+                </select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Width</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+                  <input  class="form-control"  placeholder="width" formControlName="width" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" class="sm-title">ForeignKey
+                <em>
+                    <nz-tooltip nzTitle="对象关联字段，字段为当前视图字段">
+                      <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                    </nz-tooltip>
+                  </em>
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="5" nzMd="5">
+              <select  formControlName="foreignKey" placeholder="foreignKey">
+                <option *ngFor="let col of currentSqlDefineFields" [value]="col.field" >{{col.field}}</option>
+              </select>
+            </nz-form-control>
+          </nz-form-item>
+  </nz-tab>
+</nz-tabset>
+
+  <div class="modal-footer">
+      <button nz-button type="button" (click)="cancel()">取消</button>
+      <button nz-button type="submit" [nzType]="'primary'" [disabled]="!ngbForm.valid">保存</button>
+  </div>
+</form>

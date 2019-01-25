@@ -1,0 +1,94 @@
+<div class="modal-header">
+  <div class="modal-title">编辑资源信息</div>
+</div>
+<form nz-form [formGroup]="form" (ngSubmit)="submit()">
+    <div nz-row>
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="text">文本</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+              <input nz-input formControlName="text" id="text" placeholder="文本">
+              <nz-form-explain *ngIf="form.get('text').dirty && form.get('text').errors">请输入文本</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="code">编码</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="code" id="code" placeholder="编码">
+                <nz-form-explain *ngIf="form.get('code').dirty && form.get('code').errors">请输入编码</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3"  nzFor="date" nzRequired nzFor="resourceType">资源类型</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <nz-radio-group formControlName="resourceType">
+                    <label nz-radio [nzValue] = 1>菜单</label>
+                    <label nz-radio [nzValue] = 2>功能</label>
+                    <!-- <label nz-radio [nzValue] = 3>服务</label> -->
+                  </nz-radio-group>
+                <nz-form-explain *ngIf="form.get('resourceType').dirty && form.get('resourceType').errors">请选择资源类型</nz-form-explain>
+              </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzFor="link">URL</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="link" id="link" placeholder="路由URL">
+                <nz-form-explain *ngIf="form.get('link').dirty && form.get('link').errors">请输入路由URL</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+
+          <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3"  nzFor="pid" >所属资源
+              <!-- <em>
+                <nz-tooltip nzTitle="角色拥有的最高分组权限(默认取用户所属分组)">
+                  <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                </nz-tooltip>
+              </em> -->
+            </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <nz-tree-select
+                  style="width: 100%;"
+                  [nzDefaultExpandAll]="false"
+                  [nzNodes]="formNodes"
+                  nzPlaceHolder="请选择..."
+                  formControlName="pid"
+                  >
+                </nz-tree-select>
+                <!-- <nz-form-explain *ngIf="form.get('pid').dirty && form.get('pid').errors">请选择所属资源</nz-form-explain> -->
+              </nz-form-control>
+          </nz-form-item>
+
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzFor="externalLink">外部URL</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="externalLink" id="externalLink" placeholder="外部URL">
+                <nz-form-explain *ngIf="form.get('externalLink').dirty && form.get('externalLink').errors">请输入外部URL</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzFor="icon">图标</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="icon" id="icon" placeholder="图标">
+                <nz-form-explain *ngIf="form.get('icon').dirty && form.get('icon').errors">请选择图标</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3"  nzFor="remark">扩展数据</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+              <textarea nz-input formControlName="extra" id="extra" [nzAutosize]="{minRows: 4}" placeholder="请输入扩展数据"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+    </div>
+    <div class="modal-footer">
+      <button nz-button type="button" (click)="close()">关闭</button>
+      <button nz-button type="button" [nzType]="'danger'" (click)="deleteRes()" *ngIf="this.record.id" [nzLoading]="http.loading">删除</button>
+      <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+    </div>
+</form>

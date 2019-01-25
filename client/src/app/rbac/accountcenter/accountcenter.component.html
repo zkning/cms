@@ -1,0 +1,66 @@
+<page-header [autoTitle]=false>
+  <div class="page-header">
+      <div class="avatar">
+        <nz-avatar nzSrc="{{user.avatar}}"></nz-avatar>
+      </div>
+      <div class="desc">
+        <div class="desc-title">{{user.name}}</div>
+        <div>{{user.groupName}}
+            <nz-divider nzType="vertical"></nz-divider>
+            {{user.email}}</div>
+      </div>
+    </div>
+</page-header>
+
+<nz-card [nzBordered]="false">
+    <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+
+      <!-- <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="7" nzRequired nzFor="name">姓名</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+          <input nz-input formControlName="name" id="name" placeholder="请输入姓名">
+          <nz-form-explain *ngIf="form.get('name').dirty && form.get('name').errors">请输入姓名</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item> -->
+
+      <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="7" nzRequired nzFor="mobile">手机号</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+            <input nz-input formControlName="mobile" id="mobile" placeholder="请输入手机号">
+            <nz-form-explain *ngIf="form.get('mobile').dirty && form.get('mobile').errors">请输入手机号</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="7" nzRequired nzFor="email">邮箱</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+            <input nz-input formControlName="email" id="email" placeholder="请输入手机号">
+            <nz-form-explain *ngIf="form.get('email').dirty && form.get('email').errors">请输入邮箱</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="7" nzFor="avatar">头像</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+            <input nz-input formControlName="avatar" id="avatar" placeholder="请选择头像">
+            <nz-form-explain *ngIf="form.get('avatar').dirty && form.get('avatar').errors">请选择头像</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="7" nzFor="groupId">所属分组</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+
+              <nz-form-explain *ngIf="form.get('groupId').dirty && form.get('groupId').errors">请选择所属分组</nz-form-explain>
+            </nz-form-control>
+        </nz-form-item> -->
+
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 10, offset: 7 }">
+          <button nz-button nzType="primary" type="submit" [nzLoading]="submitting">提交</button>
+          <!-- <button nz-button class="ml-sm">保存</button> -->
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-card>

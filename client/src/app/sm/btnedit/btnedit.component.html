@@ -1,0 +1,123 @@
+
+<div class="modal-header">
+    <div class="modal-title">编辑信息</div>
+</div>
+<form nz-form [formGroup]="form" (ngSubmit)="submit()">
+
+        <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="4" nzFor="id">ID</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+                    <input nz-input formControlName="id" id="id" placeholder="ID" readonly>
+                </nz-form-control>
+            </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="title">名称</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="title" id="title" placeholder="名称">
+            <nz-form-explain *ngIf="form.get('title').dirty && form.get('title').errors">请输入名称</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4"  nzFor="icon">图标</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="icon" id="icon" placeholder="icon">
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4"  nzFor="color">颜色</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="color" id="color" placeholder="color">
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="position">位置</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <select  formControlName="position" placeholder="按钮位置" style="width: 100%;">
+                <option *ngFor="let positionItem of positionList" [value]="positionItem.value">{{positionItem.text}}</option>
+            </select>
+            <nz-form-explain *ngIf="form.get('position').dirty && form.get('position').errors">请选择按钮位置</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="option">对象</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <select  formControlName="option" placeholder="按钮对象" style="width: 100%;" (ngModelChange)="optionSelected()">
+                <option *ngFor="let optionItem of optionList" [value]="optionItem.value">{{optionItem.text}}</option>
+            </select>
+            <nz-form-explain *ngIf="form.get('option').dirty && form.get('option').errors">请选择按钮对象</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzFor="url" nzRequired>url
+            <!-- <em>
+                <nz-tooltip nzTitle="对象为服务时必填">
+                    <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                </nz-tooltip>
+            </em> -->
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="url" id="url" placeholder="url">
+            <nz-form-explain *ngIf="form.get('url').dirty && form.get('url').errors">请输入url</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="showProperty('modal')">
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="modal">Modal
+            <em>
+                <nz-tooltip nzTitle="对象为Modal时必填">
+                    <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                </nz-tooltip>
+            </em>
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="modal" id="modal" placeholder="modal">
+            <nz-form-explain *ngIf="form.get('modal').dirty && form.get('modal').errors">请输入Modal</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="showProperty('modal')">
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="modal">size
+            <em>
+                <nz-tooltip nzTitle="对象为Modal时必填">
+                    <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                </nz-tooltip>
+            </em>
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="size" id="size" placeholder="size">
+            <nz-form-explain *ngIf="form.get('size').dirty && form.get('size').errors">请输入size</nz-form-explain>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item >
+        <nz-form-label nzXs="24" nzSm="4" nzFor="modal">验证
+            <em>
+                <nz-tooltip nzTitle="按钮操作时检查是否选择数据">
+                    <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                </nz-tooltip>
+            </em>
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input  type="checkbox" formControlName="verify">
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzFor="sort">索引</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+            <input nz-input formControlName="sort" id="sort" placeholder="sort">
+        </nz-form-control>
+    </nz-form-item>
+
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid">确定</button>
+  </div>
+  </form>
+

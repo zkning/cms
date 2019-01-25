@@ -1,0 +1,141 @@
+<page-header [autoTitle]=false>
+  <!-- <ng-template #action>
+    <button (click)="add()" nz-button nzType="primary">新建</button>
+  </ng-template> -->
+</page-header>
+
+<nz-card>
+    <div nz-row>
+
+       <!-- 左侧Tree区 -->
+      <div *ngIf="dataViewEditModel.treeOptions.visible" [ngStyle]="treeStyle">
+          <nz-card>
+              <div nz-row>
+                  <nz-button-group>
+                    <button nz-button nzType="default" (click)="refreshNode()">刷新</button>
+                    <button nz-button nzType="default" (click)="treeConfig.nzDefaultExpandAll =  !treeConfig.nzDefaultExpandAll;">展开</button>
+                  </nz-button-group>
+                </div>
+
+              <nz-tree [(ngModel)]="treeConfig.ngModel"
+                      [nzShowLine]="treeConfig.nzShowLine"
+                      [nzDefaultExpandedKeys]="treeConfig.nzDefaultExpandedKeys"
+                      (nzExpandChange)="treeConfig.nzDefaultExpandAll = false;"
+                      [nzDefaultExpandAll]="treeConfig.nzDefaultExpandAll"
+                      (nzClick)="nzTreeClick($event)"
+                      >
+              </nz-tree>
+            </nz-card>
+      </div>
+
+
+      <!-- 右侧查询区域 -->
+      <div [ngStyle]="gridStyle" >
+          <nz-card>
+                <form class="form-inline" [formGroup]="searchForm" (ngSubmit)="reload()" *ngIf="dataFiltersControls.length > 0">
+
+                  <!-- 条件过滤区 -->
+                  <div nz-row formArrayName="dataFilters">
+                      <div nz-col nzSpan="6" *ngFor="let df of dataFiltersControls; let idx=index" [formGroupName]="idx">
+
+                          <!-- 查询条件组 -->
+                          <div nz-row class="datafilter">
+                              <div nz-col nzSpan="6">
+                                <label [nzTitle] = "df.controls.title.value" nzPlacement="top" nz-tooltip>
+                                  {{labelFormat(df.controls.title.value)}}
+                                  <!-- ({{df.controls.expression.value}}) -->
+                                </label>:
+                              </div>
+                              <div nz-col nzSpan="17">
+                                <input nz-input  placeholder="{{df.controls.title.value}}" formControlName="value" >
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- 提交重置按钮 -->
+                      <div nz-col nzSpan="6">
+                          <div nz-row class="datafilter">
+                            <nz-button-group >
+                                <button nz-button nzType="primary" type="submit"  [nzLoading]="http.loading">
+                                    <i class=""></i>
+                                    <span>搜索</span>
+                                </button>
+                                <button nz-button nzType="default" type="button" (click)="reset()">
+                                    <i class=""></i>
+                                    <span>重置</span>
+                                </button>
+                            </nz-button-group>
+                          </div>
+                      </div>
+
+                  </div>
+                </form>
+              <p></p>
+
+              <!-- 工具栏区 -->
+              <div nz-row style="text-align: right;">
+                  <nz-button-group>
+                          <button nz-button nzType="primary" (click)="navButtonClick(btn)"  *ngFor="let btn of navButtons; let idx=index">
+                              <i class="{{btn.icon}}"></i>
+                              <span>{{btn.title}}</span>
+                          </button>
+                    </nz-button-group>
+              </div>
+
+              <!-- Grid -->
+              <div nz-row>
+                <nz-table
+                [nzData]="bootstrapPageResult.rows"
+                [nzTotal]="bootstrapPageResult.total"
+                [nzFrontPagination] = "dataViewEditModel.options.sidePagination === 'client'"
+                [nzPageIndex] = "dataViewEditModel.options.pageNumber"
+                [nzPageSize] = "dataViewEditModel.options.pageSize"
+                [nzLoading] = "http.loading"
+                [nzNoResult] = "dataViewEditModel.options.undefinedText"
+                [nzShowQuickJumper] = "true"
+                [nzShowSizeChanger] = "true"
+                [nzHideOnSinglePage] = "false"
+                [nzShowTotal] = ""
+                [nzShowTotal] = "dataViewEditModel.options.showPaginationSwitch"
+                (nzPageIndexChange) = "nzPageIndexChange($event)"
+                (nzPageSizeChange) = "nzPageSizeChange($event)"
+                (nzCurrentPageDataChange)="currentPageDataChange($event)"
+                [nzPageSizeOptions] = "toJson(dataViewEditModel.options.pageList)"
+                [nzShowPagination] = "dataViewEditModel.options.pagination">
+                    <thead  (nzSortChange)="sort($event)">
+                      <tr>
+                          <!-- checkbox -->
+                          <th nzShowCheckbox *ngIf="dataViewEditModel.options.checkboxHeader" [(nzChecked)]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="checkAll($event)"></th>
+
+                          <!-- 遍历列表表头 -->
+                        <th *ngFor="let fieldItem of visibleFields; let idx=index"
+                            [nzSortKey]="fieldItem.field"
+                            [nzShowSort]= "fieldItem.sortable"  [ngStyle]="{'text-align': fieldItem.halign,'width': fieldItem.width}">{{fieldItem.title}}</th>
+                        <th *ngIf="rowButtons.length > 0">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of bootstrapPageResult.rows; let idx=index">
+
+                        <!-- 根据列遍历数据,只显示列表可见的列-->
+                        <!-- <td *ngFor="let field of visibleFields; let idx=index" >{{row[field.field]}}</td> -->
+
+                        <td nzShowCheckbox *ngIf="dataViewEditModel.options.checkboxHeader"  [(nzChecked)]="row.checked" (nzCheckedChange)="refreshStatus($event)"></td>
+                        <td *ngFor="let field of visibleFields; let idx=index" [ngStyle]="{'text-align': field.align}">{{row[field.field]}}</td>
+
+                        <td *ngIf="rowButtons.length > 0">
+
+                            <!-- 遍历内置按钮 -->
+                            <span *ngFor="let btn of rowButtons; let idx=index" >
+                                <a href="javascript:void(0)" (click)="rowButtonClick(btn , row)">{{btn.title}}</a>
+                                <nz-divider nzType="vertical" *ngIf="idx < rowButtons.length - 1"></nz-divider>
+                            </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+              </div>
+        </nz-card>
+      </div>
+  </div>
+</nz-card>

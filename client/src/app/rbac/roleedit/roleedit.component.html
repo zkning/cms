@@ -1,0 +1,67 @@
+<div class="modal-header">
+    <div class="modal-title">编辑角色信息</div>
+  </div>
+  <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+        <div nz-row>
+
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="roleName">角色名</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="roleName" id="roleName" placeholder="角色名">
+                  <nz-form-explain *ngIf="form.get('roleName').dirty && form.get('roleName').errors">请输入角色名</nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="roleCode">角色编码</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <input nz-input formControlName="roleCode" id="roleCode" placeholder="角色编码">
+                    <nz-form-explain *ngIf="form.get('roleCode').dirty && form.get('roleCode').errors">请输入角色编码</nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"  nzFor="date" nzRequired nzFor="roleType">角色分类</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <nz-select style="width: 100%;" formControlName="roleType" required  nzPlaceHolder="角色分类" nzAllowClear >
+                        <nz-option [nzValue]="ri.value" [nzLabel]="ri.text"  *ngFor="let ri of dictList;" ></nz-option>
+                    </nz-select>
+                  <nz-form-explain *ngIf="form.get('roleType').dirty && form.get('roleType').errors">请选择角色分类</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+              <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="3"  nzFor="groupId">分组权限
+                  <em>
+                    <nz-tooltip nzTitle="角色拥有的最高分组权限(默认取用户所属分组)">
+                      <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+                    </nz-tooltip>
+                  </em>
+                </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                      <nz-tree-select
+                      style="width: 100%;"
+                      [nzDefaultExpandAll]="true"
+                      [nzNodes]="formNodes"
+                      nzPlaceHolder="请选择..."
+                      formControlName="groupId"
+                      >
+                    </nz-tree-select>
+                    <!-- <nz-form-explain *ngIf="form.get('groupId').dirty && form.get('groupId').errors">请输入分组名称</nz-form-explain> -->
+                  </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"  nzFor="remark">备注</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <textarea nz-input formControlName="remark" id="remark" [nzAutosize]="{minRows: 4}" placeholder="请输入备注"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+
+      </div>
+    <div class="modal-footer">
+      <button nz-button type="button" (click)="close()">关闭</button>
+      <button nz-button type="submit" [nzType]="'primary'"  [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+    </div>
+  </form>
+

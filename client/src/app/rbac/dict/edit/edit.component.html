@@ -1,0 +1,55 @@
+<div class="modal-header">
+  <div class="modal-title">编辑信息</div>
+</div>
+
+  <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+      <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="text">用户名</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="text" id="text" placeholder="文本值">
+                <nz-form-explain *ngIf="form.get('text').dirty && form.get('text').errors">请输入文本值</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="value">值</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="value" id="value" placeholder="值">
+                  <nz-form-explain *ngIf="form.get('value').dirty && form.get('value').errors">请输入值</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="pid">所属项</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <nz-tree-select
+                    style="width: 100%;"
+                    [nzNodes]="formNodes"
+                    nzPlaceHolder="请选择..."
+                    formControlName="pid"
+                    >
+                  </nz-tree-select>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"  nzFor="sort">排序</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="sort" id="sort" placeholder="排序">
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3"  nzFor="remark">备注</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <textarea nz-input formControlName="remark" id="remark" [nzAutosize]="{minRows: 4}" placeholder="请输入备注"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+    </div>
+
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+  </div>
+</form>
+

@@ -1,0 +1,62 @@
+<div class="modal-header">
+  <div class="modal-title">编辑信息</div>
+</div>
+
+  <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+      <div nz-row>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="name">别名</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <input nz-input formControlName="name" id="name" placeholder="别名">
+                    <nz-form-explain *ngIf="form.get('name').dirty && form.get('name').errors">请输入别名</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="driverClassName">驱动名</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="driverClassName" id="driverClassName" placeholder="文本值">
+                <nz-form-explain *ngIf="form.get('driverClassName').dirty && form.get('driverClassName').errors">请输入驱动名</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="url">url</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <textarea nz-input formControlName="url" id="url" placeholder="url" [nzAutosize]="{minRows: 4}"></textarea>
+                  <nz-form-explain *ngIf="form.get('url').dirty && form.get('url').errors">请输入url</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="dbUsername">用户名</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <input nz-input formControlName="dbUsername" id="dbUsername" placeholder="用户名">
+                    <nz-form-explain *ngIf="form.get('dbUsername').dirty && form.get('dbUsername').errors">请输入用户名</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="dbPassword">密码</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <input nz-input formControlName="dbPassword" id="dbPassword" placeholder="密码">
+                    <nz-form-explain *ngIf="form.get('dbPassword').dirty && form.get('dbPassword').errors">请输入密码</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3"  nzFor="remark">备注</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <textarea nz-input formControlName="remark" id="remark" [nzAutosize]="{minRows: 4}" placeholder="请输入备注"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+    </div>
+
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+  </div>
+</form>
+

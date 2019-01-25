@@ -1,0 +1,56 @@
+<page-header [autoTitle]=false></page-header>
+<div nz-row>
+  <div nz-col nzSpan="4">
+    <nz-card>
+        <!-- 操作按钮 -->
+        <div nz-row>
+          <nz-button-group>
+            <button nz-button nzType="default" (click)="getGroupTree()">刷新</button>
+            <button nz-button nzType="default" (click)="groupTreeConfig.nzDefaultExpandAll =  !groupTreeConfig.nzDefaultExpandAll;">展开</button>
+            <button nz-button nzType="primary" (click)="groupEdit()">编辑</button>
+          </nz-button-group>
+        </div>
+
+        <!-- 机构树 -->
+        <div nz-row>
+          <nz-tree [(ngModel)]="groupTreeConfig.ngModel"
+                  [nzShowLine]="groupTreeConfig.nzShowLine"
+                  [nzDefaultExpandedKeys]="groupTreeConfig.nzDefaultExpandedKeys"
+                  (nzExpandChange)="groupTreeConfig.nzDefaultExpandAll = false"
+                  [nzDefaultExpandAll]="groupTreeConfig.nzDefaultExpandAll"
+                  (nzClick)="clickAction($event)"
+                  >
+          </nz-tree>
+        </div>
+      </nz-card>
+    </div>
+    <div nz-col nzSpan="1" style="width: 1%;"></div>
+    <!-- tab按钮 -->
+    <div nz-col nzSpan="19" style="width: 82%;">
+      <nz-card>
+          <div nz-row >
+              <div nz-row style="text-align: right;">
+                  <nz-button-group>
+                    <!-- <button nz-button nzType="default" (click)="refreshTree()">调动</button> -->
+                    <button nz-button nzType="primary" (click)="userEdit()">编辑</button>
+                    <button nz-button nzType="danger" (click)="userDelete()">删除</button>
+                    <!-- <button nz-button nzType="default" (click)="saveOrUpdateUser()">更新</button> -->
+                  </nz-button-group>
+                </div>
+
+              <nz-card>
+                <sf mode="search" [schema]="searchSchema" [formData]="params" (formSubmit)="submit($event)" (formReset)="st.reset(params)" ></sf>
+                <simple-table #st [data]="url" [columns]="columns" [extraParams]="params"
+                [reqReName]="{pi:'pageNo',ps:'pageSize'}"
+                [resReName]="{total:'result.totalElements',list:'result.content'}"
+                [showTotal]="true"
+                [showSizeChanger]="true"
+                (radioChange)="radioChange($event)"
+                ></simple-table>
+              </nz-card>
+        </div>
+      </nz-card>
+    </div>
+</div>
+
+

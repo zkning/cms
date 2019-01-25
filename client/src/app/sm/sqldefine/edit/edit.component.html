@@ -1,0 +1,115 @@
+<div class="modal-header">
+        <div class="modal-title">编辑信息</div>
+      </div>
+
+        <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+            <div nz-row>
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="sqlName">别名</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                      <input nz-input formControlName="sqlName" id="sqlName" placeholder="别名">
+                      <nz-form-explain *ngIf="form.get('sqlName').dirty && form.get('sqlName').errors">请输入别名</nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <nz-form-item>
+                        <nz-form-label nzXs="24" nzSm="3"  nzFor="pid" nzRequired>数据源</nz-form-label>
+                        <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                              <nz-select formControlName="datasource"  nzPlaceHolder="数据源" nzAllowClear>
+                                    <nz-option [nzValue]="ri.id" [nzLabel]="ri.name"  *ngFor="let ri of datasourceList;" ></nz-option>
+                              </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label nzXs="24" nzSm="3"  nzFor="manipulate" nzRequired>类型</nz-form-label>
+                        <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                              <select formControlName="manipulate"  nzPlaceHolder="类型" nzAllowClear (change)="typeChange($event)">
+                                    <option [value]="df.value"   *ngFor="let df of defineTypeList;" >{{df.text}}</option>
+                              </select>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                  <nz-form-item  *ngIf="!isManipulationValue()">
+                    <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="tableName">对象</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                        <input nz-input formControlName="tableName" id="tableName" placeholder="对象"  (keyup) = "queryTable()">
+                        <nz-form-explain *ngIf="form.get('tableName').dirty && form.get('tableName').errors">请输入对象</nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <nz-form-item *ngIf="!isManipulationValue()">
+                    <nz-form-label nzXs="24" nzSm="3"></nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                            <table>
+                                    <thead>
+                                        <tr>
+                                            <th>表名</th>
+                                            <th>描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let schemaTable of schemaTableModelList; let i = index" style="cursor: pointer;" (click)="rowSelected(schemaTable)">
+                                            <td>{{schemaTable.tableName}}</td>
+                                            <td>{{schemaTable.tableComment}}</td>
+                                        </tr>
+                                    </tbody>
+                            </table>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <nz-form-item *ngIf="!isManipulationValue()">
+                        <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="pri">主键</nz-form-label>
+                        <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                            <input nz-input formControlName="pri" id="pri" placeholder="主键" readonly>
+                            <nz-form-explain *ngIf="form.get('pri').dirty && form.get('pri').errors">请输入主键</nz-form-explain>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                  <!-- <nz-form-item>
+                      <nz-form-label nzXs="24" nzSm="3"  nzFor="state" nzRequired>状态</nz-form-label>
+                      <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                            <nz-select   formControlName="state"  nzPlaceHolder="状态" nzAllowClear >
+                                    <nz-option [nzValue]="ri.value" [nzLabel]="ri.text"  *ngFor="let ri of stateList;" ></nz-option>
+                            </nz-select>
+                      </nz-form-control>
+                  </nz-form-item> -->
+
+                  <!-- <nz-form-item>
+                        <nz-form-label nzXs="24" nzSm="3"  nzFor="isCache" nzRequired>是否缓存</nz-form-label>
+                        <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                              <nz-select   formControlName="isCache"  nzPlaceHolder="是否缓存" nzAllowClear >
+                                      <nz-option [nzValue]="ri.value" [nzLabel]="ri.text"  *ngFor="let ri of cacheList;" ></nz-option>
+                              </nz-select>
+                        </nz-form-control>
+                    </nz-form-item> -->
+
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="3"  nzFor="selectSql" nzRequired>SQL</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                        <textarea nz-input formControlName="selectSql" id="selectSql" [nzAutosize]="{minRows: 4}" placeholder="请输入SQL" [readonly]="sqlReadonly"></textarea>
+                    </nz-form-control>
+                 </nz-form-item>
+
+                 <!-- <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="3"  nzFor="sqlExtra">SQL Extra</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                        <textarea nz-input formControlName="sqlExtra" id="sqlExtra" [nzAutosize]="{minRows: 4}" placeholder="请输入SQL Extra"></textarea>
+                    </nz-form-control>
+                </nz-form-item> -->
+
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="3"  nzFor="remark">备注</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="12" nzMd="14">
+                      <textarea nz-input formControlName="remark" id="remark" [nzAutosize]="{minRows: 4}" placeholder="请输入备注"></textarea>
+                    </nz-form-control>
+                  </nz-form-item>
+          </div>
+
+        <div class="modal-footer">
+          <button nz-button type="button" (click)="close()">关闭</button>
+          <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+        </div>
+      </form>
+
+

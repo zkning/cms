@@ -1,0 +1,31 @@
+<div class="modal-header">
+  <div class="modal-title">添至菜单</div>
+</div>
+<!-- <nz-spin *ngIf="!i" class="modal-spin"></nz-spin> -->
+<form nz-form [formGroup]="form" (ngSubmit)="submit()">
+<nz-form-item>
+    <nz-form-label nzXs="24" nzSm="4"  nzFor="pid"  nzRequired>所属资源
+    <!-- <em>
+      <nz-tooltip nzTitle="角色拥有的最高分组权限(默认取用户所属分组)">
+        <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+      </nz-tooltip>
+    </em> -->
+  </nz-form-label>
+    <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+        <nz-tree-select
+        style="width: 100%;"
+        [nzDefaultExpandAll]="false"
+        [nzNodes]="formNodes"
+        nzPlaceHolder="请选择..."
+        formControlName="pid"
+        >
+      </nz-tree-select>
+      <!-- <nz-form-explain *ngIf="form.get('pid').dirty && form.get('pid').errors">请选择所属资源</nz-form-explain> -->
+    </nz-form-control>
+</nz-form-item>
+
+<div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid">确定</button>
+</div>
+</form>

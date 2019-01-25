@@ -1,0 +1,68 @@
+<div class="modal-header">
+    <div class="modal-title">编辑分组信息</div>
+  </div>
+  <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="groupName">分组名称</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+          <input nz-input formControlName="groupName" id="groupName" placeholder="给分组起个名字">
+          <nz-form-explain *ngIf="form.get('groupName').dirty && form.get('groupName').errors">请输入分组名称</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="groupInfo.pid != '0'">
+        <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="groupType">分组类型</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+            <nz-radio-group formControlName="groupType">
+              <label nz-radio [nzValue] = 0>机构</label>
+              <label nz-radio [nzValue] = 1>部门</label>
+            </nz-radio-group>
+            <nz-form-explain *ngIf="form.get('groupType').dirty && form.get('groupType').errors">请选择分组类型</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="groupInfo.pid != '0'">
+          <nz-form-label nzXs="24" nzSm="4" nzRequired nzFor="pid">所属分组</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+              <nz-tree-select
+              style="width: 100%;"
+              [nzNodes]="formGroupTreeNgModel"
+              nzShowSearch
+              nzPlaceHolder="请选择..."
+              formControlName="pid"
+              >
+            </nz-tree-select>
+            <nz-form-explain *ngIf="form.get('pid').dirty && form.get('pid').errors">请输入分组名称</nz-form-explain>
+          </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="groupInfo.pid != '0'">
+          <nz-form-label nzXs="24" nzSm="4"  nzFor="date">是否有效</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+              <!-- <label nz-checkbox  formControlName="isValid"></label> -->
+              <nz-select  formControlName="isValid" placeholder="是否有效"  required>
+                <nz-option [nzValue]="ri.code" [nzLabel]="ri.text"  *ngFor="let ri of isValidList;" ></nz-option>
+            </nz-select>
+          </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4"  nzFor="remark">备注</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+          <textarea nz-input formControlName="remark" id="remark" [nzAutosize]="{minRows: 4}" placeholder="请输入备注"></textarea>
+          <!-- <nz-form-explain *ngIf="form.get('remark').dirty && form.get('remark').errors">请输入目标描述</nz-form-explain> -->
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="4"  nzFor="extra">扩展数据</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+          <textarea nz-input formControlName="extra" id="extra" [nzAutosize]="{minRows: 4}" placeholder="请输入扩展数据"></textarea>
+          <!-- <nz-form-explain *ngIf="form.get('extra').dirty && form.get('extra').errors">请输入衡量标准</nz-form-explain> -->
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+  </nz-form-item>
+
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="button" [nzType]="'danger'" (click)="delete()" *ngIf="this.record.id" [nzLoading]="http.loading">删除</button>
+    <button nz-button type="submit" [nzType]="'primary'"  [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+  </div>
+</form>
+

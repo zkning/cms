@@ -1,0 +1,73 @@
+<div class="modal-header">
+  <div class="modal-title">编辑信息</div>
+</div>
+<!-- <nz-spin *ngIf="!i" class="modal-spin"></nz-spin> -->
+<!-- <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none"> -->
+    <!-- <nz-card> -->
+  <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+      <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="userName">用户名</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                <input nz-input formControlName="userName" id="userName" placeholder="用户名">
+                <nz-form-explain *ngIf="form.get('userName').dirty && form.get('userName').errors">请输入用户名</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="name">真实姓名</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="name" id="name" placeholder="真实姓名">
+                  <nz-form-explain *ngIf="form.get('name').dirty && form.get('name').errors">请选择分组类型</nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="groupId">所属分组</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                    <nz-tree-select
+                    style="width: 100%;"
+                    [nzDefaultExpandAll]="true"
+                    [nzNodes]="formNodes"
+                    nzPlaceHolder="请选择..."
+                    formControlName="groupId"
+                    >
+                  </nz-tree-select>
+                  <nz-form-explain *ngIf="form.get('groupId').dirty && form.get('groupId').errors">请输入分组名称</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"   nzFor="roles">角色</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <nz-select   style="width: 100%" nzMode="multiple" nzPlaceHolder="请选择角色" formControlName="roles">
+                    <nz-option *ngFor="let option of listOfRole" [nzLabel]="option.roleName" [nzValue]="option.id"></nz-option>
+                  </nz-select>
+                  <nz-form-explain *ngIf="form.get('roles').dirty && form.get('roles').errors">请选择角色</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"  nzFor="mobile">手机号码</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="mobile" id="mobile" placeholder="手机号码">
+                  <nz-form-explain *ngIf="form.get('mobile').dirty && form.get('mobile').errors">手机号码</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="3"  nzFor="email">用户邮箱</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="12" nzMd="10">
+                  <input nz-input formControlName="email" id="email" placeholder="手机号码">
+                  <nz-form-explain *ngIf="form.get('email').dirty && form.get('email').errors">用户邮箱</nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+
+
+    </div>
+  <!-- </nz-card> -->
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!form.valid" [nzLoading]="http.loading">保存</button>
+  </div>
+</form>
+<!-- </sf> -->

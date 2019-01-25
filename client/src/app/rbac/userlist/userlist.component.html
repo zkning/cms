@@ -1,0 +1,48 @@
+<div class="modal-header">
+  <div class="modal-title">员工选择</div>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="6">
+        <nz-card>
+          <div nz-row>
+              <nz-button-group>
+                <button nz-button nzType="default" (click)="getGroupTree()">刷新</button>
+                <button nz-button nzType="default" (click)="groupConfig.nzDefaultExpandAll =  !groupConfig.nzDefaultExpandAll;">展开</button>
+              </nz-button-group>
+            </div>
+
+          <nz-tree [(ngModel)]="groupConfig.ngModel"
+                  [nzShowLine]="groupConfig.nzShowLine"
+                  [nzDefaultExpandedKeys]="groupConfig.nzDefaultExpandedKeys"
+                  (nzExpandChange)="groupConfig.nzExpandChange"
+                  [nzDefaultExpandAll]="groupConfig.nzDefaultExpandAll"
+                  (nzClick)="nzTreeClick($event)"
+
+                  >
+          </nz-tree>
+        </nz-card>
+  </div>
+
+    <!-- 列表查询 -->
+    <div nz-col nzSpan="17" style="margin-left: 10px;">
+      <nz-card>
+          <div nz-row >
+                <sf mode="search" [schema]="searchSchema" [formData]="params" (formSubmit)="st.reset($event)" (formReset)="st.reset(params)"></sf>
+                <simple-table #st [data]="url" [columns]="columns" [extraParams]="params"
+                [reqReName]="{pi:'pageNo',ps:'pageSize'}"
+                [resReName]="{total:'result.totalElements',list:'result.content'}"
+                [showTotal]="true"
+                [showSizeChanger]="true"
+                (checkboxChange)="checkboxChange($event)"
+                ></simple-table>
+            </div>
+      </nz-card>
+    </div>
+</div>
+
+<div class="modal-footer">
+  <button nz-button type="button" (click)="close()">关闭</button>
+  <button nz-button type="submit" [nzType]="'primary'" (click)="save()"  [nzLoading]="http.loading">确定</button>
+</div>
+

@@ -1,0 +1,51 @@
+<div class="modal-header">
+    <div class="modal-title">校验规则</div>
+</div>
+<form [formGroup]="ngbForm" (ngSubmit)="onSubmit()">
+<div class="modal-body" >
+    <div nz-row formArrayName="defaultPatterns">
+      <div nz-col nzSpan="4" *ngFor="let pt of patternsControls.controls;let idx=index"  [formGroupName]="idx">
+        <input type="checkbox" formControlName="checked" >
+        <label >{{pt.controls.tip.value}} </label>
+      </div>
+    </div>
+    <p></p>
+    <div class="card-box">
+      <button type="button" nz-button nzType="primary" (click)="addRule()">
+          <i class="anticon anticon-plus"></i>
+          <span>添加</span>
+      </button>
+    </div>
+    <p></p>
+
+    <div class="card-box"  formArrayName="definePatterns">
+      <div nz-row  *ngFor="let fbt of definePatternsControls.controls; let idx=index" [formGroupName]="idx">
+
+        <!-- 自定义规则 -->
+        <div nz-row>
+            <div style="float: left;">
+                tip：
+            </div>
+            <div style="float: left;margin-left: 10px;">
+                 <input nz-input formControlName="tip"  placeholder="tip">
+            </div>
+
+            <div style="float: left; margin-left: 10px;">
+                rule：
+            </div>
+            <div style="float: left;margin-left: 10px;">
+               <input nz-input formControlName="rule"  placeholder="rule">
+            </div>
+
+            <div style="float: left; margin-left: 15px;">
+                <a href="javascript:void(0)"  (click)="removeControls(definePatternsControls,idx)">x</a>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!ngbForm.valid">确定</button>
+  </div>
+</form>

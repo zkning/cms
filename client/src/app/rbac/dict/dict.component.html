@@ -1,0 +1,42 @@
+<page-header [autoTitle]=false></page-header>
+
+<div nz-row>
+<div nz-col nzSpan="4">
+    <nz-card>
+      <div nz-row>
+          <nz-button-group>
+            <button nz-button nzType="default" (click)="loadTreeData()">刷新</button>
+            <button nz-button nzType="default" (click)="groupConfig.nzDefaultExpandAll =  !groupConfig.nzDefaultExpandAll;">展开</button>
+          </nz-button-group>
+        </div>
+
+      <nz-tree [(ngModel)]="groupConfig.ngModel"
+              [nzShowLine]="groupConfig.nzShowLine"
+              [nzDefaultExpandedKeys]="groupConfig.nzDefaultExpandedKeys"
+              (nzExpandChange)="groupConfig.nzDefaultExpandAll = false;"
+              [nzDefaultExpandAll]="groupConfig.nzDefaultExpandAll"
+              (nzClick)="nzTreeClick($event)"
+              >
+      </nz-tree>
+    </nz-card>
+</div>
+<div nz-col nzSpan="19" style="margin-left: 10px;">
+    <nz-card>
+      <sf mode="search" [schema]="searchSchema" [formData]="params" (formSubmit)="st.reset($event)" (formReset)="st.reset(params)" ></sf>
+      <div nz-row style="text-align: right;">
+          <nz-button-group>
+            <button nz-button nzType="primary" (click)="add()">
+                <i class="anticon anticon-plus"></i>
+                <span>新建</span>
+            </button>
+          </nz-button-group>
+      </div>
+      <simple-table #st [data]="url" [columns]="columns" [extraParams]="params"
+      [reqReName]="{pi:'pageNo',ps:'pageSize'}"
+      [resReName]="{total:'result.totalElements',list:'result.content'}"
+      [showTotal]="true"
+      [showSizeChanger]="true"
+      [preDataChange]="preDataChange"></simple-table>
+    </nz-card>
+    </div>
+</div>

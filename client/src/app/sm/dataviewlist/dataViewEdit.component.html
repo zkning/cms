@@ -1,0 +1,56 @@
+<div class="modal-header">
+  <div class="modal-title">{{dataViewEditModel.dataViewName}}</div>
+</div>
+
+<form nz-form [formGroup]="ngbForm" (ngSubmit)="onSubmit()">
+
+  <nz-form-item *ngFor="let column of displayData;">
+    <nz-form-label nzXs="24" nzSm="3"  nzFor="{{column.field}}" nzPlacement="top" nz-tooltip [nzTitle] = "column.title" >
+      {{labelFormat(column.title)}}
+      <em *ngIf="column.titleTooltip">
+        <nz-tooltip [nzTitle]="column.titleTooltip">
+          <i nz-tooltip class="anticon anticon-info-circle-o"></i>
+        </nz-tooltip>
+      </em>
+    </nz-form-label>
+
+    <!-- 编辑 -->
+    <nz-form-control nzXs="24" nzSm="12" nzMd="12" [ngSwitch]="column.fieldType"  *ngIf="editflag">
+
+        <!--text-->
+        <input  *ngSwitchCase="'TEXT'" nz-input  placeholder="{{column.title}}" formControlName="{{column.field}}" />
+
+        <!--select-->
+        <nz-select *ngSwitchCase="'DROPDOWN'" formControlName="{{column.field}}" >
+        </nz-select>
+
+        <!--textarea-->
+        <textarea *ngSwitchCase="'TEXTAREA'" style="width: 100%;" nz-input placeholder="{{column.title}}" formControlName="{{column.field}}" ></textarea>
+
+        <!--radio-->
+        <!-- <input *ngSwitchCase="'CHECKBOX'"  type="checkbox" formControlName="{{column.field}}" > -->
+        <label nz-checkbox  *ngSwitchCase="'CHECKBOX'" formControlName="{{column.field}}"></label>
+
+        <!--文件上传 upload-->
+
+        <!--日期 datetimepicker-->
+
+        <!-- 隐藏表单域 -->
+
+        <!-- 编码器 -->
+         <nz-form-explain *ngIf="ngbForm.get(column.field).dirty && ngbForm.get(column.field).errors">{{formErrorMsg(column)}}</nz-form-explain>
+    </nz-form-control>
+
+
+     <!-- 查看 -->
+    <nz-form-control nzXs="24" nzSm="12" nzMd="12"  *ngIf="retrieveflag">
+        <input nz-input  placeholder="{{column.title}}" formControlName="{{column.field}}" readonly/>
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="activeModal.close(false)">关闭</button>
+    <button nz-button type="submit" [nzType]="'primary'" [disabled]="!ngbForm.valid" *ngIf="this.buttonOpts.curd == 1 || this.buttonOpts.curd == 2">保存</button>
+  </div>
+</form>
+
