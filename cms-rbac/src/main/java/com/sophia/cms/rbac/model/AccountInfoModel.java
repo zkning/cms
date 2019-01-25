@@ -1,6 +1,5 @@
 package com.sophia.cms.rbac.model;
 
-import com.sophia.cms.rbac.domain.RbacUserInfo;
 import com.sophia.cms.rbac.domain.Resources;
 import com.sophia.cms.rbac.security.OAuth2Principal;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lenovo on 2018/5/30.
@@ -16,6 +16,11 @@ import java.util.List;
 public class AccountInfoModel implements Serializable {
 
     private App app;
+
+    /**
+     * 前端layout动态设置
+     */
+    private Map<String, String> layout;
     private OAuth2Principal user;
     private List<Resources> menu;
     private List<String> permits;

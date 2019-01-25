@@ -24,6 +24,9 @@ public class Resources extends Auditable {
     @ApiModelProperty(value = "资源编码")
     private String code;
 
+    @ApiModelProperty(value = "国际化")
+    private String i18n;
+
     @ApiModelProperty(value = "angular路由")
     private String link;
 
