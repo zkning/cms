@@ -15,7 +15,7 @@ import com.sophia.cms.rbac.repository.GroupRepository;
 import com.sophia.cms.rbac.repository.RbacUserInfoRepository;
 import com.sophia.cms.rbac.repository.RoleRepository;
 import com.sophia.cms.rbac.repository.UserRoleRelationRepository;
-import com.sophia.cms.rbac.security.AdditionalInfo;
+import com.sophia.cms.rbac.security.OAuth2Principal;
 import com.sophia.cms.rbac.utils.RecursiveTools;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -121,7 +121,7 @@ public class RbacUserService {
     }
 
     public Response updatePwd(UpdatePwdModel updatePwdModel) {
-        AdditionalInfo additionalInfo = SessionContextHolder.me();
+        OAuth2Principal additionalInfo = SessionContextHolder.getPrincipal();
         RbacUserInfo userInfo = rbacUserInfoRepository.findOne(additionalInfo.getId());
 
         // 旧密码对比
@@ -253,12 +253,12 @@ public class RbacUserService {
 
 
     public Response<CustomInfoModel> getCustomInfo() {
-        AdditionalInfo additionalInfo = SessionContextHolder.me();
-        RbacUserInfo userInfo = rbacUserInfoRepository.findOne(additionalInfo.getId());
+        OAuth2Principal auth2Principal = SessionContextHolder.getPrincipal();
+        RbacUserInfo userInfo = rbacUserInfoRepository.findOne(auth2Principal.getId());
         if (null == userInfo) {
             return Response.FAILURE("记录不存在");
         }
-        userInfo.setGroupName(additionalInfo.getGroupName());
+        userInfo.setGroupName(auth2Principal.getGroupName());
         CustomInfoModel model = new CustomInfoModel();
         new ModelMapper().map(userInfo, model);
         return Response.SUCCESS(model);
