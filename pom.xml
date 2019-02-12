@@ -25,6 +25,5 @@
         <module>cms-rbac</module>
         <module>cms-sm</module>
         <module>cms-oauth2-client</module>
-        <module>cms-flowable</module>
     </modules>
 </project>
