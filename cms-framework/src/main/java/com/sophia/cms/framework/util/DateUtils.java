@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateUtil {
+public class DateUtils {
 
     public final static String YYYY = "yyyy";
     public final static String MM = "MM";
@@ -54,10 +54,11 @@ public class DateUtil {
      * @return 一个被格式化了的<code>String</code>日期
      */
     public static String format(Date date, String pattern) {
-        if (date == null)
+        if (date == null) {
             return "";
-        else
+        } else {
             return getFormatter(pattern).format(date);
+        }
     }
 
     /**
@@ -123,7 +124,7 @@ public class DateUtil {
         try {
             return getFormatter(pattern).parse(strDate);
         } catch (ParseException pe) {
-            throw new ParseException("Method parse in Class DateUtil err: parse strDate fail.", pe.getErrorOffset());
+            throw new ParseException("Method parse in Class DateUtils err: parse strDate fail.", pe.getErrorOffset());
         }
     }
 
@@ -620,17 +621,17 @@ public class DateUtil {
      */
     public static void main(String[] args) {
         try {
-//			System.out.println("当前日期：" + DateUtil.getCurrDateStr());
-//			System.out.println("日期格式化：" + DateUtil.format(new Date(), DateUtil.formatStr_yyyyMMddHHmmss1));
-//			System.out.println("短日期：" + DateUtil.format(new Date()));
-//			System.out.println("长日期：" + DateUtil.getCurrDateTimeStr());
-//			System.out.println("日：" + DateUtil.getDay());
-//			System.out.println("月：" + DateUtil.getMonth());
-//			System.out.println("年：" + DateUtil.getYear());
-//			System.out.println("月未最后一天：" + DateUtil.getLastDayOfMonth("2010", "08"));
-//			System.out.println("相差几天：" + DateUtil.getIntevalDays("2010-08-01", "2010-08-21"));
-//			System.out.println("当前日期后的几天：" + DateUtil.getNextDate("2010-08-01", -3));
-//			System.out.println("与今天相差几天：" + DateUtil.getTodayIntevalDays("2010-08-01"));
+//			System.out.println("当前日期：" + DateUtils.getCurrDateStr());
+//			System.out.println("日期格式化：" + DateUtils.format(new Date(), DateUtils.formatStr_yyyyMMddHHmmss1));
+//			System.out.println("短日期：" + DateUtils.format(new Date()));
+//			System.out.println("长日期：" + DateUtils.getCurrDateTimeStr());
+//			System.out.println("日：" + DateUtils.getDay());
+//			System.out.println("月：" + DateUtils.getMonth());
+//			System.out.println("年：" + DateUtils.getYear());
+//			System.out.println("月未最后一天：" + DateUtils.getLastDayOfMonth("2010", "08"));
+//			System.out.println("相差几天：" + DateUtils.getIntevalDays("2010-08-01", "2010-08-21"));
+//			System.out.println("当前日期后的几天：" + DateUtils.getNextDate("2010-08-01", -3));
+//			System.out.println("与今天相差几天：" + DateUtils.getTodayIntevalDays("2010-08-01"));
 //            System.out.println("日期开始时间:" + dateToStart("2018-05-26 19:45:14"));
 //            System.out.println("日期结束时间:" + dateToEnd("2018-05-26 19:45:14"));
 //            System.out.println("日期开始时间:" + dateToStart());
