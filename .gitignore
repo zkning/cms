@@ -15,5 +15,5 @@ cms-jwt.iml
 cms-framework.iml
 hzed-persistence.iml
 libraries\
-fast-admin.iml
+cms.iml
 test\

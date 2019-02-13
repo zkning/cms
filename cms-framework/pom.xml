@@ -3,16 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.sophia.cms</groupId>
+        <artifactId>cms</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
     <groupId>com.sophia.cms</groupId>
     <artifactId>cms-framework</artifactId>
     <version>1.0.0</version>
-
-    <parent>
-        <groupId>com.fast.manage</groupId>
-        <artifactId>fast-admin</artifactId>
-        <version>1.0.0</version>
-    </parent>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
