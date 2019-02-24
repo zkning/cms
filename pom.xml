@@ -21,8 +21,8 @@
 
     <modules>
         <module>cms-framework</module>
-        <module>cms-orm</module>
         <module>cms-rbac</module>
+        <module>cms-storage</module>
         <module>cms-sm</module>
         <module>cms-oauth2-client</module>
     </modules>

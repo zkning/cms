@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sophia.cms</groupId>
-            <artifactId>cms-orm</artifactId>
+            <artifactId>cms-storage</artifactId>
             <version>1.0.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring -->

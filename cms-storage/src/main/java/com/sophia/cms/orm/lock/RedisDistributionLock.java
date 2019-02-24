@@ -1,15 +1,18 @@
 package com.sophia.cms.orm.lock;
 
-import com.sophia.cms.framework.exception.ServiceException;
 import com.google.common.collect.Maps;
+import com.sophia.cms.framework.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.Protocol;
+import redis.clients.util.SafeEncoder;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 
 @Component
@@ -32,17 +35,21 @@ public class RedisDistributionLock {
         String lockValue = UUID.randomUUID().toString();
 
         // setNX
-        Boolean lockResult = redisTemplate.opsForValue().setIfAbsent(key, lockValue);
-        if (!lockResult) {
-            return false;
-        }
-        Boolean expireResult = redisTemplate.expire(key, expire, TimeUnit.MILLISECONDS);
-        if (!expireResult) {
-            return false;
-        }
+        Boolean flag = (Boolean) redisTemplate.execute((RedisCallback) connection -> {
+            RedisSerializer keySerializer = redisTemplate.getKeySerializer();
+            RedisSerializer valueSerializer = redisTemplate.getValueSerializer();
+            Object result = connection.execute("set",
+                    keySerializer.serialize(key),
+                    valueSerializer.serialize(lockValue),
+                    SafeEncoder.encode("NX"),
+                    SafeEncoder.encode("PX"),
+                    Protocol.toByteArray(expire)
+            );
+            return result != null;
+        });
         lockThreadLocal.set(Maps.newConcurrentMap());
         lockThreadLocal.get().put(key, lockValue);
-        return true;
+        return flag;
     }
 
     public boolean acquire(String key, long expire, int retryTimes, long sleepMillis) {
