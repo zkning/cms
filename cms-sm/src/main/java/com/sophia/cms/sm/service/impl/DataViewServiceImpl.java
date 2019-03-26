@@ -14,7 +14,6 @@ import com.sophia.cms.sm.constant.DataViewConstant;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.mapper.DataViewMapper;
 import com.sophia.cms.sm.model.*;
-import com.sophia.cms.sm.repository.DataViewRepository;
 import com.sophia.cms.sm.service.DataViewService;
 import com.sophia.cms.sm.service.SqlIdJdbcService;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,9 +38,7 @@ public class DataViewServiceImpl implements DataViewService {
      * 查询视图列表功能
      */
     public static final String sqlId_listPrefix = "/sm/sqlId/list/";
-    public static final String sqlId_deletePrefix = "/sm/sqlId/delete/";
-    public static final String sqlId_modfityPrefix = "/sm/sqlId/modfity/";
-    public static final String sqlId_createPrefix = "/sm/sqlId/create/";
+
     /**
      * 查询单个视图功能
      */
@@ -50,9 +48,6 @@ public class DataViewServiceImpl implements DataViewService {
      */
     public static final String sqlId_getTreePrefix = "/sm/sqlId/getTree";
 
-
-    @Autowired
-    DataViewRepository dataViewRepository;
     @Autowired
     SqlIdJdbcService sqlIdJdbcService;
 
@@ -68,7 +63,7 @@ public class DataViewServiceImpl implements DataViewService {
 
         // 修改
         if (isEdit) {
-            dataView = dataViewRepository.findOne(request.getId());
+            dataView = dataViewMapper.selectById(request.getId());
         }
         dataView.setId(request.getId());
         dataView.setSqlId(request.getSqlId());
@@ -81,25 +76,31 @@ public class DataViewServiceImpl implements DataViewService {
         dataView.setOptions(FastJsonUtils.toJSONString(request.getOptions()));
         dataView.setTreeOptions(FastJsonUtils.toJSONString(request.getTreeOptions()));
         dataView.setVersion(request.getVersion());
-        dataViewRepository.save(dataView);
+        dataView.setLastUpdateTime(new Date());
+        if (isEdit) {
+            dataViewMapper.updateById(dataView);
+        } else {
+            dataView.setCreateTime(new Date());
+            dataViewMapper.insert(dataView);
+        }
         return Response.SUCCESS();
     }
 
     @Override
     public Response delete(Long id) {
-        dataViewRepository.delete(id);
+        dataViewMapper.deleteById(id);
         return Response.SUCCESS();
     }
 
 
     @Override
     public DataView findById(Long id) {
-        return dataViewRepository.findOne(id);
+        return dataViewMapper.selectById(id);
     }
 
     @Override
     public DataViewFetchModel fetch(Long id) {
-        DataView dataView = dataViewRepository.findOne(id);
+        DataView dataView = dataViewMapper.selectById(id);
         DataViewFetchModel dataViewFetchModel = new DataViewFetchModel();
         dataViewFetchModel.setId(dataView.getId());
         dataViewFetchModel.setSqlId(dataView.getSqlId());
@@ -130,7 +131,7 @@ public class DataViewServiceImpl implements DataViewService {
     @Override
     @Transactional
     public Response toRes(ToResModel toResModel) {
-        DataView dataView = dataViewRepository.findOne(toResModel.getDataViewId());
+        DataView dataView = dataViewMapper.selectById(toResModel.getDataViewId());
         if (null == dataView) {
             return Response.FAILURE("视图不存在！");
         }

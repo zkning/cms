@@ -1,9 +1,5 @@
 package com.sophia.cms.orm.idworker;
 
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.id.IdentifierGenerator;
-
-import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -18,7 +14,7 @@ import java.util.Random;
  * 加起来刚好64位，为一个Long型。<br>
  * SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，并且效率较高，经测试，SnowFlake每秒能够产生26万ID左右。
  */
-public class SnowflakeId implements IdentifierGenerator {
+public class SnowflakeId {
 
     // ==============================Fields===========================================
     /**
@@ -97,10 +93,10 @@ public class SnowflakeId implements IdentifierGenerator {
     }
 
 
-    public static SnowflakeId getInstance(){
-        int workerId=new Random().nextInt(30);
-        int datacenterId=new Random().nextInt(30);
-        return new SnowflakeId(workerId,datacenterId);
+    public static SnowflakeId getInstance() {
+        int workerId = new Random().nextInt(30);
+        int datacenterId = new Random().nextInt(30);
+        return new SnowflakeId(workerId, datacenterId);
     }
 
 
@@ -182,10 +178,5 @@ public class SnowflakeId implements IdentifierGenerator {
      */
     protected static long timeGen() {
         return System.currentTimeMillis();
-    }
-
-    @Override
-    public Serializable generate(SessionImplementor s, Object obj) {
-        return getId();
     }
 }

@@ -9,11 +9,12 @@ import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.SqlDefineEditModel;
 import com.sophia.cms.sm.model.SqlDefineFetchModel;
 import com.sophia.cms.sm.model.SqlDefineSearchModel;
-import com.sophia.cms.sm.repository.SqlDefineRepository;
 import com.sophia.cms.sm.service.SqlDefineService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,59 +24,46 @@ import java.util.List;
 public class SqlDefineServiceImpl implements SqlDefineService {
 
     @Autowired
-    SqlDefineRepository sqlDefineRepository;
-    @Autowired
     SqlDefineMapper sqlDefineMapper;
 
     @Override
     public Response edit(SqlDefineEditModel sqlDefineEditModel) {
         SqlDefine sqlDefine = new SqlDefine();
-        if (null != sqlDefineEditModel.getId()) {
-            sqlDefine = sqlDefineRepository.findOne(sqlDefineEditModel.getId());
+        Boolean flag = null != sqlDefineEditModel.getId();
+        if (flag) {
+            sqlDefine = sqlDefineMapper.selectById(sqlDefineEditModel.getId());
             if (null == sqlDefine) {
                 return Response.FAILURE("记录不存在");
             }
         }
-        sqlDefine.setState(sqlDefineEditModel.getState());
-        sqlDefine.setSqlExtra(sqlDefineEditModel.getSqlExtra());
-        sqlDefine.setRemark(sqlDefineEditModel.getRemark());
-        sqlDefine.setDatasource(sqlDefineEditModel.getDatasource());
-        sqlDefine.setIsCache(sqlDefineEditModel.getIsCache());
-        sqlDefine.setVersion(sqlDefineEditModel.getVersion());
-        sqlDefine.setSqlName(sqlDefineEditModel.getSqlName());
-        sqlDefine.setTableName(sqlDefineEditModel.getTableName());
-        sqlDefine.setPri(sqlDefineEditModel.getPri());
-        sqlDefine.setManipulate(sqlDefineEditModel.getManipulate());
-        sqlDefine.setSelectSql(sqlDefineEditModel.getSelectSql());
-        sqlDefineRepository.save(sqlDefine);
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(sqlDefineEditModel, sqlDefine);
+        sqlDefine.setLastUpdateTime(new Date());
+        if (flag) {
+            sqlDefineMapper.updateById(sqlDefine);
+        } else {
+            sqlDefine.setCreateTime(new Date());
+            sqlDefineMapper.insert(sqlDefine);
+        }
         return Response.SUCCESS();
     }
 
     @Override
     public Response delete(Long id) {
-        sqlDefineRepository.delete(id);
+        sqlDefineMapper.deleteById(id);
         return Response.SUCCESS();
     }
 
     @Override
     public Response<SqlDefineFetchModel> fetch(Long id) {
-        SqlDefine entity = sqlDefineRepository.findOne(id);
+        SqlDefine entity = sqlDefineMapper.selectById(id);
         if (null == entity) {
             return Response.FAILURE("记录不存在");
         }
         SqlDefineFetchModel model = new SqlDefineFetchModel();
-        model.setState(entity.getState());
-        model.setSqlExtra(entity.getSqlExtra());
-        model.setRemark(entity.getRemark());
-        model.setDatasource(entity.getDatasource());
-        model.setIsCache(entity.getIsCache());
-        model.setVersion(entity.getVersion());
-        model.setSqlName(entity.getSqlName());
-        model.setTableName(entity.getTableName());
-        model.setPri(entity.getPri());
-        model.setManipulate(entity.getManipulate());
-        model.setSelectSql(entity.getSelectSql());
-        model.setId(entity.getId());
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(entity, model);
         return Response.SUCCESS(model);
     }
 

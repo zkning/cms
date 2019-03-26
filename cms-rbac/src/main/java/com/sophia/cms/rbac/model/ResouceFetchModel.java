@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
 
 @Data
 public class ResouceFetchModel {
@@ -27,7 +26,6 @@ public class ResouceFetchModel {
     private String link;
 
     @ApiModelProperty(value = "外部链接")
-    @Column(name = "external_link")
     private String externalLink;
 
     @ApiModelProperty(value = "图标")

@@ -6,10 +6,10 @@ import com.sophia.cms.rbac.constants.ResourceTypeEnum;
 import com.sophia.cms.rbac.domain.Resources;
 import com.sophia.cms.rbac.domain.RoleResourcesRelation;
 import com.sophia.cms.rbac.domain.UserRoleRelation;
+import com.sophia.cms.rbac.mapper.ResourcesMapper;
+import com.sophia.cms.rbac.mapper.RoleResourcesRelationMapper;
+import com.sophia.cms.rbac.mapper.UserRoleRelationMapper;
 import com.sophia.cms.rbac.model.*;
-import com.sophia.cms.rbac.repository.ResourcesRepository;
-import com.sophia.cms.rbac.repository.RoleResourcesRelationRepository;
-import com.sophia.cms.rbac.repository.UserRoleRelationRepository;
 import com.sophia.cms.rbac.security.OAuth2Principal;
 import com.sophia.cms.rbac.utils.RecursiveTools;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
@@ -17,11 +17,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,11 +36,11 @@ public class ResourcesService {
     private static final Long TOP_NODE = 0L;
 
     @Autowired
-    private ResourcesRepository resourcesRepository;
+    private ResourcesMapper resourcesMapper;
     @Autowired
-    private RoleResourcesRelationRepository roleResourcesRelationRepository;
+    private RoleResourcesRelationMapper roleResourcesRelationMapper;
     @Autowired
-    private UserRoleRelationRepository userRoleRelationRepository;
+    private UserRoleRelationMapper userRoleRelationMapper;
 
     private static final String ADMINISTRATOR = "administrator";
 
@@ -49,7 +51,7 @@ public class ResourcesService {
      * @return
      */
     public Response<Resources> edit(ResourceEditModel model) {
-        Resources resources = this.resourcesRepository.findByCode(model.getCode());
+        Resources resources = this.resourcesMapper.findByCode(model.getCode());
         // 创建
         if (null != resources && null == model.getId()) {
             return Response.FAILURE("资源编码存在!");
@@ -60,63 +62,53 @@ public class ResourcesService {
             return Response.FAILURE("资源编码已存在!");
         }
         Resources resouce = new Resources();
-        if (null != model.getId()) {
-            resouce = resourcesRepository.findOne(model.getId());
+        Boolean flag = null != model.getId();
+        if (flag) {
+            resouce = resourcesMapper.selectById(model.getId());
         }
         if (null != model.getPid()) {
             resouce.setPid(model.getPid());
         } else {
             resouce.setPid(0L);
         }
-        resouce.setCode(model.getCode());
-        resouce.setIcon(model.getIcon());
-        resouce.setExtra(model.getExtra());
-        resouce.setLink(model.getLink());
-        resouce.setPid(model.getPid());
-        resouce.setExternalLink(model.getExternalLink());
-        resouce.setResourceType(model.getResourceType());
-        resouce.setText(model.getText());
-        resouce.setVersion(model.getVersion());
-        Resources res = resourcesRepository.save(resouce);
-        return Response.SUCCESS(res);
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(model, resouce);
+        if (flag) {
+            resourcesMapper.updateById(resouce);
+        } else {
+            resourcesMapper.insert(resouce);
+        }
+        return Response.SUCCESS(resouce);
     }
 
     @Transactional
     public Response delete(Long id) {
-        Resources item = this.resourcesRepository.findOne(id);
+        Resources item = this.resourcesMapper.selectById(id);
         if (BeanUtils.isEmpty(item)) {
             return Response.FAILURE("未知的资源!");
         }
 
         // 查询子级分组
         List<Resources> subItems = RecursiveTools.forEachItem(item, (Resources index) -> {
-            return resourcesRepository.findByPid(index.getId());
+            return resourcesMapper.findByPid(index.getId());
         });
         subItems.add(item);
-        resourcesRepository.delete(subItems);
 
         //删除已关联的角色关联关系
         List<Long> resourcesIds = subItems.stream().map(Resources::getId).collect(Collectors.toList());
-        roleResourcesRelationRepository.deleteByResourceIdIn(resourcesIds);
+        resourcesMapper.deleteBatchIds(resourcesIds);
+        roleResourcesRelationMapper.deleteByResourceIdIn(resourcesIds);
         return Response.SUCCESS();
     }
 
     public Response<ResouceFetchModel> fetch(Long id) {
-        Resources item = resourcesRepository.findOne(id);
+        Resources item = resourcesMapper.selectById(id);
         if (null == item) {
             return Response.FAILURE("记录不存在");
         }
         ResouceFetchModel model = new ResouceFetchModel();
-        model.setId(item.getId());
-        model.setCode(item.getCode());
-        model.setVersion(item.getVersion());
-        model.setExternalLink(item.getExternalLink());
-        model.setExtra(item.getExtra());
-        model.setIcon(item.getIcon());
-        model.setLink(item.getLink());
-        model.setPid(item.getPid());
-        model.setResourceType(item.getResourceType());
-        model.setText(item.getText());
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(item, model);
         return Response.SUCCESS(model);
     }
 
@@ -128,7 +120,7 @@ public class ResourcesService {
      * @return
      */
     public List<Resources> findAllResourcesByUserId(Long userId) {
-        List<Resources> resources = this.resourcesRepository.findResourceByRoleUserId(userId);
+        List<Resources> resources = this.resourcesMapper.findResourceByRoleUserId(userId);
         return resources;
     }
 
@@ -139,7 +131,7 @@ public class ResourcesService {
      * @return
      */
     public List<Resources> findResourcesByUserIdAndType(Long userId, Integer type) {
-        List<Resources> resources = this.resourcesRepository.findResourceByRoleUserIdAndType(userId, type);
+        List<Resources> resources = this.resourcesMapper.findResourceByRoleUserIdAndType(userId, type);
         return resources;
     }
 
@@ -154,7 +146,7 @@ public class ResourcesService {
         // 根据角色id获取资源
         List<Long> resIdList = Lists.newArrayList();
         if (null != roleId) {
-            List<Resources> resources = resourcesRepository.findByRoleId(roleId);
+            List<Resources> resources = resourcesMapper.findByRoleId(roleId);
             if (CollectionUtils.isNotEmpty(resources)) {
                 resources.forEach(item -> {
                     resIdList.add(item.getId());
@@ -168,7 +160,7 @@ public class ResourcesService {
      * 获取资源tree
      */
     public List<TreeNodeModel> TreeNodeModel(Long pid, List<Long> resIdList) {
-        List<Resources> resourcesList = resourcesRepository.findByPid(pid);
+        List<Resources> resourcesList = resourcesMapper.findByPid(pid);
         if (CollectionUtils.isEmpty(resourcesList)) {
             return Lists.newArrayList();
         }
@@ -184,7 +176,7 @@ public class ResourcesService {
                     .build());
         });
         return RecursiveTools.forEachTreeItems(treeNodeModels, (TreeNodeModel item) -> {
-            List<Resources> resList = resourcesRepository.findByPid(Long.valueOf(item.getKey()));
+            List<Resources> resList = resourcesMapper.findByPid(Long.valueOf(item.getKey()));
 
             // 不存在子节点
             if (CollectionUtils.isEmpty(resList)) {
@@ -217,21 +209,24 @@ public class ResourcesService {
      */
     @Transactional
     public Response saveRoleRes(SaveRoleResModel saveRoleResModel) {
+
         //删除旧数据
-        List<RoleResourcesRelation> roleResourcesRelations = this.roleResourcesRelationRepository.findByRoleId(saveRoleResModel.getRoleId());
+        List<RoleResourcesRelation> roleResourcesRelations = this.roleResourcesRelationMapper.findByRoleId(saveRoleResModel.getRoleId());
         if (CollectionUtils.isNotEmpty(roleResourcesRelations)) {
-            this.roleResourcesRelationRepository.delete(roleResourcesRelations);
+            List<Long> roleResourcesRelationIds = roleResourcesRelations.stream().map(RoleResourcesRelation::getId).collect(Collectors.toList());
+            this.roleResourcesRelationMapper.deleteBatchIds(roleResourcesRelationIds);
         }
+
         //保存新关系
-        ArrayList<RoleResourcesRelation> list = Lists.newArrayList();
         Long roleId = saveRoleResModel.getRoleId();
         saveRoleResModel.getResourceIds().forEach((Long resourceId) -> {
             RoleResourcesRelation roleResourcesRelation = new RoleResourcesRelation();
             roleResourcesRelation.setRoleId(roleId);
             roleResourcesRelation.setResourceId(resourceId);
-            list.add(roleResourcesRelation);
+            roleResourcesRelation.setCreateTime(new Date());
+            roleResourcesRelation.setLastUpdateTime(new Date());
+            roleResourcesRelationMapper.insert(roleResourcesRelation);
         });
-        this.roleResourcesRelationRepository.save(list);
         return Response.SUCCESS();
     }
 
@@ -241,18 +236,19 @@ public class ResourcesService {
      * @param saveRoleResModel
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Response saveRoleUser(EditRoleUserModel saveRoleResModel) {
 
         //保存新关系
-        ArrayList<UserRoleRelation> list = Lists.newArrayList();
         Long roleId = saveRoleResModel.getRoleId();
         saveRoleResModel.getUserIds().forEach((Long userId) -> {
             UserRoleRelation userRoleRelation = new UserRoleRelation();
             userRoleRelation.setRoleId(roleId);
             userRoleRelation.setUserId(userId);
-            list.add(userRoleRelation);
+            userRoleRelation.setCreateTime(new Date());
+            userRoleRelation.setLastUpdateTime(new Date());
+            this.userRoleRelationMapper.insert(userRoleRelation);
         });
-        this.userRoleRelationRepository.save(list);
         return Response.SUCCESS();
     }
 
@@ -265,15 +261,15 @@ public class ResourcesService {
     public Response saveUserRoles(EditUserRolesModel editUserRolesModel) {
 
         //保存新关系
-        ArrayList<UserRoleRelation> list = Lists.newArrayList();
         Long userId = editUserRolesModel.getUserId();
         editUserRolesModel.getRoleIds().forEach((Long roleId) -> {
             UserRoleRelation userRoleRelation = new UserRoleRelation();
             userRoleRelation.setRoleId(roleId);
             userRoleRelation.setUserId(userId);
-            list.add(userRoleRelation);
+            userRoleRelation.setLastUpdateTime(new Date());
+            userRoleRelation.setCreateTime(new Date());
+            userRoleRelationMapper.insert(userRoleRelation);
         });
-        this.userRoleRelationRepository.save(list);
         return Response.SUCCESS();
     }
 
@@ -285,13 +281,13 @@ public class ResourcesService {
      */
     @Transactional
     public Response removeRoleUser(EditRoleUserModel editRoleUserModel) {
-        this.userRoleRelationRepository.deleteByRoleIdAndUserIdIn(editRoleUserModel.getRoleId(), editRoleUserModel.getUserIds());
+        this.userRoleRelationMapper.deleteByRoleIdAndUserIdIn(editRoleUserModel.getRoleId(), editRoleUserModel.getUserIds());
         return Response.SUCCESS();
     }
 
     @Transactional
     public Response removeUserRoles(EditUserRolesModel editUserRolesModel) {
-        this.userRoleRelationRepository.deleteByUserIdAndRoleIdIn(editUserRolesModel.getUserId(), editUserRolesModel.getRoleIds());
+        this.userRoleRelationMapper.deleteByUserIdAndRoleIdIn(editUserRolesModel.getUserId(), editUserRolesModel.getRoleIds());
         return Response.SUCCESS();
     }
 
@@ -338,7 +334,7 @@ public class ResourcesService {
         // 查找用户指定类型资源列表
         List<Resources> resources = Lists.newArrayList();
         if (ADMINISTRATOR.equalsIgnoreCase(userName)) {
-            resources = resourcesRepository.findByResourceType(ResourceTypeEnum.MENU.getCode());
+            resources = resourcesMapper.findByResourceType(ResourceTypeEnum.MENU.getCode());
         } else {
             resources = this.findResourcesByUserIdAndType(userId, ResourceTypeEnum.MENU.getCode());
         }

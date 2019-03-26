@@ -11,7 +11,6 @@ import com.sophia.cms.sm.mapper.DataSourceMapper;
 import com.sophia.cms.sm.model.DataSourceEditModel;
 import com.sophia.cms.sm.model.DataSourceFetchModel;
 import com.sophia.cms.sm.model.DataSourceSearchModel;
-import com.sophia.cms.sm.repository.DataSourceRepository;
 import com.sophia.cms.sm.service.DataSourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.assertj.core.util.Lists;
@@ -31,27 +30,26 @@ import java.util.List;
 public class DataSourceServiceImpl implements DataSourceService {
 
     @Autowired
-    DataSourceRepository dataSourceRepository;
-
-    @Autowired
     DataSourceMapper dataSourceMapper;
 
     @Override
     public Response edit(DataSourceEditModel dataSourceEditModel) {
         DataSource dataSource = new ModelMapper().map(dataSourceEditModel, DataSource.class);
-        dataSourceRepository.save(dataSource);
         if (null != dataSourceEditModel.getId()) {
+            dataSourceMapper.updateById(dataSource);
 
             //删除缓存
             DataSourceService dataSourceService = SpringContextUtil.getBean(DataSourceServiceImpl.class);
             dataSourceService.deleteCacheId(dataSourceEditModel.getId());
+        } else {
+            dataSourceMapper.insert(dataSource);
         }
         return Response.SUCCESS();
     }
 
     @Override
     public Response delete(Long id) {
-        dataSourceRepository.delete(id);
+        dataSourceMapper.deleteById(id);
 
         //删除缓存
         DataSourceService dataSourceService = SpringContextUtil.getBean(DataSourceServiceImpl.class);
@@ -61,7 +59,7 @@ public class DataSourceServiceImpl implements DataSourceService {
 
     @Override
     public Response<DataSourceFetchModel> fetch(Long id) {
-        DataSource entity = dataSourceRepository.findOne(id);
+        DataSource entity = dataSourceMapper.selectById(id);
         if (null == entity) {
             return Response.FAILURE("记录不存在");
         }
@@ -85,7 +83,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public List<DataSourceFetchModel> findAll() {
         List<DataSourceFetchModel> result = Lists.newArrayList();
-        List<DataSource> list = dataSourceRepository.findAll();
+        List<DataSource> list = dataSourceMapper.findAll();
         if (CollectionUtils.isNotEmpty(list)) {
             list.forEach(item -> {
                 result.add(new ModelMapper().map(item, DataSourceFetchModel.class));
@@ -97,7 +95,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     @Cacheable(cacheNames = CacheableConstants.CacheableName, unless = "#result != null")
     public DataSource findById(Long id) {
-        return dataSourceRepository.findOne(id);
+        return dataSourceMapper.selectById(id);
     }
 
     @Override

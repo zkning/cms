@@ -1,24 +1,30 @@
 package com.sophia.cms.sm.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.sophia.cms.orm.domain.Auditable;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Data
-@Entity
-@Table(name = "t_sm_sqldefine")
+@TableName(value = "t_sm_sqldefine")
 public class SqlDefine extends Auditable {
     private static final long serialVersionUID = 1L;
+
+    @TableField(value = "sql_name")
     private String sqlName;
+
+    @TableField(value = "select_sql")
     private String selectSql;
     private String manipulate;
+
+    @TableField(value = "sql_extra")
     private String sqlExtra;
     private Long datasource;
     /**
      * 是否缓存
      */
+    @TableField(value = "is_cache")
     private Integer isCache;
 
     /**
@@ -34,6 +40,7 @@ public class SqlDefine extends Auditable {
     /**
      * 主表
      */
+    @TableField(value = "table_name")
     private String tableName;
 
     /**

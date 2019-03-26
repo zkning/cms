@@ -11,8 +11,8 @@ import com.sophia.cms.sm.constant.SqlExpression;
 import com.sophia.cms.sm.constant.TreeNodeHandleType;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.domain.SqlDefine;
+import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.*;
-import com.sophia.cms.sm.repository.SqlDefineRepository;
 import com.sophia.cms.sm.service.DataViewService;
 import com.sophia.cms.sm.utils.DataFilter;
 import com.sophia.cms.sm.utils.SimpleUtils;
@@ -44,13 +44,13 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     private static final String manipulate_query = "QUERY";
 
     @Autowired
-    SqlDefineRepository sqlDefineRepository;
+    SqlDefineMapper sqlDefineMapper;
 
     @Autowired
     DataViewService dataViewService;
 
     public SqlDefine findOne(Long sqlId) {
-        return sqlDefineRepository.getOne(sqlId);
+        return sqlDefineMapper.selectById(sqlId);
     }
 
 
@@ -206,7 +206,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
 
     public Response fetch(Long dataViewId, Long recordId) {
         DataView dataView = this.findByDataViewId(dataViewId);
-        SqlDefine sqlDefine = sqlDefineRepository.findOne(dataView.getSqlId());
+        SqlDefine sqlDefine = sqlDefineMapper.selectById(dataView.getSqlId());
         Map<String, Object> paraMap = new HashedMap();
 
         // 获取主键
@@ -286,7 +286,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
 
     public Response updateByDataViewId(Long id, JSONObject rowValue) {
         DataView dataView = findByDataViewId(id);
-        SqlDefine sqlDefine = sqlDefineRepository.findOne(dataView.getSqlId());
+        SqlDefine sqlDefine = sqlDefineMapper.selectById(dataView.getSqlId());
         Response<List<FieldModel>> checkResp = checkSqlDefineConfig(sqlDefine, dataView);
         if (!checkResp.checkSuccess()) {
             return checkResp;
@@ -393,7 +393,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
                                                                    String sortName, String sortOrder, Long sqlId,
                                                                    BootstrapSearchParam bootstrapSearchParam) {
         BootstrapPageResult pageResultForBootstrap = new BootstrapPageResult();
-        SqlDefine sqlDefine = sqlDefineRepository.findOne(sqlId);
+        SqlDefine sqlDefine = sqlDefineMapper.selectById(sqlId);
         DataFilter dataFilter = DataFilter.getInstance();
         dataFilter.setQuerySql(sqlDefine.getSelectSql());
         dataFilter.setSortName(sortName);

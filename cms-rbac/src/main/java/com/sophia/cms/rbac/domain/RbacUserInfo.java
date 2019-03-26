@@ -1,54 +1,50 @@
 package com.sophia.cms.rbac.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sophia.cms.orm.domain.Auditable;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 /**
  * Created by lenovo on 2017/11/10.
  */
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "t_rbac_user")
+@TableName(value = "t_rbac_user")
 public class RbacUserInfo extends Auditable {
 
     @JsonIgnore
-    @Column(name = "password")
+    @TableField(value = "password")
     private String password;
 
     @ApiModelProperty(value = "用户名")
-    @Column(name = "user_name")
+    @TableField(value = "user_name")
     private String userName;
 
     @ApiModelProperty(value = "姓名")
-    @Column(name = "name")
+    @TableField(value = "name")
     private String name;
 
     @ApiModelProperty(value = "手机号码")
-    @Column(name = "mobile")
+    @TableField(value = "mobile")
     private String mobile;
 
     @ApiModelProperty(value = "邮箱")
-    @Column(name = "email")
+    @TableField(value = "email")
     private String email;
 
     @ApiModelProperty(value = "头像")
-    @Column(name = "avatar")
+    @TableField(value = "avatar")
     private String avatar;
 
     @ApiModelProperty(value = "所属组别id")
-    @Column(name = "group_id")
+    @TableField(value = "group_id")
     private Long groupId;
 
-    @Transient
+    @TableField(exist = false)
     @ApiModelProperty(value = "所属组别名称")
     private String groupName;
 }

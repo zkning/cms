@@ -3,7 +3,7 @@
 <mapper namespace="com.sophia.cms.rbac.mapper.RbacUserInfoMapper">
 
     <select id="list" parameterType="com.sophia.cms.rbac.model.RbacUserInfoSearchModel"
-            resultType="com.sophia.cms.rbac.model.RbacUserInfoFetchModel" >
+            resultType="com.sophia.cms.rbac.model.RbacUserInfoFetchModel">
         select trui.id as id,trui.user_name as userName,trui.name as name,trui.mobile as mobile,trui.version,
         trui.create_time as createTime,trui.create_user as createUser,trg.group_name as groupName
         from t_rbac_user trui left join t_rbac_group trg on trui.group_id = trg.id
@@ -23,7 +23,7 @@
             </if>
             <if test="params.groupIds != null and  params.groupIds.size() > 0">
                 and trui.group_id in
-                <foreach collection="params.groupIds"  item="item" open="(" separator="," close=")">
+                <foreach collection="params.groupIds" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
@@ -32,12 +32,12 @@
                 <choose>
                     <when test="params.userIds != null and  params.userIds.size() > 0">
                         and trui.id in
-                        <foreach collection="params.userIds"  item="item" open="(" separator="," close=")">
+                        <foreach collection="params.userIds" item="item" open="(" separator="," close=")">
                             #{item}
                         </foreach>
-                    </when >
+                    </when>
                     <otherwise>
-                         and 1=2
+                        and 1=2
                     </otherwise>
                 </choose>
             </if>
@@ -51,4 +51,22 @@
         </where>
         order by trui.create_time desc
     </select>
+
+
+    <select id="findByGroupIdIn" resultType="com.sophia.cms.rbac.domain.RbacUserInfo">
+        select * from t_rbac_user where group_id in
+        <foreach collection="groupIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+     <select id="findByIdIn" resultType="com.sophia.cms.rbac.domain.RbacUserInfo">
+        select * from t_rbac_user where id in
+        <foreach collection="userIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+
 </mapper>

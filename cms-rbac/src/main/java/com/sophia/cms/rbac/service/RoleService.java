@@ -1,22 +1,23 @@
 package com.sophia.cms.rbac.service;
 
+import com.google.common.collect.Lists;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.framework.util.BeanUtils;
 import com.sophia.cms.rbac.domain.Dict;
 import com.sophia.cms.rbac.domain.Role;
+import com.sophia.cms.rbac.mapper.DictMapper;
 import com.sophia.cms.rbac.mapper.RoleMapper;
 import com.sophia.cms.rbac.model.RoleEditModel;
 import com.sophia.cms.rbac.model.RoleFetchModel;
 import com.sophia.cms.rbac.model.RoleSearchModel;
 import com.sophia.cms.rbac.model.TreeNodeModel;
-import com.sophia.cms.rbac.repository.DictRepository;
-import com.sophia.cms.rbac.repository.RoleRepository;
 import com.sophia.cms.rbac.utils.RecursiveTools;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,14 +29,10 @@ public class RoleService {
     private static final String ROLE_TYPE_CODE = "JUESEFENLEI";
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleMapper roleMapper;
 
     @Autowired
-    DictRepository dictRepository;
-
-    @Autowired
-    RoleMapper roleMapper;
-
+    DictMapper dictMapper;
 
     /**
      * 根据用户id获取所有角色
@@ -44,7 +41,7 @@ public class RoleService {
      * @return
      */
     public List<Role> findAllRoleByUserId(Long userId) {
-        return roleRepository.findAllRoleByUserId(userId);
+        return roleMapper.findAllRoleByUserId(userId);
     }
 
     /**
@@ -55,7 +52,7 @@ public class RoleService {
      * @return
      */
     public boolean hasRoleOrNotByUserIdAndRoleCode(Long userId, String roleCode) {
-        Role role = roleRepository.findRoleByUserIdAndRoleType(userId, roleCode);
+        Role role = roleMapper.findRoleByUserIdAndRoleType(userId, roleCode);
         if (BeanUtils.isNotEmpty(role)) {
             return true;
         }
@@ -63,10 +60,11 @@ public class RoleService {
     }
 
     public Response edit(RoleEditModel roleEditModel) {
-        Role role = roleRepository.findByRoleCode(roleEditModel.getRoleCode());
+        Role role = roleMapper.findByRoleCode(roleEditModel.getRoleCode());
 
         // 创建
-        if (null != role && null == roleEditModel.getId()) {
+        Boolean editflag = null == roleEditModel.getId();
+        if (null != role && editflag) {
             return Response.FAILURE("角色编号已存在!");
         } else if (null != role &&
                 null != roleEditModel.getId() &&
@@ -75,27 +73,29 @@ public class RoleService {
             return Response.FAILURE("角色编号已存在!");
         }
         Role roleModel = new Role();
-        if (null != roleEditModel.getId()) {
-            roleModel = roleRepository.findOne(roleEditModel.getId());
+        if (!editflag) {
+            roleModel = roleMapper.selectById(roleEditModel.getId());
             roleModel.setVersion(roleEditModel.getVersion());
         }
-        roleModel.setRoleName(roleEditModel.getRoleName());
-        roleModel.setRoleCode(roleEditModel.getRoleCode());
-        roleModel.setRemark(roleEditModel.getRemark());
-        roleModel.setGroupId(roleEditModel.getGroupId());
-        roleModel.setRoleType(roleEditModel.getRoleType());
-        roleModel.setRemark(roleEditModel.getRemark());
-        roleRepository.save(roleModel);
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(roleEditModel, roleModel);
+        roleModel.setLastUpdateTime(new Date());
+        if (editflag) {
+            roleModel.setCreateTime(new Date());
+            roleMapper.insert(roleModel);
+        } else {
+            roleMapper.updateById(roleModel);
+        }
         return Response.SUCCESS(roleModel);
     }
 
     public Response delete(Long id) {
-        roleRepository.delete(id);
+        roleMapper.deleteById(id);
         return Response.SUCCESS();
     }
 
     public Response<RoleFetchModel> fetch(Long id) {
-        Role role = roleRepository.findOne(id);
+        Role role = roleMapper.selectById(id);
         if (null == role) {
             return Response.FAILURE("记录不存在");
         }
@@ -116,9 +116,9 @@ public class RoleService {
     public List<TreeNodeModel> TreeNodeModel() {
 
         //从数据字典获取分类
-        Dict dict = dictRepository.findByValue(ROLE_TYPE_CODE);
+        Dict dict = dictMapper.findByValue(ROLE_TYPE_CODE);
 
-        List<Dict> dicts = dictRepository.findByPidOrderBySortDesc(dict.getId());
+        List<Dict> dicts = dictMapper.findByPidOrderBySortDesc(dict.getId());
         if (CollectionUtils.isEmpty(dicts)) {
             return Lists.newArrayList();
         }
@@ -132,7 +132,7 @@ public class RoleService {
                     .build());
         });
         return RecursiveTools.forEachTreeItems(treeNodeModels, (TreeNodeModel item) -> {
-            List<Role> roleList = roleRepository.findByRoleType(Integer.valueOf(item.getKey()));
+            List<Role> roleList = roleMapper.findByRoleType(Integer.valueOf(item.getKey()));
             if (CollectionUtils.isEmpty(roleList)) {
                 item.setLeaf(true);
                 return null;

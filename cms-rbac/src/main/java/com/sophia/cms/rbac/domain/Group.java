@@ -1,5 +1,8 @@
 package com.sophia.cms.rbac.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.sophia.cms.orm.domain.Auditable;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -7,10 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -21,37 +20,36 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "t_rbac_group")
+@TableName(value = "t_rbac_group")
 public class Group extends Auditable implements Comparable<Group> {
 
     @ApiModelProperty(value = "分组名称")
-    @Column(name = "group_name")
+    @TableField(value = "group_name")
     private String groupName;
 
     @ApiModelProperty(value = "备注")
-    @Column(name = "remark")
+    @TableField(value = "remark")
     private String remark;
 
     @ApiModelProperty(value = "上级id")
-    @Column(name = "pid")
+    @TableField(value = "pid")
     private Long pid;
 
     @ApiModelProperty(value = "分组类型")
-    @Column(name = "group_type")
+    @TableField(value = "group_type")
     private Integer groupType;
 
     @ApiModelProperty(value = "扩展数据")
-    @Column(name = "extra")
+    @TableField(value = "extra")
     private String extra;
 
     @ApiModelProperty(value = "是否有效")
     private Integer isValid;
 
-    @Transient
+    @TableField(exist = false)
     private List<Group> children;
 
-    @Transient
+    @TableField(exist = false)
     private int level;
 
     @Override

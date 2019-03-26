@@ -9,12 +9,11 @@ import com.sophia.cms.orm.model.Pager;
 import com.sophia.cms.rbac.domain.Group;
 import com.sophia.cms.rbac.domain.RbacUserInfo;
 import com.sophia.cms.rbac.domain.Role;
+import com.sophia.cms.rbac.mapper.GroupMapper;
 import com.sophia.cms.rbac.mapper.RbacUserInfoMapper;
+import com.sophia.cms.rbac.mapper.RoleMapper;
+import com.sophia.cms.rbac.mapper.UserRoleRelationMapper;
 import com.sophia.cms.rbac.model.*;
-import com.sophia.cms.rbac.repository.GroupRepository;
-import com.sophia.cms.rbac.repository.RbacUserInfoRepository;
-import com.sophia.cms.rbac.repository.RoleRepository;
-import com.sophia.cms.rbac.repository.UserRoleRelationRepository;
 import com.sophia.cms.rbac.security.OAuth2Principal;
 import com.sophia.cms.rbac.utils.RecursiveTools;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,20 +40,21 @@ import java.util.List;
 @Service
 public class RbacUserService {
     private static final String pwd = "123456";
+
     @Autowired
-    private GroupRepository groupRepository;
+    private GroupMapper groupMapper;
+
     @Autowired
-    private RbacUserInfoRepository rbacUserInfoRepository;
+    private RbacUserInfoMapper rbacUserInfoMapper;
+
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleMapper roleMapper;
+
     @Autowired
-    private UserRoleRelationRepository userRoleRelationRepository;
+    private UserRoleRelationMapper userRoleRelationMapper;
 
     @Autowired
     ResourcesService resourceService;
-
-    @Autowired
-    RbacUserInfoMapper rbacUserInfoMapper;
 
     /**
      * 保存或更新用户
@@ -65,7 +66,7 @@ public class RbacUserService {
     public Response<RbacUserInfo> edit(RbacUserInfoEditModel rbacUserInfoReqModel) {
 
         // 用户名不能重复
-        RbacUserInfo userInfo = rbacUserInfoRepository.findByUserName(rbacUserInfoReqModel.getUserName());
+        RbacUserInfo userInfo = rbacUserInfoMapper.findByUserName(rbacUserInfoReqModel.getUserName());
         if (null != userInfo && null == rbacUserInfoReqModel.getId()) {
             return Response.FAILURE("用户名称已存在!");
         } else if (null != userInfo &&
@@ -77,24 +78,30 @@ public class RbacUserService {
 
         // 修改用户信息
         RbacUserInfo rbacUserInfo = new RbacUserInfo();
+        Boolean flag = null != rbacUserInfoReqModel.getId();
+        if (flag) {
+            rbacUserInfo = rbacUserInfoMapper.selectById(rbacUserInfoReqModel.getId());
+        }
         rbacUserInfo.setEmail(rbacUserInfoReqModel.getEmail());
         rbacUserInfo.setMobile(rbacUserInfoReqModel.getMobile());
         rbacUserInfo.setGroupId(rbacUserInfoReqModel.getGroupId());
         rbacUserInfo.setName(rbacUserInfoReqModel.getName());
         rbacUserInfo.setUserName(rbacUserInfoReqModel.getUserName());
-        if (null != rbacUserInfoReqModel.getId()) {
-            rbacUserInfo = rbacUserInfoRepository.findById(rbacUserInfoReqModel.getId());
+        rbacUserInfo.setLastUpdateTime(new Date());
+        if (flag) {
             rbacUserInfo.setVersion(rbacUserInfoReqModel.getVersion());
 
             // 判断是否需要更新用户角色
-            List<Long> roleIds = userRoleRelationRepository.findByUserId(rbacUserInfo.getId());
+            List<Long> roleIds = userRoleRelationMapper.findByUserId(rbacUserInfo.getId());
             if (!listEqual(roleIds, rbacUserInfoReqModel.getRoles())) {
                 EditUserRolesModel editUserRolesModel = new EditUserRolesModel();
                 editUserRolesModel.setUserId(rbacUserInfo.getId());
 
                 // 删除用户角色
                 editUserRolesModel.setRoleIds(roleIds);
-                resourceService.removeUserRoles(editUserRolesModel);
+                if (CollectionUtils.isNotEmpty(roleIds)) {
+                    resourceService.removeUserRoles(editUserRolesModel);
+                }
 
                 // 重新添加角色
                 if (CollectionUtils.isEmpty(rbacUserInfoReqModel.getRoles())) {
@@ -103,26 +110,27 @@ public class RbacUserService {
                 editUserRolesModel.setRoleIds(rbacUserInfoReqModel.getRoles());
                 resourceService.saveUserRoles(editUserRolesModel);
             }
-            rbacUserInfoRepository.save(rbacUserInfo);
+            rbacUserInfoMapper.updateById(rbacUserInfo);
             return Response.SUCCESS();
         }
         // 初始化密码
         rbacUserInfo.setPassword(MD5Utils.string2MD5(pwd));
-        RbacUserInfo user = rbacUserInfoRepository.save(rbacUserInfo);
+        rbacUserInfo.setCreateTime(new Date());
+        rbacUserInfoMapper.insert(rbacUserInfo);
 
         // 判断是否需要创建用户角色
         if (CollectionUtils.isNotEmpty(rbacUserInfoReqModel.getRoles())) {
             EditUserRolesModel editUserRolesModel = new EditUserRolesModel();
             editUserRolesModel.setRoleIds(rbacUserInfoReqModel.getRoles());
-            editUserRolesModel.setUserId(user.getId());
+            editUserRolesModel.setUserId(rbacUserInfo.getId());
             resourceService.saveUserRoles(editUserRolesModel);
         }
-        return Response.SUCCESS(user);
+        return Response.SUCCESS(rbacUserInfo);
     }
 
     public Response updatePwd(UpdatePwdModel updatePwdModel) {
         OAuth2Principal additionalInfo = SessionContextHolder.getPrincipal();
-        RbacUserInfo userInfo = rbacUserInfoRepository.findOne(additionalInfo.getId());
+        RbacUserInfo userInfo = rbacUserInfoMapper.selectById(additionalInfo.getId());
 
         // 旧密码对比
         if (userInfo.getPassword().equals(updatePwdModel.getNewPassword())) {
@@ -132,8 +140,9 @@ public class RbacUserService {
         if (!updatePwdModel.getNewPassword().equals(updatePwdModel.getNewPassword2())) {
             return Response.FAILURE("两次密码输入不一致!");
         }
+        userInfo.setLastUpdateTime(new Date());
         userInfo.setPassword(updatePwdModel.getNewPassword());
-        rbacUserInfoRepository.save(userInfo);
+        rbacUserInfoMapper.updateById(userInfo);
         return Response.SUCCESS();
     }
 
@@ -141,7 +150,7 @@ public class RbacUserService {
         // 修改用户信息
         RbacUserInfo rbacUserInfo = new RbacUserInfo();
         if (null != rbacUserInfoReqModel.getId()) {
-            rbacUserInfo = rbacUserInfoRepository.findById(rbacUserInfoReqModel.getId());
+            rbacUserInfo = rbacUserInfoMapper.selectById(rbacUserInfoReqModel.getId());
             rbacUserInfo.setVersion(rbacUserInfoReqModel.getVersion());
         }
         rbacUserInfo.setEmail(rbacUserInfoReqModel.getEmail());
@@ -149,8 +158,8 @@ public class RbacUserService {
         rbacUserInfo.setName(rbacUserInfoReqModel.getName());
         rbacUserInfo.setUserName(rbacUserInfoReqModel.getUserName());
         rbacUserInfo.setAvatar(rbacUserInfoReqModel.getAvatar());
-        RbacUserInfo user = rbacUserInfoRepository.save(rbacUserInfo);
-        return Response.SUCCESS(user);
+        rbacUserInfoMapper.updateById(rbacUserInfo);
+        return Response.SUCCESS(rbacUserInfo);
     }
 
     private boolean listEqual(List<Long> roleIds, List<Long> roles) {
@@ -173,7 +182,7 @@ public class RbacUserService {
      * @return
      */
     public Response delete(Long id) {
-        rbacUserInfoRepository.delete(id);
+        rbacUserInfoMapper.deleteById(id);
         return Response.SUCCESS();
     }
 
@@ -190,7 +199,7 @@ public class RbacUserService {
 
             //查询该组的所有下属组
             List<Long> groupIds = RecursiveTools.forEachItem(rbacUserInfoSearchModel.getGroupId(), (Long groupId) -> {
-                return groupRepository.findIdsByPid(groupId);
+                return groupMapper.findIdsByPid(groupId);
             });
             groupIds.add(rbacUserInfoSearchModel.getGroupId());
             rbacUserInfoSearchModel.setGroupIds(groupIds);
@@ -200,7 +209,7 @@ public class RbacUserService {
         if (null != rbacUserInfoSearchModel.getRoleId()) {
 
             // 查询角色下的所有用户
-            List<Long> userIds = userRoleRelationRepository.findUserIdsByRoleId(rbacUserInfoSearchModel.getRoleId());
+            List<Long> userIds = userRoleRelationMapper.findUserIdsByRoleId(rbacUserInfoSearchModel.getRoleId());
             rbacUserInfoSearchModel.setUserIds(userIds);
         }
 
@@ -208,7 +217,7 @@ public class RbacUserService {
         if (null != rbacUserInfoSearchModel.getNotInRoleId()) {
 
             // 查询角色下的所有用户
-            List<Long> userIds = userRoleRelationRepository.findUserIdsByRoleId(rbacUserInfoSearchModel.getNotInRoleId());
+            List<Long> userIds = userRoleRelationMapper.findUserIdsByRoleId(rbacUserInfoSearchModel.getNotInRoleId());
             if (CollectionUtils.isNotEmpty(userIds)) {
                 rbacUserInfoSearchModel.setNotInUserIds(userIds);
             }
@@ -230,7 +239,7 @@ public class RbacUserService {
      * @return
      */
     public List<RbacUserInfo> findByGroupId(Long groupId) {
-        List<RbacUserInfo> users = rbacUserInfoRepository.findByGroupId(groupId);
+        List<RbacUserInfo> users = rbacUserInfoMapper.findByGroupId(groupId);
         return users;
     }
 
@@ -241,11 +250,11 @@ public class RbacUserService {
      * @return
      */
     public List<RbacUserInfo> findByRoleCode(String roleCode) {
-        Role role = roleRepository.findByRoleCode(roleCode);
+        Role role = roleMapper.findByRoleCode(roleCode);
         if (BeanUtils.isNotEmpty(role)) {
-            List<Long> userIds = userRoleRelationRepository.findUserIdsByRoleId(role.getId());
+            List<Long> userIds = userRoleRelationMapper.findUserIdsByRoleId(role.getId());
             if (BeanUtils.isNotEmpty(userIds)) {
-                return rbacUserInfoRepository.findByIdIn(userIds);
+                return rbacUserInfoMapper.findByIdIn(userIds);
             }
         }
         return null;
@@ -254,7 +263,7 @@ public class RbacUserService {
 
     public Response<CustomInfoModel> getCustomInfo() {
         OAuth2Principal auth2Principal = SessionContextHolder.getPrincipal();
-        RbacUserInfo userInfo = rbacUserInfoRepository.findOne(auth2Principal.getId());
+        RbacUserInfo userInfo = rbacUserInfoMapper.selectById(auth2Principal.getId());
         if (null == userInfo) {
             return Response.FAILURE("记录不存在");
         }
@@ -265,7 +274,7 @@ public class RbacUserService {
     }
 
     public Response<RbacUserInfoFetchModel> fetch(Long userId) {
-        RbacUserInfo userInfo = rbacUserInfoRepository.findOne(userId);
+        RbacUserInfo userInfo = rbacUserInfoMapper.selectById(userId);
         if (null == userInfo) {
             return Response.FAILURE("记录不存在");
         }
@@ -277,7 +286,7 @@ public class RbacUserService {
                 .mobile(userInfo.getMobile())
                 .version(userInfo.getVersion())
                 .email(userInfo.getEmail()).build();
-        List<Long> roleIds = userRoleRelationRepository.findByUserId(userId);
+        List<Long> roleIds = userRoleRelationMapper.findByUserId(userId);
         List<String> roles = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(roleIds)) {
             for (Long roleId : roleIds) {
@@ -289,12 +298,12 @@ public class RbacUserService {
     }
 
     public RbacUserInfo findByUserName(String userName) {
-        return rbacUserInfoRepository.findByUserName(userName);
+        return rbacUserInfoMapper.findByUserName(userName);
     }
 
     public Response findByUserNameAndPassword(String userName, String password) {
         //查询用户
-        RbacUserInfo userInfo = rbacUserInfoRepository.findByUserName(userName);
+        RbacUserInfo userInfo = rbacUserInfoMapper.findByUserName(userName);
         if (null == userInfo) {
             return Response.FAILURE();
         }
@@ -303,14 +312,14 @@ public class RbacUserService {
 //        String pwd = MD5Utils.string2MD5(password);
 
         //密码校验
-        userInfo = rbacUserInfoRepository.findByUserNameAndPassword(userName, password);
+        userInfo = rbacUserInfoMapper.findByUserNameAndPassword(userName, password);
         if (null == userInfo) {
             return Response.FAILURE();
         }
         userInfo.setAvatar(userInfo.getAvatar());
 
         //获取用户所在部门
-        Group dept = groupRepository.findOne(userInfo.getGroupId());
+        Group dept = groupMapper.selectById(userInfo.getGroupId());
         if (null != dept) {
             userInfo.setGroupId(dept.getId());
             userInfo.setGroupName(dept.getGroupName());
