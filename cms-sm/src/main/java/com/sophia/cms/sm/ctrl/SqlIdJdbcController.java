@@ -92,7 +92,7 @@ public class SqlIdJdbcController {
     @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @GetMapping(value = "/fetch/{dataViewId}")
-    public Response fetch(@PathVariable Long dataViewId, Long id) {
+    public Response fetch(@PathVariable Long dataViewId, String id) {
         Response response = sqlIdJdbcService.fetch(dataViewId, id);
         return response;
     }

@@ -200,13 +200,10 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         return String.format(sqlformat, sqlDefine.getSelectSql(), sqlDefine.getPri());
     }
 
-    public Response fetch(Long dataViewId, Long recordId) {
+    public Response fetch(Long dataViewId, String recordId) {
         DataView dataView = this.findByDataViewId(dataViewId);
         SqlDefine sqlDefine = sqlDefineMapper.selectById(dataView.getSqlId());
         Map<String, Object> paraMap = new HashedMap();
-
-        // 获取主键
-        OptionsModel optionsModel = JSON.parseObject(dataView.getOptions(), OptionsModel.class);
         paraMap.put(sqlDefine.getPri().toLowerCase(), recordId);
 
         //查询指定数据库的数据

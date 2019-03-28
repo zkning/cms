@@ -29,7 +29,7 @@ public interface SqlIdJdbcService {
     /**
      * 查询内容根据sqlid和数据id
      */
-    Response fetch(Long dataViewId, Long recordId);
+    Response fetch(Long dataViewId, String recordId);
 
     /**
      * 创建数据视图根据SQL定义编码

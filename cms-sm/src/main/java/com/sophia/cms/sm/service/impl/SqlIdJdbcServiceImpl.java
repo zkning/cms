@@ -57,7 +57,7 @@ public class SqlIdJdbcServiceImpl extends DataViewDetailsService implements SqlI
     }
 
     @Override
-    public Response fetch(Long dataViewId, Long recordId) {
+    public Response fetch(Long dataViewId, String recordId) {
         return super.fetch(dataViewId, recordId);
     }
 
