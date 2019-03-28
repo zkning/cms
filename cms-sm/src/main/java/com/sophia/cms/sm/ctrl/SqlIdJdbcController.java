@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Slf4j
@@ -104,17 +103,8 @@ public class SqlIdJdbcController {
     @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority(#dataViewId)")
     @ResponseBody
     @RequestMapping(value = "/list/{dataViewId}", method = RequestMethod.POST)
-    public Response<BootstrapPageResult> getBootatrapTableResponse(@PathVariable Long dataViewId, @RequestBody BootstrapSearchParam bootstrapSearchParam
-//                                                                 Integer pageSize, Integer pageNumber, String searchText, String sortName, String sortOrder,
-    ) throws UnsupportedEncodingException {
-//        if (RequestMethod.GET.name().equals(httpServletRequest.getMethod())) {
-//            //当查询条件中包含中文时，get请求默认会使用ISO-8859-1编码请求参数，在服务端需要对其解码
-//            if (!StringUtils.isEmpty(searchText)) {
-//                searchText = new String(searchText.getBytes("ISO-8859-1"), "UTF-8");
-//            }
-//            return sqlIdJdbcService.
-//                    getBootstrapTableResponse(pageSize, pageNumber, searchText, sortName, sortOrder, sqlId, bootstrapSearchParam);
-//        }
+    public Response<BootstrapPageResult> getBootatrapTableResponse(@PathVariable Long dataViewId,
+                                                                   @RequestBody BootstrapSearchParam bootstrapSearchParam) {
         return sqlIdJdbcService.getBootstrapTableResponse(bootstrapSearchParam, dataViewId);
     }
 

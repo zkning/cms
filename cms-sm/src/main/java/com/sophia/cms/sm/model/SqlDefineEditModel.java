@@ -4,6 +4,8 @@ import com.sophia.cms.framework.request.Request;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by ningzuokun on 2017/11/8.
  */
@@ -17,20 +19,17 @@ public class SqlDefineEditModel extends Request {
 
     @NotBlank(message = "selectSql不能为空")
     private String selectSql;
-
-    //    @NotBlank(message = "表名不能为空")
     private String tableName;
 
     /**
      * 主表对应的ID
      */
-//    @NotBlank(message = "主键不能为空")
     private String pri;
     private Integer state;
     private String sqlExtra;
     private Long datasource;
 
-    @NotBlank(message = "操纵类型不能为空")
+    @NotNull(message = "操纵类型不能为空")
     private Integer sqlType;
     private Integer isCache;
     private String remark;
