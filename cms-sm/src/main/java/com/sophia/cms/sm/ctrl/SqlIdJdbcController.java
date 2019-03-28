@@ -129,17 +129,4 @@ public class SqlIdJdbcController {
         Response response = sqlIdJdbcService.getTree(ztreeModel);
         return response;
     }
-
-
-    /**
-     * Ztree
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/ztree", method = RequestMethod.POST)
-    public Object ztree(ZtreeModel ztreeModel) {
-        Response response = sqlIdJdbcService.ztree(ztreeModel);
-        return response.getResult();
-    }
 }

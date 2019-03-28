@@ -46,10 +46,6 @@ public interface SqlIdJdbcService {
      */
     Response modifyByDataViewId(Long id, JSONObject rowValue);
 
-    /**
-     * 构建ztree数据
-     */
-    Response ztree(ZtreeModel ztreeModel);
     Response getTree(ZtreeModel ztreeModel);
 
     /**

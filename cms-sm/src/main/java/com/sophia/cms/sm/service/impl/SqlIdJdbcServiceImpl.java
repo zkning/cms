@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class SqlIdJdbcServiceImpl extends AbsDatabasehandle implements SqlIdJdbcService {
+public class SqlIdJdbcServiceImpl extends DataViewDetailsService implements SqlIdJdbcService {
 
     @Override
     public List<FieldModel> showFullColumnsBySqlId(Long sqlId) throws Exception {
@@ -86,11 +86,6 @@ public class SqlIdJdbcServiceImpl extends AbsDatabasehandle implements SqlIdJdbc
     @Override
     public Response getTree(ZtreeModel ztreeModel) {
         return super.getTree(ztreeModel);
-    }
-
-    @Override
-    public Response ztree(ZtreeModel ztreeModel) {
-        return super.ztree(ztreeModel);
     }
 
 

@@ -6,6 +6,7 @@ import com.sophia.cms.sm.domain.DataSource;
 import com.sophia.cms.sm.model.DataSourceFetchModel;
 import com.sophia.cms.sm.model.DataSourceSearchModel;
 import com.sophia.cms.sm.model.DataSourceEditModel;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 

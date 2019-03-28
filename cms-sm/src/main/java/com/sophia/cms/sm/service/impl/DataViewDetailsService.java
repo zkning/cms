@@ -8,6 +8,7 @@ import com.sophia.cms.rbac.utils.RecursiveTools;
 import com.sophia.cms.sm.constant.*;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.domain.SqlDefine;
+import com.sophia.cms.sm.jdbc.CustomJdbcTemplate;
 import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.*;
 import com.sophia.cms.sm.service.DataViewService;
@@ -32,7 +33,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
-public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
+public class DataViewDetailsService extends CustomJdbcTemplate {
 
     //默认空字符串
     private static final String BLANK_STR = "-1";
@@ -502,32 +503,6 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
         return queryResult;
     }
 
-    public Response ztree(ZtreeModel ztreeModel) {
-        SqlDefine sqlDefine = findOne(ztreeModel.getSqlId());
-        StringBuilder sqlBuilder = new StringBuilder(String.format("select t.* from ( %s ) t ", sqlDefine.getSelectSql()));
-        Map<String, Object> paraMap = new HashedMap();
-
-        //异步加载
-        if (ztreeModel.isEnable()) {
-            sqlBuilder.append(" where t.");
-            if (null == ztreeModel.getId()) {
-                sqlBuilder.append(ztreeModel.getPidKey()).append(" = ''");
-            } else {
-                sqlBuilder.append(ztreeModel.getPidKey()).append("= :parent");
-                paraMap.put("parent", ztreeModel.getId());
-            }
-        }
-        List<Map<String, Object>> dataList = query(sqlDefine.getDatasource(), sqlBuilder.toString(), paraMap, buildColumnMapRowMapper());
-
-        //异步加载判断是否parent
-        if (ztreeModel.isEnable()) {
-            for (Map<String, Object> node : dataList) {
-                node.put("isParent", this.isParent(node.get(ztreeModel.getIdKey()).toString(), sqlDefine,
-                        ztreeModel));
-            }
-        }
-        return Response.SUCCESS(dataList);
-    }
 
     /**
      * TODO leaf 优化

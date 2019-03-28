@@ -1,6 +1,6 @@
-package com.sophia.cms.sm.service.impl;
+package com.sophia.cms.sm.jdbc;
 
-import com.sophia.cms.sm.factory.JdbcTemplateFactory;
+import com.sophia.cms.sm.jdbc.JdbcTemplateBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,12 +14,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author zkning
+ */
 @Slf4j
-public class DataSourceCrudhandle {
-
+public class CustomJdbcTemplate {
 
     @Autowired
-    JdbcTemplateFactory jdbcTemplateFactory;
+    JdbcTemplateBuilder jdbcTemplateBuilder;
 
     public <T> List<T> query(Long dataSourceId, String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException {
         return this.getNamedParameterJdbcTemplate(dataSourceId)
@@ -46,11 +48,11 @@ public class DataSourceCrudhandle {
     }
 
     protected NamedParameterJdbcTemplate getNamedParameterJdbcTemplate(Long dataSourceId) {
-        return jdbcTemplateFactory.getNamedParameterJdbcTemplate(dataSourceId);
+        return jdbcTemplateBuilder.getNamedParameterJdbcTemplate(dataSourceId);
     }
 
     protected JdbcTemplate getJdbcTemplate(Long dataSourceId) {
-        return jdbcTemplateFactory.getJdbcTemplate(dataSourceId);
+        return jdbcTemplateBuilder.getJdbcTemplate(dataSourceId);
     }
 
     public List<Map<String, Object>> queryForList(Long datasourceId, String sql, Map<String, ?> paramMap) throws DataAccessException {
