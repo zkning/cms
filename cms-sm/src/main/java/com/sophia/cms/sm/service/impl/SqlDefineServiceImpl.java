@@ -61,7 +61,6 @@ public class SqlDefineServiceImpl implements SqlDefineService {
             return Response.FAILURE("记录不存在");
         }
         SqlDefineFetchModel model = new SqlDefineFetchModel();
-
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(entity, model);
         return Response.SUCCESS(model);

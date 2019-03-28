@@ -2,6 +2,7 @@ package com.sophia.cms.sm.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.sophia.cms.sm.constant.SqlTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -46,7 +47,9 @@ public class SqlDefineFetchModel {
     private String remark;
 
     @ApiModelProperty(value = "类型")
-    private String manipulate;
+    private Integer sqlType;
+
+
     /**
      * 主表
      */

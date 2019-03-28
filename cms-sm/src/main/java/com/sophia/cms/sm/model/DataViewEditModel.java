@@ -24,7 +24,6 @@ public class DataViewEditModel extends Request {
     @NotNull(message = "sqlId不能为空值")
     @ApiModelProperty(value = "sqlId")
     private Long sqlId;
-    private String manipulate;
 
     @ApiModelProperty(value = "备注")
     private String remark;

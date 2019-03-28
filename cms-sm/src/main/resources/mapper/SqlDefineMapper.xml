@@ -7,7 +7,7 @@
         select t.id as id, t.sql_name as sqlName , t.select_sql as selectSql,
         t.sql_extra as sqlExtra , t.datasource as datasource , t.version as version , t.create_time as createTime,
         t.is_cache as isCache,
-        state as state, remark as remark,table_name as tableName,pri as pri, manipulate as manipulate from
+        state as state, remark as remark,table_name as tableName,pri as pri, sql_type as sqlType from
         t_sm_sqldefine t
         <where>
             1 = 1

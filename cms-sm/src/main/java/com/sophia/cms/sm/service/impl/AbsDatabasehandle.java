@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.rbac.model.TreeNodeModel;
 import com.sophia.cms.rbac.utils.RecursiveTools;
-import com.sophia.cms.sm.constant.DataViewConstant;
-import com.sophia.cms.sm.constant.FieldTypeEnum;
-import com.sophia.cms.sm.constant.SqlExpression;
-import com.sophia.cms.sm.constant.TreeNodeHandleType;
+import com.sophia.cms.sm.constant.*;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.domain.SqlDefine;
 import com.sophia.cms.sm.mapper.SqlDefineMapper;
@@ -41,8 +38,6 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
     private static final String BLANK_STR = "-1";
     private static final String default_top = "0";
 
-    private static final String manipulate_query = "QUERY";
-
     @Autowired
     SqlDefineMapper sqlDefineMapper;
 
@@ -56,7 +51,7 @@ public abstract class AbsDatabasehandle extends DataSourceCrudhandle {
 
     // 获取字段SQL
     public String getFieldSql(SqlDefine sqlDefine) {
-        if (manipulate_query.equals(sqlDefine.getManipulate())) {
+        if (SqlTypeEnum.QUERY.getCode().equals(sqlDefine.getSqlType())) {
             return String.format("select _t.* from ( %s ) as _t  where 1=2 ", sqlDefine.getSelectSql());
         }
         return String.format("select * from  %s  where 1=2 ", sqlDefine.getTableName());

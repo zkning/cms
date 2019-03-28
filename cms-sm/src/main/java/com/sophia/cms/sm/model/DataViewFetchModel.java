@@ -7,13 +7,14 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DataViewFetchModel{
+public class DataViewFetchModel {
     private String dataViewName;
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sqlId;
     private String remark;
-    private String manipulate;
+    private String sqlTypeText;
+    private Integer sqlType;
     private OptionsModel options;
     private List<FieldModel> fields;
     private List<ButtonModel> buttons;

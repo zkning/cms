@@ -18,7 +18,7 @@ public class SqlDefineEditModel extends Request {
     @NotBlank(message = "selectSql不能为空")
     private String selectSql;
 
-//    @NotBlank(message = "表名不能为空")
+    //    @NotBlank(message = "表名不能为空")
     private String tableName;
 
     /**
@@ -31,7 +31,7 @@ public class SqlDefineEditModel extends Request {
     private Long datasource;
 
     @NotBlank(message = "操纵类型不能为空")
-    private String manipulate;
+    private Integer sqlType;
     private Integer isCache;
     private String remark;
     private Long version;

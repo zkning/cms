@@ -12,7 +12,9 @@ import com.sophia.cms.rbac.model.ResourceEditModel;
 import com.sophia.cms.rbac.service.ResourcesService;
 import com.sophia.cms.sm.constant.DataViewConstant;
 import com.sophia.cms.sm.domain.DataView;
+import com.sophia.cms.sm.domain.SqlDefine;
 import com.sophia.cms.sm.mapper.DataViewMapper;
+import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.*;
 import com.sophia.cms.sm.service.DataViewService;
 import com.sophia.cms.sm.service.SqlIdJdbcService;
@@ -55,6 +57,9 @@ public class DataViewServiceImpl implements DataViewService {
     DataViewMapper dataViewMapper;
 
     @Autowired
+    SqlDefineMapper sqlDefineMapper;
+
+    @Autowired
     ResourcesService resourcesService;
 
     @Override
@@ -67,7 +72,6 @@ public class DataViewServiceImpl implements DataViewService {
         }
         dataView.setId(request.getId());
         dataView.setSqlId(request.getSqlId());
-        dataView.setManipulate(request.getManipulate());
         dataView.setRemark(request.getRemark());
         dataView.setDataViewName(request.getDataViewName());
         dataView.setButtons(FastJsonUtils.toJSONString(request.getButtons()));
@@ -101,11 +105,13 @@ public class DataViewServiceImpl implements DataViewService {
     @Override
     public DataViewFetchModel fetch(Long id) {
         DataView dataView = dataViewMapper.selectById(id);
+        SqlDefine sqlDefine = sqlDefineMapper.selectById(dataView.getSqlId());
         DataViewFetchModel dataViewFetchModel = new DataViewFetchModel();
         dataViewFetchModel.setId(dataView.getId());
         dataViewFetchModel.setSqlId(dataView.getSqlId());
         dataViewFetchModel.setRemark(dataView.getRemark());
-        dataViewFetchModel.setManipulate(dataView.getManipulate());
+        dataViewFetchModel.setSqlTypeText(sqlDefine.getSqlTypeText());
+        dataViewFetchModel.setSqlType(sqlDefine.getSqlType());
         dataViewFetchModel.setDataViewName(dataView.getDataViewName());
         dataViewFetchModel.setButtons(JSONArray.parseArray(dataView.getButtons(), ButtonModel.class));
         dataViewFetchModel.setFields(JSONArray.parseArray(dataView.getFields(), FieldModel.class));
