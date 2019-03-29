@@ -10,14 +10,11 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
+        <groupId>com.sophia.cms</groupId>
+        <artifactId>cms-springboot-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>/cms-springboot-parent/pom.xml</relativePath>
     </parent>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <modules>
         <module>cms-framework</module>
@@ -25,5 +22,6 @@
         <module>cms-rbac</module>
         <module>cms-sm</module>
         <module>cms-oauth2-client</module>
+        <module>cms-springboot-parent</module>
     </modules>
 </project>
