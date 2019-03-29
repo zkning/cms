@@ -4,13 +4,26 @@
 
     <select id="list" parameterType="com.sophia.cms.sm.model.SqlDefineSearchModel"
             resultType="com.sophia.cms.sm.model.SqlDefineFetchModel">
-        select t.id as id, t.sql_name as sqlName , t.select_sql as selectSql,
-        t.sql_extra as sqlExtra , t.datasource as datasource , t.version as version , t.create_time as createTime,
-        t.is_cache as isCache,
-        state as state, remark as remark,table_name as tableName,pri as pri, sql_type as sqlType from
-        t_sm_sqldefine t
+        SELECT
+        t.id AS id,
+        t.sql_name AS sqlName,
+        t.select_sql AS selectSql,
+        t.sql_extra AS sqlExtra,
+        t.datasource AS datasource,
+        d.NAME AS datasourceText,
+        t.version AS version,
+        t.create_time AS createTime,
+        t.is_cache AS isCache,
+        t.state AS state,
+        t.remark AS remark,
+        t.table_name AS tableName,
+        t.pri AS pri,
+        t.sql_type AS sqlType
+        FROM
+        t_sm_sqldefine t,
+        t_sm_datasource d
         <where>
-            1 = 1
+            t.datasource = d.id
             <if test="params.id != null">
                 and t.id like  concat(#{params.id},'%')
             </if>
@@ -20,6 +33,7 @@
             <if test="params.tableName != null">
                 and t.table_name like  concat(#{params.tableName},'%')
             </if>
+            order by t.create_time desc
         </where>
     </select>
 </mapper>

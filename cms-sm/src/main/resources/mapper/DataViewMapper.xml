@@ -4,9 +4,23 @@
 
     <select id="list" parameterType="com.sophia.cms.sm.model.DataViewSearchModel"
             resultType="com.sophia.cms.sm.model.DataViewModel">
-        select t.id,t.sql_id as sqlId,t.data_view_name as dataViewName,t.remark,t.options,
-        t.fields,t.buttons,t.tree_options as treeOptions,t.data_filters as dataFilters,t.version,t.create_time as createTime,t.create_user as createUser,t.last_update_time,t.last_update_user
-        from t_sm_dataview t
+        SELECT
+        t.id,
+        t.sql_id AS sqlId,
+        t.data_view_name AS dataViewName,
+        t.remark,
+        t.OPTIONS,
+        t.FIELDS,
+        t.buttons,
+        t.tree_options AS treeOptions,
+        t.data_filters AS dataFilters,
+        t.version,
+        t.create_time AS createTime,
+        t.create_user AS createUser,
+        t.last_update_time,
+        t.last_update_user
+        FROM
+        t_sm_dataview t
         <where>
             1 = 1
             <if test="params.sqlId != null">

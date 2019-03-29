@@ -29,4 +29,16 @@ public enum  SqlDefineStatusEnum {
     public void setText(String text) {
         this.text = text;
     }
+
+    public static String getTextByValue(Integer value) {
+        if (value == null) {
+            return "";
+        }
+        for (SqlDefineStatusEnum e : SqlDefineStatusEnum.values()) {
+            if (value.equals(e.getCode())) {
+                return e.getText();
+            }
+        }
+        return "";
+    }
 }

@@ -24,6 +24,7 @@ public class SqlDefineController {
     @Autowired
     SqlDefineService sqlDefineService;
 
+    @ApiModelProperty(value = "编辑")
     @PreAuthorize("hasRole('ROLE_ENGINEER') or hasAuthority('sm_sqldefine_edit')")
     @ResponseBody
     @PostMapping(value = "/edit")

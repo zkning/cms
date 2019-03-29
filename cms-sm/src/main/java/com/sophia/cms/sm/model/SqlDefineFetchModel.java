@@ -2,6 +2,7 @@ package com.sophia.cms.sm.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.sophia.cms.sm.constant.SqlDefineStatusEnum;
 import com.sophia.cms.sm.constant.SqlTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class SqlDefineFetchModel {
     @ApiModelProperty(value = "数据源")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long datasource;
+    private String datasourceText;
 
     /**
      * 是否缓存
@@ -37,8 +39,8 @@ public class SqlDefineFetchModel {
      * 1-编辑,2-发布
      */
     @ApiModelProperty(value = "0-待发布,1-已发布")
-    @JsonSerialize(using = ToStringSerializer.class)
     private Integer state;
+    private String stateText;
 
     /**
      * 功能描述
@@ -62,4 +64,8 @@ public class SqlDefineFetchModel {
     @ApiModelProperty(value = "对象主键")
     private String pri;
     private Long version;
+
+    public String getStateText() {
+        return SqlDefineStatusEnum.getTextByValue(state);
+    }
 }

@@ -4,6 +4,7 @@ package com.sophia.cms.sm.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.orm.model.Pager;
+import com.sophia.cms.rbac.utils.SessionContextHolder;
 import com.sophia.cms.sm.domain.SqlDefine;
 import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.SqlDefineEditModel;
@@ -40,8 +41,10 @@ public class SqlDefineServiceImpl implements SqlDefineService {
         modelMapper.map(sqlDefineEditModel, sqlDefine);
         sqlDefine.setLastUpdateTime(new Date());
         if (flag) {
+            sqlDefine.setLastUpdateUser(SessionContextHolder.getPrincipal().getName());
             sqlDefineMapper.updateById(sqlDefine);
         } else {
+            sqlDefine.setCreateUser(SessionContextHolder.getPrincipal().getName());
             sqlDefine.setCreateTime(new Date());
             sqlDefineMapper.insert(sqlDefine);
         }

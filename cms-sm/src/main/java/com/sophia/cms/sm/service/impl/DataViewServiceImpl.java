@@ -10,6 +10,7 @@ import com.sophia.cms.orm.model.Pager;
 import com.sophia.cms.rbac.domain.Resources;
 import com.sophia.cms.rbac.model.ResourceEditModel;
 import com.sophia.cms.rbac.service.ResourcesService;
+import com.sophia.cms.rbac.utils.SessionContextHolder;
 import com.sophia.cms.sm.constant.DataViewConstant;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.domain.SqlDefine;
@@ -82,8 +83,10 @@ public class DataViewServiceImpl implements DataViewService {
         dataView.setVersion(request.getVersion());
         dataView.setLastUpdateTime(new Date());
         if (isEdit) {
+            dataView.setLastUpdateUser(SessionContextHolder.getPrincipal().getName());
             dataViewMapper.updateById(dataView);
         } else {
+            dataView.setCreateUser(SessionContextHolder.getPrincipal().getName());
             dataView.setCreateTime(new Date());
             dataViewMapper.insert(dataView);
         }

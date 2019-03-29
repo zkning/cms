@@ -23,4 +23,5 @@ public class DataViewModel {
     private Long id;
     private Long version;
     private Date createTime;
+    private String createUser;
 }

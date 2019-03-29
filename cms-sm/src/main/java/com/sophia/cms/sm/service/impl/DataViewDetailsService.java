@@ -387,6 +387,9 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
                                                                    BootstrapSearchParam bootstrapSearchParam) {
         BootstrapPageResult pageResultForBootstrap = new BootstrapPageResult();
         SqlDefine sqlDefine = sqlDefineMapper.selectById(sqlId);
+        if (SqlDefineStatusEnum.UN_ISSUE.getCode().equals(sqlDefine.getState())) {
+            return Response.FAILURE(sqlDefine.getSqlName() + "待发布");
+        }
         DataFilter dataFilter = DataFilter.getInstance();
         dataFilter.setQuerySql(sqlDefine.getSelectSql());
         dataFilter.setSortName(sortName);
