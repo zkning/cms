@@ -191,6 +191,8 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         // 设置title
         if (commentMap.containsKey(field.getField())) {
             field.setTitle(commentMap.get(field.getField()));
+        } else {
+            field.setTitle(field.getField());
         }
     }
 
