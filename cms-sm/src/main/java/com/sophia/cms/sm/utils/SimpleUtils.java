@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  * @author zkning
  */
 public class SimpleUtils {
+    private static final Pattern pattern = Pattern.compile("([A-Za-z\\d]+)(_)?");
 
     /**
      * 下划线转驼峰
@@ -25,7 +26,6 @@ public class SimpleUtils {
             return "";
         }
         StringBuffer sb = new StringBuffer();
-        Pattern pattern = Pattern.compile("([A-Za-z\\d]+)(_)?");
         Matcher matcher = pattern.matcher(line);
         while (matcher.find()) {
             String word = matcher.group();

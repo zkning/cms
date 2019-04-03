@@ -63,23 +63,29 @@ public class SqlIdJdbcServiceImpl extends DataViewDetailsService implements SqlI
 
     @Override
     public Response<BootstrapPageResult>
-    getBootstrapTableResponse(BootstrapSearchParam bootstrapSearchParam, Long dataViewId) {
-        DataView dataView = this.findByDataViewId(dataViewId);
-        return this.getBootstrapTableResponse(bootstrapSearchParam.getPageSize(), bootstrapSearchParam.getPageNumber()
-                , bootstrapSearchParam.getSearchText(), bootstrapSearchParam.getSortName()
-                , bootstrapSearchParam.getSortOrder(), dataView.getSqlId()
-                , bootstrapSearchParam);
+    getBootstrapTableResponse(BootstrapSearchParam sp, Long dataViewId) {
+        return this.getBootstrapTableResponse(sp.getPageSize()
+                , sp.getPageNumber()
+                , sp.getSearchText()
+                , sp.getSortName()
+                , sp.getSortOrder()
+                , dataViewId
+                , sp);
     }
 
     /**
      * 默认获取bootstrapTable服务
      */
     @Override
-    public Response<BootstrapPageResult> getBootstrapTableResponse(Integer pageSize, Integer pageNumber,
+    public Response<BootstrapPageResult> getBootstrapTableResponse(Integer pageSize,
+                                                                   Integer pageNumber,
                                                                    String searchText,
-                                                                   String sortName, String sortOrder, Long sqlId,
+                                                                   String sortName,
+                                                                   String sortOrder,
+                                                                   Long dataViewId,
                                                                    BootstrapSearchParam bootstrapSearchParam) {
-        return super.getBootstrapTableResponse(pageSize, pageNumber, searchText, sortName, sortOrder, sqlId, bootstrapSearchParam);
+
+        return this.getBootstrapTableDataResponse(pageSize, pageNumber, searchText, sortName, sortOrder, dataViewId, bootstrapSearchParam);
     }
 
 

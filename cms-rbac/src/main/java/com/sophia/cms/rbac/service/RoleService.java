@@ -117,7 +117,6 @@ public class RoleService {
 
         //从数据字典获取分类
         Dict dict = dictMapper.findByValue(ROLE_TYPE_CODE);
-
         List<Dict> dicts = dictMapper.findByPidOrderBySortDesc(dict.getId());
         if (CollectionUtils.isEmpty(dicts)) {
             return Lists.newArrayList();

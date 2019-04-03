@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ningzuokun
@@ -26,11 +28,20 @@ import java.util.List;
  */
 @Service
 public class DictService {
+    private static final Long TOP_NODE = 0L;
 
     @Autowired
     DictMapper dictMapper;
 
-    private static final Long TOP_NODE = 0L;
+    @Cacheable(cacheNames = CacheableConstants.CacheableName, key = "#dictId")
+    public Map<String, String> getTextByPid(Long dictId) {
+        List<Dict> dicts = dictMapper.selectValByPid(dictId);
+        Map<String, String> dm = new HashMap<>();
+        for (Dict dict : dicts) {
+            dm.put(dict.getValue(), dict.getText());
+        }
+        return dm;
+    }
 
     public Response edit(DictEditModel editModel) {
         Dict entity = new Dict();

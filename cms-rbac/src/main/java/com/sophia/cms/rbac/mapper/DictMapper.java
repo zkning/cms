@@ -19,4 +19,7 @@ public interface DictMapper extends BaseMapper<Dict> {
 
     @Select("select * from t_rbac_dict where value = #{value}")
     Dict findByValue(@Param("value") String value);
+
+    @Select("select * from t_rbac_dict where pid = #{pid}")
+    List<Dict> selectValByPid(Long pId);
 }

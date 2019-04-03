@@ -1,9 +1,11 @@
 package com.sophia.cms.sm.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.rbac.model.TreeNodeModel;
+import com.sophia.cms.rbac.service.DictService;
 import com.sophia.cms.rbac.utils.RecursiveTools;
 import com.sophia.cms.sm.constant.*;
 import com.sophia.cms.sm.domain.DataView;
@@ -13,6 +15,7 @@ import com.sophia.cms.sm.mapper.SqlDefineMapper;
 import com.sophia.cms.sm.model.*;
 import com.sophia.cms.sm.service.DataViewService;
 import com.sophia.cms.sm.utils.DataFilter;
+import com.sophia.cms.sm.utils.MaskingUtils;
 import com.sophia.cms.sm.utils.SimpleUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,6 +25,7 @@ import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 
@@ -45,6 +49,9 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
     @Autowired
     DataViewService dataViewService;
 
+    @Autowired
+    DictService dictService;
+
     public SqlDefine findOne(Long sqlId) {
         return sqlDefineMapper.selectById(sqlId);
     }
@@ -61,20 +68,20 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
 
     public Map<String, Object> getFieldUpperCaseMap(SqlRowSet resultSet) {
         SqlRowSetMetaData srsmd = resultSet.getMetaData();
-        Map<String, Object> fieldMap = new HashMap<>();
+        Map<String, Object> fmap = new HashMap<>();
         for (int index = 1; index <= srsmd.getColumnCount(); index++) {
-            fieldMap.put(srsmd.getColumnLabel(index).toUpperCase(), srsmd.getColumnLabel(index));
+            fmap.put(srsmd.getColumnLabel(index).toUpperCase(), srsmd.getColumnLabel(index));
         }
-        return fieldMap;
+        return fmap;
     }
 
     public Map<String, String> getFieldUpperCommentMap(SqlDefine sqlDefine, SqlRowSet resultSet) throws Exception {
-        Map<String, String> commentMap = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         List<SchemaColumnModel> columnModels = getInformationSchemaColumns(sqlDefine.getTableName(), sqlDefine.getDatasource());
         columnModels.forEach(item -> {
-            commentMap.put(item.getColumnName().toUpperCase(), item.getColumnComment());
+            map.put(item.getColumnName().toUpperCase(), item.getColumnComment());
         });
-        return commentMap;
+        return map;
     }
 
     public String getInformationSchemaColumnsSql() {
@@ -82,24 +89,24 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
     }
 
     public List<SchemaColumnModel> getInformationSchemaColumns(String tablename, Long datasource) throws Exception {
-        Connection connection = null;
+        Connection conn = null;
         try {
             JdbcTemplate jdbcTemplate = this.getJdbcTemplate(datasource);
-            connection = jdbcTemplate.getDataSource().getConnection();
-            LinkedHashMap<String, Object> paraMap = new LinkedHashMap();
-            paraMap.put("tableName", tablename);
-            paraMap.put("tableschema", connection.getCatalog());
-            List<SchemaColumnModel> dataList = jdbcTemplate.query(this.getInformationSchemaColumnsSql(), SimpleUtils.linkedHashMapToValues(paraMap),
+            conn = jdbcTemplate.getDataSource().getConnection();
+            LinkedHashMap<String, Object> pm = new LinkedHashMap();
+            pm.put("tableName", tablename);
+            pm.put("tableschema", conn.getCatalog());
+            List<SchemaColumnModel> dataList = jdbcTemplate.query(this.getInformationSchemaColumnsSql(), SimpleUtils.linkedHashMapToValues(pm),
                     (ResultSet resultSet, int i) -> {
-                        SchemaColumnModel mySQLColumnResult = new SchemaColumnModel();
-                        mySQLColumnResult.setColumnName(resultSet.getString("column_name"));
-                        mySQLColumnResult.setColumnKey(resultSet.getString("column_key").toUpperCase());
-                        mySQLColumnResult.setColumnComment(resultSet.getString("column_comment"));
-                        return mySQLColumnResult;
+                        SchemaColumnModel ret = new SchemaColumnModel();
+                        ret.setColumnName(resultSet.getString("column_name"));
+                        ret.setColumnKey(resultSet.getString("column_key").toUpperCase());
+                        ret.setColumnComment(resultSet.getString("column_comment"));
+                        return ret;
                     });
             return dataList;
         } finally {
-            this.destroyConnection(connection);
+            this.destroyConnection(conn);
         }
     }
 
@@ -109,29 +116,29 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
     }
 
     public List<SchemaTableModel> getInformationSchemaTable(SchemaTableSearchModel schemaTableSearchModel) throws Exception {
-        Connection connection = null;
+        Connection conn = null;
         try {
             List<SchemaTableModel> dataList = new ArrayList<>();
             if (StringUtils.isBlank(schemaTableSearchModel.getTablename())) {
                 return dataList;
             }
             JdbcTemplate jdbcTemplate = this.getJdbcTemplate(schemaTableSearchModel.getDatasource());
-            connection = jdbcTemplate.getDataSource().getConnection();
-            LinkedHashMap<String, Object> paraMap = new LinkedHashMap();
+            conn = jdbcTemplate.getDataSource().getConnection();
+            LinkedHashMap<String, Object> param = new LinkedHashMap();
 
             //get dbname
-            paraMap.put("tableschema", connection.getCatalog());
-            paraMap.put("tableName", schemaTableSearchModel.getTablename() + '%');
-            dataList = jdbcTemplate.query(getInformationSchemaTableSql(), SimpleUtils.linkedHashMapToValues(paraMap),
+            param.put("tableschema", conn.getCatalog());
+            param.put("tableName", schemaTableSearchModel.getTablename() + '%');
+            dataList = jdbcTemplate.query(getInformationSchemaTableSql(), SimpleUtils.linkedHashMapToValues(param),
                     (ResultSet resultSet, int i) -> {
-                        SchemaTableModel tablesResult = new SchemaTableModel();
-                        tablesResult.setTableName(resultSet.getString("table_name"));
-                        tablesResult.setTableComment(resultSet.getString("table_comment"));
-                        return tablesResult;
+                        SchemaTableModel ret = new SchemaTableModel();
+                        ret.setTableName(resultSet.getString("table_name"));
+                        ret.setTableComment(resultSet.getString("table_comment"));
+                        return ret;
                     });
             return dataList;
         } finally {
-            this.destroyConnection(connection);
+            this.destroyConnection(conn);
         }
     }
 
@@ -141,41 +148,42 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
 
     public List<FieldModel> showFullColumns(SqlDefine sqlDefine, Map<String, Object> fieldMap, Map<String, String> commentMap)
             throws Exception {
-        Connection connection = null;
+        Connection conn = null;
         try {
+
             //获取sql查询所有列
             DataSource dataSource = this.getJdbcTemplate(sqlDefine.getDatasource()).getDataSource();
-            connection = dataSource.getConnection();
-            ResultSet resultSet = connection.prepareStatement(getShowFullColumnsSql(sqlDefine.getSelectSql())).executeQuery();
+            conn = dataSource.getConnection();
+            ResultSet resultSet = conn.prepareStatement(getShowFullColumnsSql(sqlDefine.getSelectSql())).executeQuery();
             List<FieldModel> list = Lists.newArrayList();
 
             // 获取sql元数据
             ResultSetMetaData srsmd = resultSet.getMetaData();
             for (int index = 1; index <= srsmd.getColumnCount(); index++) {
-                FieldModel field = this.buildColumnModel(srsmd, index);
+                FieldModel field = this.getColumnModel(srsmd, index);
                 this.fieldFormat(field, fieldMap, commentMap);
                 field.setSort(index);
                 list.add(field);
             }
             return list;
         } finally {
-            this.destroyConnection(connection);
+            this.destroyConnection(conn);
         }
     }
 
-    public FieldModel buildColumnModel(ResultSetMetaData srsmd, int index) throws SQLException {
-        FieldModel field = new FieldModel();
+    public FieldModel getColumnModel(ResultSetMetaData srsmd, int index) throws SQLException {
+        FieldModel fm = new FieldModel();
 
         //  as 后的值 ，getColumnName 原始值
-        field.setField(srsmd.getColumnLabel(index));
-        field.setMaxlength(srsmd.getPrecision(index));
-        field.setDataType(srsmd.getColumnTypeName(index));
-        field.setFieldType(FieldTypeEnum.TEXT.getValue());
-        field.setAlign(DataViewConstant.align_center);
-        field.setHalign(DataViewConstant.align_center);
-        field.setDuplicated(false);
-        field.setSort(index);
-        return field;
+        fm.setField(srsmd.getColumnLabel(index));
+        fm.setMaxlength(srsmd.getPrecision(index));
+        fm.setDataType(srsmd.getColumnTypeName(index));
+        fm.setFieldType(FieldTypeEnum.TEXT.getValue());
+        fm.setAlign(DataViewConstant.align_center);
+        fm.setHalign(DataViewConstant.align_center);
+        fm.setDuplicated(false);
+        fm.setSort(index);
+        return fm;
     }
 
     public void fieldFormat(FieldModel field, Map<String, Object> fieldMap, Map<String, String> commentMap) {
@@ -196,7 +204,6 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         }
     }
 
-
     protected String getFetchSql(SqlDefine sqlDefine) {
         String sqlformat = "select t.* from ( %s ) t where t.%s = :id ";
         return String.format(sqlformat, sqlDefine.getSelectSql(), sqlDefine.getPri());
@@ -209,23 +216,25 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         paraMap.put(sqlDefine.getPri().toLowerCase(), recordId);
 
         //查询指定数据库的数据
-        return Response.SUCCESS(this.queryForObject(sqlDefine.getDatasource(), getFetchSql(sqlDefine), paraMap, buildColumnMapRowMapper()));
+        return Response.SUCCESS(this.queryForObject(sqlDefine.getDatasource(), getFetchSql(sqlDefine), paraMap, getColumnMapRowMapper()));
     }
 
-    protected ColumnMapRowMapper buildColumnMapRowMapper() {
+    protected ColumnMapRowMapper getColumnMapRowMapper() {
         return new ColumnMapRowMapper() {
 
             @Override
             protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
-                Object columnValue = super.getColumnValue(rs, index);
-                if (null != columnValue && columnValue instanceof Long) {
-                    return columnValue.toString();
+                Object cv = JdbcUtils.getResultSetValue(rs, index);
+                if (null == cv) {
+                    return cv;
                 }
-                return columnValue;
+                if (cv instanceof Long) {
+                    return cv.toString();
+                }
+                return cv;
             }
         };
     }
-
 
     public DataView findByDataViewId(Long id) {
         return dataViewService.findById(id);
@@ -247,80 +256,81 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         }
 
         //获取修改列
-        List<FieldModel> dataViewFields = JSON.parseArray(dataView.getFields(), FieldModel.class);
-        if (CollectionUtils.isEmpty(dataViewFields)) {
+        List<FieldModel> dvf = JSON.parseArray(dataView.getFields(), FieldModel.class);
+        if (CollectionUtils.isEmpty(dvf)) {
             return Response.FAILURE("字段集合不能为空,sqlId:" + dataView.getSqlId());
         }
-        return Response.SUCCESS(dataViewFields);
+        return Response.SUCCESS(dvf);
     }
 
     /**
      * 数据唯一校验
      */
-    private boolean unduplicated(FieldModel field, SqlDefine sqlDefine, JSONObject rowValue, boolean insert) {
+    private boolean unduplicated(FieldModel field, SqlDefine sqlDefine, JSONObject rowValue, boolean isAdd) {
         if (!field.isDuplicated()) {
             return false;
         }
-        StringBuffer checkSql = new StringBuffer(String.format(" select count(1) from  %s t ", sqlDefine.getTableName()));
+        StringBuffer sql = new StringBuffer(String.format(" select count(1) from  %s t ", sqlDefine.getTableName()));
 
         //新增
-        Map<String, Object> checkParams = new HashedMap();
-        if (insert) {
-            String whereSql = String.format(" where  t.%s =:%s ", field.getField(), field.getField());
-            checkSql.append(whereSql);
-            checkParams.put(field.getField(), rowValue.get(field.getField()));
+        Map<String, Object> param = new HashedMap();
+        if (isAdd) {
+            String wsql = String.format(" where  t.%s =:%s ", field.getField(), field.getField());
+            sql.append(wsql);
+            param.put(field.getField(), rowValue.get(field.getField()));
         } else {
-            String whereSql = String.format(" where  t.%s <>:%s  and t.%s = :%s ", sqlDefine.getPri(), sqlDefine.getPri(),
+            String wsql = String.format(" where  t.%s <>:%s  and t.%s = :%s ", sqlDefine.getPri(), sqlDefine.getPri(),
                     field.getField(), field.getField());
-            checkSql.append(whereSql);
-            checkParams.put(sqlDefine.getPri(), rowValue.get(sqlDefine.getPri()));
-            checkParams.put(field.getField(), rowValue.get(field.getField()));
+            sql.append(wsql);
+            param.put(sqlDefine.getPri(), rowValue.get(sqlDefine.getPri()));
+            param.put(field.getField(), rowValue.get(field.getField()));
         }
-        return queryForObject(sqlDefine.getDatasource(), checkSql.toString(), checkParams, Long.class) > 0;
+        return queryForObject(sqlDefine.getDatasource(), sql.toString(), param, Long.class) > 0;
     }
 
-    public Response updateByDataViewId(Long id, JSONObject rowValue) {
-        DataView dataView = findByDataViewId(id);
-        SqlDefine sqlDefine = sqlDefineMapper.selectById(dataView.getSqlId());
-        Response<List<FieldModel>> checkResp = checkSqlDefineConfig(sqlDefine, dataView);
+    public Response updateByDataViewId(Long id, JSONObject rv) {
+        DataView dv = findByDataViewId(id);
+        SqlDefine sd = sqlDefineMapper.selectById(dv.getSqlId());
+        Response<List<FieldModel>> checkResp = checkSqlDefineConfig(sd, dv);
         if (!checkResp.checkSuccess()) {
             return checkResp;
         }
+
         //update SQL
-        StringBuffer updateSql = new StringBuffer(String.format(" update  %s  set ", sqlDefine.getTableName()));
-        Map<String, Object> paramMap = new HashMap<>();
+        StringBuffer udsql = new StringBuffer(String.format(" update  %s  set ", sd.getTableName()));
+        Map<String, Object> param = new HashMap<>();
         for (FieldModel fieldModel : checkResp.getResult()) {
             if (DataViewConstant.MODIFTY_ENABLE.equals(fieldModel.getUpdateType())) {
-                if (this.unduplicated(fieldModel, sqlDefine, rowValue, false)) {
+                if (this.unduplicated(fieldModel, sd, rv, false)) {
                     return Response.FAILURE(fieldModel.getTitle() + "数据重复");
                 }
-                updateSql.append(String.format(" %s = :%s ,", fieldModel.getField(), fieldModel.getField()));
-                paramMap.put(fieldModel.getField(), rowValue.get(fieldModel.getField()));
+                udsql.append(String.format(" %s = :%s ,", fieldModel.getField(), fieldModel.getField()));
+                param.put(fieldModel.getField(), rv.get(fieldModel.getField()));
             }
         }
-        updateSql.deleteCharAt(updateSql.lastIndexOf(","));
+        udsql.deleteCharAt(udsql.lastIndexOf(","));
 
         //sql条件处理
-        StringBuffer whereSql = new StringBuffer(String.format(" where %s = :%s ", sqlDefine.getPri(), sqlDefine.getPri()));
-        paramMap.put(sqlDefine.getPri(), rowValue.get(sqlDefine.getPri()));
+        StringBuffer wsql = new StringBuffer(String.format(" where %s = :%s ", sd.getPri(), sd.getPri()));
+        param.put(sd.getPri(), rv.get(sd.getPri()));
 
         //获取参数配置
-        OptionsModel optionsModel = JSON.parseObject(dataView.getOptions(), OptionsModel.class);
+        OptionsModel optm = JSON.parseObject(dv.getOptions(), OptionsModel.class);
 
         //根据版本号更新
-        if (StringUtils.isNotBlank(optionsModel.getVersion())) {
-            int version = (Integer) rowValue.get(optionsModel.getVersion()) + 1;
+        if (StringUtils.isNotBlank(optm.getVersion())) {
+            int version = (Integer) rv.get(optm.getVersion()) + 1;
 
             //修改版本号
-            updateSql.append(String.format(", %s = :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
+            udsql.append(String.format(", %s = :%s ", optm.getVersion(), optm.getVersion()));
 
             //where条件添加版本
-            whereSql.append(String.format(" and %s < :%s ", optionsModel.getVersion(), optionsModel.getVersion()));
-            paramMap.put(optionsModel.getVersion(), version);
+            wsql.append(String.format(" and %s < :%s ", optm.getVersion(), optm.getVersion()));
+            param.put(optm.getVersion(), version);
         }
-        updateSql = updateSql.append(whereSql);
-        if (update(sqlDefine.getDatasource(), updateSql.toString(), paramMap)) {
-            return Response.FAILURE(updateSql);
+        udsql = udsql.append(wsql);
+        if (update(sd.getDatasource(), udsql.toString(), param)) {
+            return Response.FAILURE(udsql);
         }
         return Response.SUCCESS();
     }
@@ -347,18 +357,19 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         return Response.SUCCESS();
     }
 
-    public Response createByDataViewId(Long id, JSONObject rowValue) {
-        DataView dataView = findByDataViewId(id);
-        SqlDefine sqlDefine = findOne(dataView.getSqlId());
-        Response<List<FieldModel>> checkResponse = checkSqlDefineConfig(sqlDefine, dataView);
+    public Response createByDataViewId(Long id, JSONObject rv) {
+        DataView dv = findByDataViewId(id);
+        SqlDefine sd = findOne(dv.getSqlId());
+        Response<List<FieldModel>> checkResponse = checkSqlDefineConfig(sd, dv);
         if (!checkResponse.checkSuccess()) {
             return checkResponse;
         }
-        //create sql
-        StringBuffer createsql = new StringBuffer(String.format(" insert into %s ( ", sqlDefine.getTableName()));
 
-        //列表达式
-        StringBuffer expressionsql = new StringBuffer(" ) values ( ");
+        // create sql
+        StringBuffer csql = new StringBuffer(String.format(" insert into %s ( ", sd.getTableName()));
+
+        // 列表达式
+        StringBuffer exsql = new StringBuffer(" ) values ( ");
 
         //参数绑定
         Map<String, Object> paramMap = new HashMap<>();
@@ -366,104 +377,141 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
             if (!fieldModel.isInsert()) {
                 continue;
             }
-            if (this.unduplicated(fieldModel, sqlDefine, rowValue, true)) {
+            if (this.unduplicated(fieldModel, sd, rv, true)) {
                 return Response.FAILURE(fieldModel.getTitle() + "数据重复");
             }
-            createsql.append(fieldModel.getField()).append(",");
-            expressionsql.append(":").append(fieldModel.getField()).append(",");
-            paramMap.put(fieldModel.getField(), rowValue.get(fieldModel.getField()));
+            csql.append(fieldModel.getField()).append(",");
+            exsql.append(":").append(fieldModel.getField()).append(",");
+            paramMap.put(fieldModel.getField(), rv.get(fieldModel.getField()));
         }
-        createsql = createsql.deleteCharAt(createsql.lastIndexOf(","));
-        expressionsql = expressionsql.deleteCharAt(expressionsql.lastIndexOf(",")).append(")");
+        csql = csql.deleteCharAt(csql.lastIndexOf(","));
+        exsql = exsql.deleteCharAt(exsql.lastIndexOf(",")).append(")");
+
         //end sql
-        String sql = createsql.append(expressionsql).toString();
-        if (update(sqlDefine.getDatasource(), sql, paramMap)) {
+        String sql = csql.append(exsql).toString();
+        if (update(sd.getDatasource(), sql, paramMap)) {
             return Response.FAILURE(sql);
         }
         return Response.SUCCESS();
     }
 
-    public Response<BootstrapPageResult> getBootstrapTableResponse(Integer pageSize, Integer pageNumber,
-                                                                   String searchText,
-                                                                   String sortName, String sortOrder, Long sqlId,
-                                                                   BootstrapSearchParam bootstrapSearchParam) {
-        BootstrapPageResult pageResultForBootstrap = new BootstrapPageResult();
-        SqlDefine sqlDefine = sqlDefineMapper.selectById(sqlId);
-        if (SqlDefineStatusEnum.UN_ISSUE.getCode().equals(sqlDefine.getState())) {
-            return Response.FAILURE(sqlDefine.getSqlName() + "待发布");
+    public Response<BootstrapPageResult> getBootstrapTableDataResponse(Integer pageSize,
+                                                                       Integer pageNumber,
+                                                                       String searchText,
+                                                                       String sortName, String sortOrder, Long dataViewId,
+                                                                       BootstrapSearchParam sp) {
+        DataView dv = this.findByDataViewId(dataViewId);
+        BootstrapPageResult ret = new BootstrapPageResult();
+        SqlDefine sd = sqlDefineMapper.selectById(dv.getSqlId());
+        if (SqlDefineStatusEnum.UN_ISSUE.getCode().equals(sd.getState())) {
+            return Response.FAILURE(sd.getSqlName() + "待发布");
         }
-        DataFilter dataFilter = DataFilter.getInstance();
-        dataFilter.setQuerySql(sqlDefine.getSelectSql());
-        dataFilter.setSortName(sortName);
-        dataFilter.setSortOrder(sortOrder);
+        DataFilter df = DataFilter.getInstance();
+        df.setQuerySql(sd.getSelectSql());
+        df.setSortName(sortName);
+        df.setSortOrder(sortOrder);
 
         // 条件
-        List<ConditionModel> conditionModelList = bootstrapSearchParam.getSearchArray();
-        if (CollectionUtils.isEmpty(conditionModelList)) {
-            conditionModelList = new ArrayList<>();
+        List<ConditionModel> cms = sp.getSearchArray();
+        if (CollectionUtils.isEmpty(cms)) {
+            cms = new ArrayList<>();
         }
 
-        // 解析ztree
-        ConditionModel ztreeConditionModel = this.getTreeNode(bootstrapSearchParam.getTreeOptions());
-        if (null != ztreeConditionModel) {
-            conditionModelList.add(ztreeConditionModel);
+        // parse tree
+        ConditionModel cm = this.getTreeNode(sp.getTreeOptions());
+        if (null != cm) {
+            cms.add(cm);
         }
-        dataFilter.addCondition(conditionModelList);
-        List<Map<String, Object>> list =
-                this.query(sqlDefine.getDatasource(), dataFilter.createPager(pageNumber, pageSize), dataFilter.getParams(), buildColumnMapRowMapper());
-        pageResultForBootstrap.setRows(list);
+        df.addCondition(cms);
+        Map<String, Integer> maskingMap = new HashMap<>();
+        Map<String, Long> dictMap = new HashMap<>();
+        List<FieldModel> fms = JSONArray.parseArray(dv.getFields(), FieldModel.class);
+        for (FieldModel fm : fms) {
+            if (null != fm.getMasking()) {
+                maskingMap.put(fm.getField(), fm.getMasking());
+            }
+            if (StringUtils.isNotBlank(fm.getDict())) {
+                dictMap.put(fm.getField(), Long.valueOf(fm.getDict()));
+            }
+        }
+        List<Map<String, Object>> rows = this.query(sd.getDatasource(),
+                df.createPager(pageNumber, pageSize),
+                df.getParams(),
+                new ColumnMapRowMapper() {
 
-        // 查询总数
-        Long count = this.queryForObject(sqlDefine.getDatasource(), dataFilter.countSql(), dataFilter.getParams(), Long.class);
-        pageResultForBootstrap.setTotal(count);
-        return Response.SUCCESS(pageResultForBootstrap);
+                    @Override
+                    protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
+                        Object cv = JdbcUtils.getResultSetValue(rs, index);
+                        if (null == cv) {
+                            return cv;
+                        }
+
+                        // 脱敏
+                        String cn = rs.getMetaData().getColumnName(index);
+                        if (!maskingMap.isEmpty() && maskingMap.containsKey(cn)) {
+                            return MaskingUtils.masking(maskingMap.get(cn), cv.toString());
+                        }
+
+                        // 字典转换
+                        if (!dictMap.isEmpty() && dictMap.containsKey(cn)) {
+                            return dictService.getTextByPid(dictMap.get(cn)).get(cv.toString());
+                        }
+                        if (cv instanceof Long) {
+                            return cv.toString();
+                        }
+                        return cv;
+                    }
+                });
+        ret.setRows(rows);
+        Long count = this.queryForObject(sd.getDatasource(), df.countSql(), df.getParams(), Long.class);
+        ret.setTotal(count);
+        return Response.SUCCESS(ret);
     }
 
     /**
      * 获取树节点条件
      */
-    private ConditionModel getTreeNode(TreeOptionsFilterModel treeOptionsModel) {
-        if (null == treeOptionsModel || !treeOptionsModel.isVisible()) {
+    private ConditionModel getTreeNode(TreeOptionsFilterModel tm) {
+        if (null == tm || !tm.isVisible()) {
             return null;
         }
 
         //获取sqlDefine
-        SqlDefine sqlDefine = findOne(treeOptionsModel.getSqlId());
+        SqlDefine sd = findOne(tm.getSqlId());
 
         //默认是空字符串
-        String idValue = StringUtils.isNotBlank(treeOptionsModel.getNodeValue()) ? treeOptionsModel.getNodeValue() : BLANK_STR;
-        List<Map<String, Object>> result = new ArrayList();
+        String idValue = StringUtils.isNotBlank(tm.getNodeValue()) ? tm.getNodeValue() : BLANK_STR;
+        List<Map<String, Object>> ret = new ArrayList();
 
         // 构建获取下级sql
-        String sql = buildChildSql(sqlDefine.getSelectSql(), treeOptionsModel.getPidKey());
-        Map<String, Object> paramMap = new HashMap();
-        switch (treeOptionsModel.getScope()) {
+        String sql = getChildSql(sd.getSelectSql(), tm.getPidKey());
+        Map<String, Object> param = new HashMap();
+        switch (tm.getScope()) {
             case TreeNodeHandleType.TREEHANDLETYPE_ALL:
-                paramMap.put(treeOptionsModel.getPidKey(), idValue);
-                List<Map<String, Object>> items = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
-                result = RecursiveTools.forEachItems(items, (Map<String, Object> item) -> {
+                param.put(tm.getPidKey(), idValue);
+                List<Map<String, Object>> items = this.queryForList(sd.getDatasource(), sql, param);
+                ret = RecursiveTools.forEachItems(items, (Map<String, Object> item) -> {
                     Map<String, Object> paraMap = new HashMap<>();
-                    paraMap.put(treeOptionsModel.getPidKey(), item.get(treeOptionsModel.getIdKey()));
-                    return this.queryForList(sqlDefine.getDatasource(), sql, paraMap);
+                    paraMap.put(tm.getPidKey(), item.get(tm.getIdKey()));
+                    return this.queryForList(sd.getDatasource(), sql, paraMap);
                 });
-                result.addAll(items);
+                ret.addAll(items);
                 break;
             case TreeNodeHandleType.TREEHANDLETYPE_CHILD:
-                paramMap.put(treeOptionsModel.getPidKey(), idValue);
-                result = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
+                param.put(tm.getPidKey(), idValue);
+                ret = this.queryForList(sd.getDatasource(), sql, param);
                 break;
             case TreeNodeHandleType.TREEHANDLETYPE_SELF:
-                paramMap.put(treeOptionsModel.getPidKey(), idValue);
-                result = this.queryForList(sqlDefine.getDatasource(), sql, paramMap);
+                param.put(tm.getPidKey(), idValue);
+                ret = this.queryForList(sd.getDatasource(), sql, param);
                 break;
             default:
         }
-
-        ConditionModel conditionDto = new ConditionModel();
-        conditionDto.setField(treeOptionsModel.getForeignKey());
-        conditionDto.setExpression(SqlExpression.IN);
-        conditionDto.setValue(appendIdIn(result, treeOptionsModel.getIdKey()));
-        return conditionDto;
+        ConditionModel cd = new ConditionModel();
+        cd.setField(tm.getForeignKey());
+        cd.setExpression(SqlExpression.IN);
+        cd.setValue(appendIdIn(ret, tm.getIdKey()));
+        return cd;
     }
 
     /**
@@ -480,29 +528,29 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
     /**
      * tree查询SQL
      */
-    private String buildChildSql(String sql, String field) {
+    private String getChildSql(String sql, String field) {
         return String.format("select t.* from ( %s ) t where t.%s = :%s ", sql, field, field);
     }
 
     /**
      * 根据nodeId获取所有子节点
      */
-    private List<Map<String, Object>> findAllNode(String sql, Object pId, TreeOptionsModel treeVo, Long dataSourceId) {
-        Map<String, Object> paramMap = new HashMap();
-        paramMap.put(treeVo.getPidKey(), pId);
-        List<Map<String, Object>> queryResult = Lists.newArrayList();
-        List<Map<String, Object>> result = this.query(dataSourceId, sql, paramMap, buildColumnMapRowMapper());
-        if (!CollectionUtils.isEmpty(result)) {
+    private List<Map<String, Object>> findAllNode(String sql, Object pId, TreeOptionsModel tm, Long dataSourceId) {
+        Map<String, Object> param = new HashMap();
+        param.put(tm.getPidKey(), pId);
+        List<Map<String, Object>> qret = Lists.newArrayList();
+        List<Map<String, Object>> ret = this.query(dataSourceId, sql, param, getColumnMapRowMapper());
+        if (!CollectionUtils.isEmpty(ret)) {
             List<Map<String, Object>> subResult = null;
-            for (Map<String, Object> subMap : result) {
-                subResult = findAllNode(sql, subMap.get(treeVo.getIdKey()), treeVo, dataSourceId);
+            for (Map<String, Object> subMap : ret) {
+                subResult = findAllNode(sql, subMap.get(tm.getIdKey()), tm, dataSourceId);
                 if (!CollectionUtils.isEmpty(subResult)) {
-                    queryResult.addAll(subResult);
+                    qret.addAll(subResult);
                 }
             }
-            queryResult.addAll(result);
+            qret.addAll(ret);
         }
-        return queryResult;
+        return qret;
     }
 
 
@@ -512,45 +560,45 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
      */
     private boolean isParent(String parent, SqlDefine sqlDefine, ZtreeModel ztreeModel) {
         String sql = String.format("select t.* from ( %s ) t where t.%s = :parent ", sqlDefine.getSelectSql(), ztreeModel.getPidKey());
-        Map<String, Object> paraMap = new HashedMap();
-        paraMap.put("parent", parent);
-        List<Map<String, Object>> dataList = this.queryForList(sqlDefine.getDatasource(), sql, paraMap);
+        Map<String, Object> param = new HashedMap();
+        param.put("parent", parent);
+        List<Map<String, Object>> dataList = this.queryForList(sqlDefine.getDatasource(), sql, param);
         return dataList.size() > 0;
     }
 
     public Response getTree(ZtreeModel ztreeModel) {
-        SqlDefine sqlDefine = findOne(ztreeModel.getSqlId());
-        String sql = String.format("select t.* from ( %s ) t ", sqlDefine.getSelectSql());
-        Map<String, Object> paraMap = new HashedMap();
-        List<Map<String, Object>> dataList = this.getNamedParameterJdbcTemplate(sqlDefine.getDatasource()).query(sql, paraMap, buildColumnMapRowMapper());
-        List<TreeNodeModel> dataSource = Lists.newArrayList();
-        List<TreeNodeModel> parentNodeItemList = Lists.newArrayList();
-        TreeNodeModel nodeItemModel;
+        SqlDefine sd = findOne(ztreeModel.getSqlId());
+        String sql = String.format("select t.* from ( %s ) t ", sd.getSelectSql());
+        Map<String, Object> param = new HashedMap();
+        List<Map<String, Object>> dataList = this.getNamedParameterJdbcTemplate(sd.getDatasource()).query(sql, param, getColumnMapRowMapper());
+        List<TreeNodeModel> tnms = Lists.newArrayList();
+        List<TreeNodeModel> pns = Lists.newArrayList();
+        TreeNodeModel tnm;
         for (Map<String, Object> item : dataList) {
-            nodeItemModel = TreeNodeModel.builder()
-                    .key(toString(item.get(ztreeModel.getIdKey())))
-                    .title(toString(item.get(ztreeModel.getName())))
-                    .pid(toString(item.get(ztreeModel.getPidKey())))
-                    .id(toString(item.get(sqlDefine.getPri())))
+            tnm = TreeNodeModel.builder()
+                    .key(fomartVal(item.get(ztreeModel.getIdKey())))
+                    .title(fomartVal(item.get(ztreeModel.getName())))
+                    .pid(fomartVal(item.get(ztreeModel.getPidKey())))
+                    .id(fomartVal(item.get(sd.getPri())))
                     .build();
-            dataSource.add(nodeItemModel);
-            if (nodeItemModel.getPid().equalsIgnoreCase(default_top)) {
-                nodeItemModel.setExpanded(true);
-                parentNodeItemList.add(nodeItemModel);
+            tnms.add(tnm);
+            if (tnm.getPid().equalsIgnoreCase(default_top)) {
+                tnm.setExpanded(true);
+                pns.add(tnm);
             }
         }
-        List<TreeNodeModel> nodeModelList = RecursiveTools.forEachTreeItems(parentNodeItemList, (TreeNodeModel item) -> {
-            List<TreeNodeModel> nodeItemModelList = getChildMapList(item.getId(), dataSource);
-            item.setChildren(nodeItemModelList);
-            if (CollectionUtils.isEmpty(nodeItemModelList)) {
+        List<TreeNodeModel> nml = RecursiveTools.forEachTreeItems(pns, (TreeNodeModel item) -> {
+            List<TreeNodeModel> tnl = getChildMapList(item.getId(), tnms);
+            item.setChildren(tnl);
+            if (CollectionUtils.isEmpty(tnl)) {
                 item.setLeaf(true);
             }
-            return nodeItemModelList;
+            return tnl;
         });
-        return Response.SUCCESS(nodeModelList);
+        return Response.SUCCESS(nml);
     }
 
-    private String toString(Object value) {
+    private String fomartVal(Object value) {
         if (null != value) {
             return value.toString();
         }
@@ -558,12 +606,12 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
     }
 
     private List<TreeNodeModel> getChildMapList(Object pid, List<TreeNodeModel> dataList) {
-        List<TreeNodeModel> mapList = Lists.newArrayList();
+        List<TreeNodeModel> ml = Lists.newArrayList();
         for (TreeNodeModel item : dataList) {
             if (StringUtils.isNotBlank(item.getPid()) && item.getPid().equals(pid)) {
-                mapList.add(item);
+                ml.add(item);
             }
         }
-        return mapList;
+        return ml;
     }
 }
