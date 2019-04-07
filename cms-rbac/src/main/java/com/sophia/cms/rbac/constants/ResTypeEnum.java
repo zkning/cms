@@ -4,7 +4,7 @@ package com.sophia.cms.rbac.constants;
  * 资源类型
  * Created by ningzuokun on 2018/3/21.
  */
-public enum ResourceTypeEnum {
+public enum ResTypeEnum {
     MENU(1, "菜单"),
     FUNC(2, "功能按钮"),
     SERV(3, "服务");
@@ -12,13 +12,13 @@ public enum ResourceTypeEnum {
     private Integer code;
     private String value;
 
-    ResourceTypeEnum(Integer code, String value) {
+    ResTypeEnum(Integer code, String value) {
         this.code = code;
         this.value = value;
     }
 
-    public static ResourceTypeEnum getInstance(Integer code) {
-        for (ResourceTypeEnum e : values()) {
+    public static ResTypeEnum getInstance(Integer code) {
+        for (ResTypeEnum e : values()) {
             if (e.getCode().equals(code)) {
                 return e;
             }

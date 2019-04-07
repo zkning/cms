@@ -1,6 +1,6 @@
 package com.sophia.cms.sm.utils;
 
-import com.sophia.cms.sm.constant.SqlExpression;
+import com.sophia.cms.sm.constant.SQLExprConst;
 import com.sophia.cms.sm.model.ConditionModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +64,7 @@ public class DataFilter {
     }
 
     public void EQ(String alias, String value) {
-        addCondition(alias, SqlExpression.EQ, value, null);
+        addCondition(alias, SQLExprConst.EQ, value, null);
     }
 
     public void addCondition(String alias, String expression, Object value, String sort) {
@@ -76,8 +76,8 @@ public class DataFilter {
 
         // 构造条件sql
         switch (expression) {
-            case SqlExpression.IN:
-            case SqlExpression.NOT_IN:
+            case SQLExprConst.IN:
+            case SQLExprConst.NOT_IN:
                 List idIn = (List) value;
                 if (CollectionUtils.isNotEmpty(idIn)) {
                     getCondition().append(" t.").append(alias)
@@ -87,8 +87,8 @@ public class DataFilter {
                     getCondition().append(" 1 = 2 ");
                 }
                 return;
-            case SqlExpression.NULL:
-            case SqlExpression.NOT_NULL:
+            case SQLExprConst.NULL:
+            case SQLExprConst.NOT_NULL:
                 getCondition().append(" t.").append(alias).append(expression);
                 return;
             default:
@@ -97,7 +97,7 @@ public class DataFilter {
                 }
                 getCondition().append(" t.").append(alias).append(" " + expression + " ")
                         .append(":").append(paramStr);
-                if (SqlExpression.LIKE.equalsIgnoreCase(expression)) {
+                if (SQLExprConst.LIKE.equalsIgnoreCase(expression)) {
                     params.put(paramStr, value + "%");
                 } else {
                     params.put(paramStr, value);

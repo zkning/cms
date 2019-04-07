@@ -1,6 +1,6 @@
 package com.sophia.cms.sm.constant;
 
-public class DataViewConstant {
+public class DataViewConst {
 	public static final String ASC  = "asc";
 	public static final String DESC = "desc";
 

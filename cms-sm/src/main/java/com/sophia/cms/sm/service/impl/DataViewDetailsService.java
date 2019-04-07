@@ -59,7 +59,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
 
     // 获取字段SQL
     public String getFieldSql(SqlDefine sqlDefine) {
-        if (SqlTypeEnum.QUERY.getCode().equals(sqlDefine.getSqlType())) {
+        if (SQLTypeEnum.QUERY.getCode().equals(sqlDefine.getSqlType())) {
             return String.format("select _t.* from ( %s ) as _t  where 1=2 ", sqlDefine.getSelectSql());
         }
         return String.format("select * from  %s  where 1=2 ", sqlDefine.getTableName());
@@ -179,8 +179,8 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         fm.setMaxlength(srsmd.getPrecision(index));
         fm.setDataType(srsmd.getColumnTypeName(index));
         fm.setFieldType(FieldTypeEnum.TEXT.getValue());
-        fm.setAlign(DataViewConstant.align_center);
-        fm.setHalign(DataViewConstant.align_center);
+        fm.setAlign(DataViewConst.align_center);
+        fm.setHalign(DataViewConst.align_center);
         fm.setDuplicated(false);
         fm.setSort(index);
         return fm;
@@ -190,7 +190,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
 
         // 表包含的SQL查询列,属性特殊处理
         if (fieldMap.containsKey(field.getField())) {
-            field.setUpdateType(DataViewConstant.MODIFTY_HIDE);
+            field.setUpdateType(DataViewConst.MODIFTY_HIDE);
             field.setInsert(true);
             field.setVisible(true);
             field.setView(true);
@@ -300,7 +300,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         StringBuffer udsql = new StringBuffer(String.format(" update  %s  set ", sd.getTableName()));
         Map<String, Object> param = new HashMap<>();
         for (FieldModel fieldModel : checkResp.getResult()) {
-            if (DataViewConstant.MODIFTY_ENABLE.equals(fieldModel.getUpdateType())) {
+            if (DataViewConst.MODIFTY_ENABLE.equals(fieldModel.getUpdateType())) {
                 if (this.unduplicated(fieldModel, sd, rv, false)) {
                     return Response.FAILURE(fieldModel.getTitle() + "数据重复");
                 }
@@ -403,7 +403,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         DataView dv = this.findByDataViewId(dataViewId);
         BootstrapPageResult ret = new BootstrapPageResult();
         SqlDefine sd = sqlDefineMapper.selectById(dv.getSqlId());
-        if (SqlDefineStatusEnum.UN_ISSUE.getCode().equals(sd.getState())) {
+        if (SQLDefineStateEnum.UN_ISSUE.getCode().equals(sd.getState())) {
             return Response.FAILURE(sd.getSqlName() + "待发布");
         }
         DataFilter df = DataFilter.getInstance();
@@ -487,7 +487,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         String sql = getChildSql(sd.getSelectSql(), tm.getPidKey());
         Map<String, Object> param = new HashMap();
         switch (tm.getScope()) {
-            case TreeNodeHandleType.TREEHANDLETYPE_ALL:
+            case TreeNodeTypeConst.TREEHANDLETYPE_ALL:
                 param.put(tm.getPidKey(), idValue);
                 List<Map<String, Object>> items = this.queryForList(sd.getDatasource(), sql, param);
                 ret = RecursiveTools.forEachItems(items, (Map<String, Object> item) -> {
@@ -497,11 +497,11 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
                 });
                 ret.addAll(items);
                 break;
-            case TreeNodeHandleType.TREEHANDLETYPE_CHILD:
+            case TreeNodeTypeConst.TREEHANDLETYPE_CHILD:
                 param.put(tm.getPidKey(), idValue);
                 ret = this.queryForList(sd.getDatasource(), sql, param);
                 break;
-            case TreeNodeHandleType.TREEHANDLETYPE_SELF:
+            case TreeNodeTypeConst.TREEHANDLETYPE_SELF:
                 param.put(tm.getPidKey(), idValue);
                 ret = this.queryForList(sd.getDatasource(), sql, param);
                 break;
@@ -509,7 +509,7 @@ public class DataViewDetailsService extends CustomJdbcTemplate {
         }
         ConditionModel cd = new ConditionModel();
         cd.setField(tm.getForeignKey());
-        cd.setExpression(SqlExpression.IN);
+        cd.setExpression(SQLExprConst.IN);
         cd.setValue(appendIdIn(ret, tm.getIdKey()));
         return cd;
     }

@@ -2,7 +2,7 @@ package com.sophia.cms.rbac.service;
 
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.framework.util.BeanUtils;
-import com.sophia.cms.rbac.constants.ResourceTypeEnum;
+import com.sophia.cms.rbac.constants.ResTypeEnum;
 import com.sophia.cms.rbac.domain.Resources;
 import com.sophia.cms.rbac.domain.RoleResourcesRelation;
 import com.sophia.cms.rbac.domain.UserRoleRelation;
@@ -334,9 +334,9 @@ public class ResourcesService {
         // 查找用户指定类型资源列表
         List<Resources> resources = Lists.newArrayList();
         if (ADMINISTRATOR.equalsIgnoreCase(userName)) {
-            resources = resourcesMapper.findByResourceType(ResourceTypeEnum.MENU.getCode());
+            resources = resourcesMapper.findByResourceType(ResTypeEnum.MENU.getCode());
         } else {
-            resources = this.findResourcesByUserIdAndType(userId, ResourceTypeEnum.MENU.getCode());
+            resources = this.findResourcesByUserIdAndType(userId, ResTypeEnum.MENU.getCode());
         }
         if (CollectionUtils.isEmpty(resources)) {
             return Response.SUCCESS(getMenuResult);

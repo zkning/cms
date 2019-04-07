@@ -3,7 +3,7 @@ package com.sophia.cms.rbac.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.orm.model.Pager;
-import com.sophia.cms.rbac.constants.CacheableConstants;
+import com.sophia.cms.rbac.constants.CacheableConst;
 import com.sophia.cms.rbac.domain.Dict;
 import com.sophia.cms.rbac.mapper.DictMapper;
 import com.sophia.cms.rbac.model.DictEditModel;
@@ -33,7 +33,7 @@ public class DictService {
     @Autowired
     DictMapper dictMapper;
 
-    @Cacheable(cacheNames = CacheableConstants.CacheableName, key = "#dictId")
+    @Cacheable(cacheNames = CacheableConst.CacheableName, key = "#dictId")
     public Map<String, String> getTextByPid(Long dictId) {
         List<Dict> dicts = dictMapper.selectValByPid(dictId);
         Map<String, String> dm = new HashMap<>();
@@ -69,7 +69,7 @@ public class DictService {
         return Response.SUCCESS();
     }
 
-    @Cacheable(value = CacheableConstants.CacheableName, key = "#root.method.name + #id", unless = "#result.code != 0")
+    @Cacheable(value = CacheableConst.CacheableName, key = "#root.method.name + #id", unless = "#result.code != 0")
     public Response<DictFetchModel> fetch(Long id) {
         Dict dict = dictMapper.selectById(id);
         if (null == dict) {

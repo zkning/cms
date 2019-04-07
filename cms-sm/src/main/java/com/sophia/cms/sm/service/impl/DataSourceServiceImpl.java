@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.framework.util.SpringContextUtil;
 import com.sophia.cms.orm.model.Pager;
-import com.sophia.cms.rbac.constants.CacheableConstants;
+import com.sophia.cms.rbac.constants.CacheableConst;
 import com.sophia.cms.sm.domain.DataSource;
 import com.sophia.cms.sm.mapper.DataSourceMapper;
 import com.sophia.cms.sm.model.DataSourceEditModel;
@@ -93,13 +93,13 @@ public class DataSourceServiceImpl implements DataSourceService {
     }
 
     @Override
-    @Cacheable(cacheNames = CacheableConstants.CacheableName, unless = "#result != null")
+    @Cacheable(cacheNames = CacheableConst.CacheableName, unless = "#result != null")
     public DataSource findById(Long id) {
         return dataSourceMapper.selectById(id);
     }
 
     @Override
-    @CacheEvict(cacheNames = CacheableConstants.CacheableName, key = "#id")
+    @CacheEvict(cacheNames = CacheableConst.CacheableName, key = "#id")
     public void deleteCacheId(Long id) {
     }
 }

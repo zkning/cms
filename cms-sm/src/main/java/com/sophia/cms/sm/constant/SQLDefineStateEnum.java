@@ -1,16 +1,15 @@
 package com.sophia.cms.sm.constant;
 
 /**
- * sql类型
+ * Created by lenovo on 2018/4/15.
  */
-public enum SqlTypeEnum {
-    QUERY(1, "QUERY"),
-    CRUD(2, "CRUD");
+public enum SQLDefineStateEnum {
 
+    ISSUE(1, "已发布"),
+    UN_ISSUE(0, "待发布");
     private Integer code;
     private String text;
-
-    SqlTypeEnum(Integer code, String text) {
+    SQLDefineStateEnum(Integer code, String text) {
         this.code = code;
         this.text = text;
     }
@@ -35,7 +34,7 @@ public enum SqlTypeEnum {
         if (value == null) {
             return "";
         }
-        for (SqlTypeEnum e : SqlTypeEnum.values()) {
+        for (SQLDefineStateEnum e : SQLDefineStateEnum.values()) {
             if (value.equals(e.getCode())) {
                 return e.getText();
             }

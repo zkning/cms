@@ -5,7 +5,7 @@ package com.sophia.cms.sm.constant;
  * @author zkning
  *
  */
-public class SqlExpression {
+public class SQLExprConst {
 	
 	/**
 	 * =

@@ -11,7 +11,7 @@ import com.sophia.cms.rbac.domain.Resources;
 import com.sophia.cms.rbac.model.ResourceEditModel;
 import com.sophia.cms.rbac.service.ResourcesService;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
-import com.sophia.cms.sm.constant.DataViewConstant;
+import com.sophia.cms.sm.constant.DataViewConst;
 import com.sophia.cms.sm.domain.DataView;
 import com.sophia.cms.sm.domain.SqlDefine;
 import com.sophia.cms.sm.mapper.DataViewMapper;
@@ -149,7 +149,7 @@ public class DataViewServiceImpl implements DataViewService {
                 .code(dataView.getId().toString())
                 .pid(toResModel.getResPid())
                 .text(dataView.getDataViewName())
-                .resourceType(DataViewConstant.menu)
+                .resourceType(DataViewConst.menu)
                 .build();
         Response<Resources> resp = resourcesService.edit(model);
         if (!resp.checkSuccess()) {
@@ -169,7 +169,7 @@ public class DataViewServiceImpl implements DataViewService {
                     .code(dataView.getId() + "_" + buttonModel.getId())
                     .pid(resp.getResult().getId())
                     .text(buttonModel.getTitle())
-                    .resourceType(DataViewConstant.func)
+                    .resourceType(DataViewConst.func)
                     .build());
             if (!fucnResp.checkSuccess()) {
                 throw new ServiceException("功能创建失败！");
@@ -179,7 +179,7 @@ public class DataViewServiceImpl implements DataViewService {
         // 查询视图数据列表功能
         fucnResp = resourcesService.edit(ResourceEditModel.builder()
                 .link(sqlId_listPrefix + dataView.getId())
-                .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询视图列表").resourceType(DataViewConstant.func)
+                .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询视图列表").resourceType(DataViewConst.func)
                 .build());
         if (!fucnResp.checkSuccess()) {
             throw new ServiceException("视图查询列表功能创建失败！");
@@ -187,7 +187,7 @@ public class DataViewServiceImpl implements DataViewService {
         // 查询单个视图数据
         fucnResp = resourcesService.edit(ResourceEditModel.builder()
                 .link(sqlId_fetchPrefix + dataView.getId())
-                .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询单条数据").resourceType(DataViewConstant.serv)
+                .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询单条数据").resourceType(DataViewConst.serv)
                 .build());
         if (!fucnResp.checkSuccess()) {
             throw new ServiceException("视图查询列表功能创建失败！");
@@ -198,7 +198,7 @@ public class DataViewServiceImpl implements DataViewService {
         if (null != treeOptionsModel && treeOptionsModel.isVisible()) {
             fucnResp = resourcesService.edit(ResourceEditModel.builder()
                     .link(sqlId_getTreePrefix)
-                    .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询视图tree").resourceType(DataViewConstant.serv)
+                    .code(UUID.randomUUID().toString()).pid(resp.getResult().getId()).text("查询视图tree").resourceType(DataViewConst.serv)
                     .build());
             if (!fucnResp.checkSuccess()) {
                 throw new ServiceException("视图tree功能创建失败！");

@@ -1,13 +1,13 @@
 package com.sophia.cms.sm.utils;
 
-import com.sophia.cms.sm.constant.MaskingType;
+import com.sophia.cms.sm.constant.MaskingTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 
 public class MaskingUtils {
 
 
     public static String masking(Integer maskingType, String val) {
-        MaskingType mt = MaskingType.get(maskingType);
+        MaskingTypeEnum mt = MaskingTypeEnum.get(maskingType);
         switch (mt) {
             case EMAIL:
                 return email(val);

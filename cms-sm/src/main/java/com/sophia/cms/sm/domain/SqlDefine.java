@@ -3,7 +3,7 @@ package com.sophia.cms.sm.domain;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.sophia.cms.orm.domain.Auditable;
-import com.sophia.cms.sm.constant.SqlTypeEnum;
+import com.sophia.cms.sm.constant.SQLTypeEnum;
 import lombok.Data;
 
 
@@ -52,6 +52,6 @@ public class SqlDefine extends Auditable {
     private String pri;
 
     public String getSqlTypeText() {
-        return SqlTypeEnum.getTextByValue(sqlType);
+        return SQLTypeEnum.getTextByValue(sqlType);
     }
 }

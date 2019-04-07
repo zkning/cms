@@ -2,8 +2,7 @@ package com.sophia.cms.sm.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sophia.cms.framework.response.Response;
-import com.sophia.cms.sm.constant.SqlDefineStatusEnum;
-import com.sophia.cms.sm.domain.DataView;
+import com.sophia.cms.sm.constant.SQLDefineStateEnum;
 import com.sophia.cms.sm.domain.SqlDefine;
 import com.sophia.cms.sm.model.*;
 import com.sophia.cms.sm.service.SqlIdJdbcService;
@@ -118,7 +117,7 @@ public class SqlIdJdbcServiceImpl extends DataViewDetailsService implements SqlI
                 break;
             }
         }
-        sqlDefine.setState(SqlDefineStatusEnum.UN_ISSUE.getCode());
+        sqlDefine.setState(SQLDefineStateEnum.UN_ISSUE.getCode());
         sqlDefine.setSelectSql(SimpleUtils.buildQuerySql(previewModel.getTablename(), columnList));
         return Response.SUCCESS(sqlDefine);
     }

@@ -5,7 +5,7 @@ package com.sophia.cms.sm.constant;
  * @author zkning
  *
  */
-public class TreeNodeHandleType {
+public class TreeNodeTypeConst {
 
 	/**
 	 * 所有子节点

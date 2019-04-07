@@ -2,8 +2,7 @@ package com.sophia.cms.sm.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.sophia.cms.sm.constant.SqlDefineStatusEnum;
-import com.sophia.cms.sm.constant.SqlTypeEnum;
+import com.sophia.cms.sm.constant.SQLDefineStateEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -66,6 +65,6 @@ public class SqlDefineFetchModel {
     private Long version;
 
     public String getStateText() {
-        return SqlDefineStatusEnum.getTextByValue(state);
+        return SQLDefineStateEnum.getTextByValue(state);
     }
 }

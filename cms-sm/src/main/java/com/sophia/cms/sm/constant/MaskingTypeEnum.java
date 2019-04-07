@@ -1,6 +1,6 @@
 package com.sophia.cms.sm.constant;
 
-public enum MaskingType {
+public enum MaskingTypeEnum {
 
     CHINESE_NAME(1, "中文名"),
     ID_CARD(2, "身份证"),
@@ -11,16 +11,16 @@ public enum MaskingType {
     private Integer code;
     private String value;
 
-    private MaskingType(Integer code, String value) {
+    private MaskingTypeEnum(Integer code, String value) {
         this.code = code;
         this.value = value;
     }
 
-    public static MaskingType get(Integer value) {
+    public static MaskingTypeEnum get(Integer value) {
         if (value == null) {
             return null;
         }
-        for (MaskingType e : MaskingType.values()) {
+        for (MaskingTypeEnum e : MaskingTypeEnum.values()) {
             if (value.equals(e.getCode())) {
                 return e;
             }
