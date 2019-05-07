@@ -17,13 +17,10 @@ export class SqlDefineFetchModel {
 
     // 数据源
     this.datasource = '';
-    this.manipulate = GoldbalConstant.manipulate.QUERY;
+    this.sqlType = GoldbalConstant.SQL_TYPE.QUERY;
 
     // 是否缓存
     this.isCache = 0;
-
-    // 1-编辑,2-发布
-    this.state = '';
 
     // 备注
     this.remark = '';
@@ -53,13 +50,14 @@ export class SqlDefineFetchModel {
 
   // 数据源
   datasource: string;
-  manipulate: string;
+  datasourceText: string;
+  sqlType: number;
 
   // 是否缓存
   isCache: number;
 
   // 1-编辑,2-发布
-  state: string;
+  state: number;
 
   // 备注
   remark: string;

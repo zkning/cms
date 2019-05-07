@@ -125,9 +125,26 @@ export class DictConstant {
   }
 
   static defineType() {
-    const defineType = new Array<any>();
-    defineType.push({ value: 'QUERY', text: 'QUERY' });
-    defineType.push({ value: 'CRUD', text: 'CRUD' });
+    const defineType = new Array();
+    defineType.push({ value: GoldbalConstant.SQL_TYPE.QUERY, text: 'QUERY' });
+    defineType.push({ value: GoldbalConstant.SQL_TYPE.CRUD, text: 'CRUD' });
     return defineType;
+  }
+
+  static getState() {
+    const defineType = new Array();
+    defineType.push({ value: 0, text: '待发布' });
+    defineType.push({ value: 1, text: '已发布' });
+    return defineType;
+  }
+
+  static getMasking() {
+    const list = new Array();
+    list.push({ value: 1, text: '中文名' });
+    list.push({ value: 2, text: '身份证' });
+    list.push({ value: 3, text: '手机号' });
+    list.push({ value: 4, text: '电子邮件' });
+    list.push({ value: 5, text: '银行卡' });
+    return list;
   }
 }

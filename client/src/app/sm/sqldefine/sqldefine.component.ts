@@ -51,11 +51,11 @@ export class SmSqldefineComponent implements OnInit {
     { title: '序号', index: 'no' },
     { title: 'ID', index: 'id' },
     { title: '别名', index: 'sqlName' },
-    { title: '数据源', index: 'datasource' },
+    { title: '数据源', index: 'datasourceText' },
     { title: '对象', index: 'tableName' },
     { title: '主键', index: 'pri' },
     // { title: '是否缓存', index: 'isCache' },
-    { title: '状态', index: 'state' },
+    { title: '状态', index: 'stateText' },
     {
       title: '操作',
       buttons: [
@@ -74,7 +74,7 @@ export class SmSqldefineComponent implements OnInit {
           click: (item: any) => {
             this.modalService.confirm({
               nzTitle: '<i>确定要删除吗?</i>',
-              nzContent: '<b>删除后引用此数据源的视图将无法工作</b>',
+              nzContent: '<b>删除后引用此SQL定义的视图将无法工作</b>',
               nzOnOk: () => {
                 this.http
                   .get<IResponse<any>>(SmServerConstant.sqldefine_delete, item)

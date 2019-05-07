@@ -146,6 +146,9 @@ export class DataViewEditComponent implements OnInit {
   // 动态获取表单验证提示
   formErrorMsg(field) {
     const validator = this.ngbForm.get(field.field).errors;
+    if (!field.pattern) {
+      return;
+    }
     const ruleJson = JSON.parse(field.pattern);
     // 判断是否为表达式
     const pattern = validator[GoldbalConstant.validators.pattern];

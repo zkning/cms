@@ -21,5 +21,5 @@ export class GoldbalConstant {
     maxlength: 'maxlength',
   };
 
-  static manipulate = { QUERY: 'QUERY', CRUD: 'CRUD' };
+  static SQL_TYPE = { QUERY: 1, CRUD: 2 };
 }

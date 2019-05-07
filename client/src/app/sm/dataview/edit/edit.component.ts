@@ -25,14 +25,11 @@ import { DictConstant } from '../../constants/dict.constant';
   styleUrls: ['./edit.component.css'],
 })
 export class SmDataviewEditComponent implements OnInit {
+  formGroup: any;
   ngbForm: FormGroup;
   formData = new DataViewEditModel();
-  formGroup: any;
-  treeFromGroup: FormGroup;
-  optionsFormGroup: FormGroup;
-
-  // manipulateValue;
-  // manipulateQuery = GoldbalConstant.manipulate.QUERY;
+  treeFg: FormGroup;
+  optionsFg: FormGroup;
 
   // error info
   formErrors: Array<string>;
@@ -49,15 +46,11 @@ export class SmDataviewEditComponent implements OnInit {
   createQueryParamsTypes = DictConstant.createQueryParamsType();
   exportDataType = DictConstant.createExportDataType();
   orderList = DictConstant.createOrderBy();
-
-  // SQL 定义
-  sqlDefines: Array<any> = new Array<any>();
+  maskList = DictConstant.getMasking();
+  dictList: Array<string>;
 
   // ztree sqldefine fields
   ztreeSqlDefineFields: Array<any>;
-
-  // 当前对应SQLDEFINE,relationId字段
-  currentSqlDefineFields: Array<any>;
   constructor(
     private httpService: _HttpClient,
     private modalService: ModalHelper,
@@ -70,50 +63,60 @@ export class SmDataviewEditComponent implements OnInit {
     // private formVerifiyService: FormVerifiyService
   }
   ngOnInit() {
-    this.buildTreeGroup();
-    this.buildOptionsFormGroup();
-    this.formGroup = {
-      id: [this.formData.id],
-      dataViewName: [
-        this.formData.dataViewName,
-        [Validators.required, Validators.maxLength(32)],
-      ],
-      sqlId: [
-        this.formData.sqlId,
-        [Validators.required, Validators.maxLength(50)],
-      ],
-      manipulate: [this.formData.manipulate, Validators.required],
-      remark: [this.formData.remark, Validators.maxLength(250)],
-      version: [this.formData.version],
-      options: this.optionsFormGroup,
-      fields: this.fb.array(new Array<any>()),
-      treeOptions: this.treeFromGroup,
-      buttons: this.fb.array(new Array<any>()),
-      dataFilters: this.fb.array(new Array<any>()),
-    };
-    this.ngbForm = this.fb.group(this.formGroup);
-    this.ngbForm.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.httpService
+      .get<IResponse<Array<any>>>(SmServerConstant.findByPValue, {
+        value: 'SHUJUZIDIAN',
+      })
+      .subscribe(resp => {
+        if (IResponse.statuscode.SUCCESS === resp.code) {
+          this.dictList = resp.result;
 
-    // 字段列表
-    const fieldControls = this.ngbForm.controls.fields as FormArray;
-    this.buildFieldFormArray(fieldControls, this.formData.fields);
+          this.getTreeFg();
+          this.getOptionsFg();
+          this.formGroup = {
+            id: [this.formData.id],
+            dataViewName: [
+              this.formData.dataViewName,
+              [Validators.required, Validators.maxLength(32)],
+            ],
+            sqlId: [
+              this.formData.sqlId,
+              [Validators.required, Validators.maxLength(50)],
+            ],
+            sqlType: [this.formData.sqlType],
+            remark: [this.formData.remark, Validators.maxLength(250)],
+            version: [this.formData.version],
+            options: this.optionsFg,
+            treeOptions: this.treeFg,
+            fields: this.fb.array(new Array<any>()),
+            buttons: this.fb.array(new Array<any>()),
+            dataFilters: this.fb.array(new Array<any>()),
+          };
+          this.ngbForm = this.fb.group(this.formGroup);
+          this.ngbForm.valueChanges.subscribe(data =>
+            this.onValueChanged(data),
+          );
 
-    // tree外键字段集合
-    this.currentSqlDefineFields = this.formData.fields;
+          // 字段列表
+          const fieldControls = this.ngbForm.controls.fields as FormArray;
+          this.getFieldFs(fieldControls, this.formData.fields);
 
-    // // 按钮列表
-    const buttonControls = this.ngbForm.controls.buttons as FormArray;
-    this.buildButtonFormArray(buttonControls, this.formData.buttons);
+          //  按钮列表
+          const buttonControls = this.ngbForm.controls.buttons as FormArray;
+          this.getButtonFs(buttonControls, this.formData.buttons);
 
-    // 过滤列表
-    const filterControls = this.ngbForm.controls.dataFilters as FormArray;
-    this.buildFilterFormArray(filterControls, this.formData.dataFilters);
+          // 过滤列表
+          const filterControls = this.ngbForm.controls.dataFilters as FormArray;
+          this.getFilterFs(filterControls, this.formData.dataFilters);
+        } else {
+          this.msgService.error(resp.message);
+        }
+      });
   }
 
   isManipulateQuery() {
     return (
-      this.ngbForm.controls.manipulate.value ===
-      GoldbalConstant.manipulate.QUERY
+      this.ngbForm.controls.sqlType.value === GoldbalConstant.SQL_TYPE.QUERY
     );
   }
 
@@ -132,49 +135,8 @@ export class SmDataviewEditComponent implements OnInit {
       });
   }
 
-  // 基础选项
-  buildItems() {
-    const instance = this;
-    this.getItems('update-Item').then(function(value) {
-      instance.updateTypes = value;
-    });
-    this.getItems('fieldType-item').then(function(value) {
-      instance.fieldTypes = value;
-    });
-    this.getItems('align-item').then(function(value) {
-      instance.aligns = value;
-    });
-    this.getItems('option-item').then(function(value) {
-      instance.buttons = value;
-    });
-    this.getItems('valigns-item').then(function(value) {
-      instance.valigns = value;
-    });
-    this.getItems('scopes-item').then(function(value) {
-      instance.scopes = value;
-    });
-    this.getItems('order-item').then(function(value) {
-      instance.orderList = value;
-    });
-    this.getItems('expression-item').then(function(value) {
-      instance.expressions = value;
-    });
-    this.getItems('methods-item').then(function(value) {
-      instance.methods = value;
-    });
-    this.getItems('position-item').then(function(value) {
-      instance.locations = value;
-    });
-    this.getItems('side-pagination-item').then(function(value) {
-      instance.sidePaginations = value;
-    });
-    this.getItems('export-data-type').then(function(value) {
-      instance.exportDataType = value;
-    });
-  }
-
   // 构建 field
-  buildFieldFormArray(formArray, dataList: Array<FieldModel>) {
+  getFieldFs(formArray, dataList: Array<FieldModel>) {
     if (!formArray || !dataList) {
       return;
     }
@@ -184,39 +146,22 @@ export class SmDataviewEditComponent implements OnInit {
   }
 
   // 构建 button
-  buildButtonFormArray(formArray, dataList: Array<ButtonModel>) {
+  getButtonFs(formArray, dataList: Array<ButtonModel>) {
     if (!formArray || !dataList) {
       return;
     }
     dataList.forEach(item => {
-      formArray.push(this.buildBtnFormGroup(item));
+      formArray.push(this.getBtnFg(item));
     });
   }
 
   // 构建 过滤条件
-  buildFilterFormArray(formArray, dataList: Array<DataFilterModel>) {
+  getFilterFs(formArray, dataList: Array<DataFilterModel>) {
     if (!formArray || !dataList) {
       return;
     }
     dataList.forEach(item => {
-      formArray.push(this.buildDataFilter(item));
-    });
-  }
-
-  getItems(value: string): any {
-    return new Promise((resolve, reject) => {
-      this.httpService
-        .get<IResponse<Array<any>>>(SmServerConstant.findByPValue, {
-          value: value,
-        })
-        .subscribe(resp => {
-          if (IResponse.statuscode.SUCCESS === resp.code) {
-            resolve(resp.result);
-          } else {
-            this.msgService.error(resp.message);
-            reject(null);
-          }
-        });
+      formArray.push(this.getDataFilter(item));
     });
   }
 
@@ -231,13 +176,13 @@ export class SmDataviewEditComponent implements OnInit {
           const controls = this.ngbForm.controls.buttons as FormArray;
           if (button.id === '') {
             button.id = GUID.createGUIDString();
-            controls.push(this.buildBtnFormGroup(button));
+            controls.push(this.getBtnFg(button));
           }
         }
       });
   }
 
-  buildBtnFormGroup(button) {
+  getBtnFg(button) {
     return this.fb.group({
       id: [button.id, [Validators.required]],
       option: [button.option, [Validators.required]],
@@ -303,7 +248,7 @@ export class SmDataviewEditComponent implements OnInit {
       default:
         break;
     }
-    formArray.push(this.buildBtnFormGroup(btn));
+    formArray.push(this.getBtnFg(btn));
   }
 
   // 删除行
@@ -335,9 +280,9 @@ export class SmDataviewEditComponent implements OnInit {
       _treeFormGroup.controls.sqlId.setValue(_selectedSqlId);
 
       // clear idKey,pIdkey name field
-      _treeFormGroup.controls.idKey.setValue('');
-      _treeFormGroup.controls.pidKey.setValue('');
-      _treeFormGroup.controls.name.setValue('');
+      _treeFormGroup.controls.idKey.setValue(null);
+      _treeFormGroup.controls.pidKey.setValue(null);
+      _treeFormGroup.controls.name.setValue(null);
 
       // 刷新sqldefine fields
       this.refreshZtreeSqlIdFields(_selectedSqlId);
@@ -362,8 +307,8 @@ export class SmDataviewEditComponent implements OnInit {
   }
 
   // 创建树
-  buildTreeGroup() {
-    this.treeFromGroup = this.fb.group({
+  getTreeFg() {
+    this.treeFg = this.fb.group({
       visible: [this.formData.treeOptions.visible],
       sqlId: [this.formData.treeOptions.sqlId],
       idKey: [this.formData.treeOptions.idKey],
@@ -381,9 +326,9 @@ export class SmDataviewEditComponent implements OnInit {
     }
   }
 
-  buildOptionsFormGroup() {
+  getOptionsFg() {
     // options fromGroup
-    this.optionsFormGroup = this.fb.group({
+    this.optionsFg = this.fb.group({
       url: [this.formData.options.url, [Validators.maxLength(200)]],
       method: [
         this.formData.options.method,
@@ -462,7 +407,7 @@ export class SmDataviewEditComponent implements OnInit {
     });
   }
 
-  buildDataFilter(dataFilter: DataFilterModel) {
+  getDataFilter(dataFilter: DataFilterModel) {
     return this.fb.group({
       title: [dataFilter.title],
       field: [dataFilter.field],
@@ -512,6 +457,8 @@ export class SmDataviewEditComponent implements OnInit {
       searchFormatter: [fieldModel.searchFormatter],
       escape: [fieldModel.escape],
       dataFormat: [fieldModel.dataFormat],
+      masking: [fieldModel.masking],
+      dict: [fieldModel.dict],
     });
   }
 
@@ -529,9 +476,6 @@ export class SmDataviewEditComponent implements OnInit {
         if (IResponse.statuscode.SUCCESS === resp.code) {
           const dataList = resp.result;
 
-          // 刷新ztree关系字段
-          this.currentSqlDefineFields = resp.result;
-
           // 刷新过滤器列,其实可以不用刷新
           this.formData.fields = resp.result;
 
@@ -541,7 +485,7 @@ export class SmDataviewEditComponent implements OnInit {
           // 清空现在有的视图字段列表
           const fieldcontrols = this.ngbForm.controls.fields as FormArray;
           this.clearFormArray(fieldcontrols);
-          this.buildFieldFormArray(fieldcontrols, dataList);
+          this.getFieldFs(fieldcontrols, dataList);
 
           this.msgService.success(resp.message);
         } else {
@@ -553,14 +497,14 @@ export class SmDataviewEditComponent implements OnInit {
   showTreeCheck() {
     this.formData = this.ngbForm.value;
     if (!this.formData.treeOptions.visible) {
-      for (const key in this.treeFromGroup.controls) {
-        this.treeFromGroup.controls[key].setValidators(Validators.required);
-        this.treeFromGroup.controls[key].updateValueAndValidity();
+      for (const key in this.treeFg.controls) {
+        this.treeFg.controls[key].setValidators(Validators.required);
+        this.treeFg.controls[key].updateValueAndValidity();
       }
     } else {
-      for (const key in this.treeFromGroup.controls) {
-        this.treeFromGroup.controls[key].clearValidators();
-        this.treeFromGroup.controls[key].updateValueAndValidity();
+      for (const key in this.treeFg.controls) {
+        this.treeFg.controls[key].clearValidators();
+        this.treeFg.controls[key].updateValueAndValidity();
       }
     }
   }
@@ -616,31 +560,29 @@ export class SmDataviewEditComponent implements OnInit {
       }
 
       // 设置查询类型
-      this.ngbForm.controls.manipulate.setValue(_selectedValue.manipulate);
-      if (GoldbalConstant.manipulate.QUERY === _selectedValue.manipulate) {
-        this.optionsFormGroup.controls.idField.setValue(null);
-        this.optionsFormGroup.controls.idField.clearValidators();
+      this.ngbForm.controls.sqlType.setValue(_selectedValue.sqlType);
+      if (GoldbalConstant.SQL_TYPE.QUERY === _selectedValue.sqlType) {
+        this.optionsFg.controls.idField.setValue(null);
+        this.optionsFg.controls.idField.clearValidators();
       } else {
-        this.optionsFormGroup.controls.idField.setValidators(
-          Validators.required,
-        );
+        this.optionsFg.controls.idField.setValidators(Validators.required);
         this.ngbForm.controls.buttons.setValue(new Array<ButtonModel>());
       }
-      this.optionsFormGroup.controls.idField.updateValueAndValidity();
+      this.optionsFg.controls.idField.updateValueAndValidity();
 
       // 返回的sqlId
       this.ngbForm.controls.sqlId.setValue(_selectedValue.id);
 
       // 更新默认数据请求地址:当前视图id
-      this.optionsFormGroup.controls.url.setValue(
+      this.optionsFg.controls.url.setValue(
         // SmServerConstant.sqlId_list + _selectedValue.id,
         SmServerConstant.sqlId_list + this.ngbForm.controls.id.value,
       );
 
       // 设置默认主键
       if (_selectedValue.pri) {
-        this.optionsFormGroup.controls.idField.setValue(_selectedValue.pri);
-        this.optionsFormGroup.controls.uniqueId.setValue(_selectedValue.pri);
+        this.optionsFg.controls.idField.setValue(_selectedValue.pri);
+        this.optionsFg.controls.uniqueId.setValue(_selectedValue.pri);
       }
 
       // 清空数据过滤
@@ -691,6 +633,10 @@ export class SmDataviewEditComponent implements OnInit {
           fieldControl.controls.pattern.setValue(result);
         }
       });
+  }
+
+  get fieldControlsValue() {
+    return this.ngbForm.controls.fields.value;
   }
 
   get fieldsControls() {

@@ -22,9 +22,9 @@
                     </nz-form-item>
 
                     <nz-form-item>
-                        <nz-form-label nzXs="24" nzSm="3"  nzFor="manipulate" nzRequired>类型</nz-form-label>
+                        <nz-form-label nzXs="24" nzSm="3"  nzFor="sqlType" nzRequired>类型</nz-form-label>
                         <nz-form-control nzXs="24" nzSm="12" nzMd="14">
-                              <select formControlName="manipulate"  nzPlaceHolder="类型" nzAllowClear (change)="typeChange($event)">
+                              <select formControlName="sqlType"  nzPlaceHolder="类型" nzAllowClear (change)="typeChange($event)">
                                     <option [value]="df.value"   *ngFor="let df of defineTypeList;" >{{df.text}}</option>
                               </select>
                         </nz-form-control>
@@ -66,14 +66,14 @@
                         </nz-form-control>
                     </nz-form-item>
 
-                  <!-- <nz-form-item>
+                  <nz-form-item>
                       <nz-form-label nzXs="24" nzSm="3"  nzFor="state" nzRequired>状态</nz-form-label>
                       <nz-form-control nzXs="24" nzSm="12" nzMd="14">
                             <nz-select   formControlName="state"  nzPlaceHolder="状态" nzAllowClear >
-                                    <nz-option [nzValue]="ri.value" [nzLabel]="ri.text"  *ngFor="let ri of stateList;" ></nz-option>
+                                <nz-option [nzValue]="ri.value" [nzLabel]="ri.text"  *ngFor="let ri of stateList;" ></nz-option>
                             </nz-select>
                       </nz-form-control>
-                  </nz-form-item> -->
+                  </nz-form-item>
 
                   <!-- <nz-form-item>
                         <nz-form-label nzXs="24" nzSm="3"  nzFor="isCache" nzRequired>是否缓存</nz-form-label>

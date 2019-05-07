@@ -97,4 +97,6 @@ export class FieldModel {
   colspan: number;
   searchFormatter: boolean;
   escape: boolean;
+  masking: number;
+  dict: string;
 }

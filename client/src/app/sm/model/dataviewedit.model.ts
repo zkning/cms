@@ -9,7 +9,6 @@ export class DataViewEditModel {
     this.id = '';
     this.dataViewName = '';
     this.sqlId = '';
-    this.manipulate = '';
     this.remark = '';
     this.options = new OptionsModel();
     this.fields = new Array<FieldModel>();
@@ -20,7 +19,7 @@ export class DataViewEditModel {
   id: string;
   dataViewName: string;
   sqlId: string;
-  manipulate: string;
+  sqlType: number;
   remark: string;
   options: OptionsModel;
   fields: Array<FieldModel>;

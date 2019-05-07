@@ -62,6 +62,7 @@ export class StartupService {
 
               // 应用信息：包括站点名、描述、年份
               this.settingService.setApp(credentialsModel.app);
+              this.settingService.setLayout('lang', 'zh-CN');
 
               // 用户信息：包括姓名、头像、邮箱地址
               this.settingService.setUser(credentialsModel.user);

@@ -29,13 +29,13 @@
             </nz-form-control>
           </nz-form-item>
 
-          <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="manipulate" class="sm-title">Manipulate</nz-form-label>
+          <!-- <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="3" nzRequired nzFor="sqlType" class="sm-title">SqlType</nz-form-label>
             <nz-form-control nzXs="24" nzSm="12" nzMd="14">
-                  <input class="form-control"  placeholder="manipulate" formControlName="manipulate" readonly="readonly"/>
-                  <nz-form-explain *ngIf="ngbForm.get('manipulate').dirty && ngbForm.get('manipulate').errors">请输入操纵类型</nz-form-explain>
+                  <input class="form-control"  placeholder="sqlType" formControlName="sqlType" readonly="readonly"/>
+                  <nz-form-explain *ngIf="ngbForm.get('sqlType').dirty && ngbForm.get('sqlType').errors">请输入操纵类型</nz-form-explain>
             </nz-form-control>
-          </nz-form-item>
+          </nz-form-item> -->
 
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="3"  nzFor="remark" class="sm-title">Remark</nz-form-label>
@@ -420,6 +420,25 @@
                               </nz-form-control>
                             </nz-form-item>
 
+                             <!-- 脱敏 -->
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">Masking</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <select  formControlName="masking" placeholder="masking">
+                                      <option *ngFor="let msk of maskList" [value]="msk.value">{{msk.text}}</option>
+                                    </select>
+                              </nz-form-control>
+                            </nz-form-item>
+
+                            <nz-form-item>
+                              <nz-form-label nzXs="24" nzSm="3" class="sm-title">dict</nz-form-label>
+                              <nz-form-control nzXs="24" nzSm="5" nzMd="8">
+                                <select  formControlName="dict" placeholder="dict">
+                                      <option *ngFor="let dict of dictList" [value]="dict.id">{{dict.text}}</option>
+                                    </select>
+                              </nz-form-control>
+                            </nz-form-item>
+
                             <!--<div class="form-group row">
                               <label class="col-sm-2 control-label">radio</label>
                               <div class="col-sm-10">
@@ -519,9 +538,9 @@
                         </ng-template>
 
                         <!--更多设置-->
-                        <a href="javascript:void(0)" (click)="formCheckRule(columOptions)" *ngIf="!isManipulateQuery()">validator</a>
+                        <a href="javascript:void(0)" (click)="formCheckRule(columOptions)" *ngIf="!isManipulateQuery()">验证器</a>
                         <nz-divider nzType="vertical" *ngIf="!isManipulateQuery()"></nz-divider>
-                        <a href="javascript:void(0)" (click)="openMore(content)" style="margin-left: 5px;">more</a>
+                        <a href="javascript:void(0)" (click)="openMore(content)" style="margin-left: 5px;">...</a>
                       </td>
                     </tr>
                   </tbody>
@@ -646,15 +665,7 @@
                 <input type="checkbox" formControlName="visible" (click)="showTreeCheck()">
             </nz-form-control>
           </nz-form-item>
-          <!--<div class="form-group row">
-            <label class="col-sm-2 control-label">enable</label>
-            <div class="col-sm-10">
-              <div class="checkbox checkbox-purple">
-                <input id="enable" type="checkbox" formControlName="enable">
-                <label for="enable"></label>
-              </div>
-            </div>
-          </div>-->
+
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="3" class="sm-title">SqlId</nz-form-label>
             <nz-form-control nzXs="24" nzSm="5" nzMd="5">
@@ -707,12 +718,6 @@
               </nz-form-control>
           </nz-form-item>
 
-          <!--<div class="form-group row">
-            <label class="col-sm-2 control-label">url</label>
-            <div class="col-sm-10">
-                <input  class="form-control"  placeholder="url" formControlName="url" />
-            </div>
-          </div>-->
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="3" class="sm-title">Scope</nz-form-label>
             <nz-form-control nzXs="24" nzSm="5" nzMd="5">
@@ -739,7 +744,7 @@
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="5" nzMd="5">
               <select  formControlName="foreignKey" placeholder="foreignKey">
-                <option *ngFor="let col of currentSqlDefineFields" [value]="col.field" >{{col.field}}</option>
+                <option *ngFor="let col of fieldControlsValue" [value]="col.field" >{{col.field}}</option>
               </select>
             </nz-form-control>
           </nz-form-item>

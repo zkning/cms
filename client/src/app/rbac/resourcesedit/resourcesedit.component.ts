@@ -42,7 +42,10 @@ export class RbacResourceseditComponent implements OnInit {
       id: [this.resInfo.id],
       code: [this.resInfo.code],
     });
+    this.getFormGroupTree();
+  }
 
+  fetch() {
     if (this.record.id) {
       this.http
         .get<IResponse<RbacResInfo>>(RbacApplication.res_fetch, {
@@ -56,7 +59,6 @@ export class RbacResourceseditComponent implements OnInit {
           }
         });
     }
-    this.getFormGroupTree();
   }
 
   // 资源树
@@ -72,6 +74,7 @@ export class RbacResourceseditComponent implements OnInit {
           resp.result.forEach(tnm => {
             this.formNodes.push(new NzTreeNode(tnm));
           });
+          this.fetch();
         } else {
           this.msgSrv.error(resp.message);
         }

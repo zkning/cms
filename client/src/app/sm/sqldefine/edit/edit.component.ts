@@ -69,31 +69,12 @@ export class SmSqldefineEditComponent implements OnInit {
 
   defineTypeList = DictConstant.defineType();
   datasourceList = [];
-  stateList = [];
+  stateList = DictConstant.getState();
   cacheList = [];
   schemaTableModelList = new Array<SchemaTableModel>();
-
-  // 操纵类型：QUERY
-  manipulationQuery = GoldbalConstant.manipulate.QUERY;
-
   sqlReadonly = false;
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      id: [this.sqlDefineFetchModel.id],
-      sqlName: [this.sqlDefineFetchModel.sqlName, [Validators.required]],
-      selectSql: [this.sqlDefineFetchModel.selectSql, [Validators.required]],
-      sqlExtra: [this.sqlDefineFetchModel.sqlExtra],
-      remark: [this.sqlDefineFetchModel.remark],
-      // datasource: [{value: this.sqlDefineFetchModel.datasource, disabled: this.record.id}, [Validators.required]],
-      datasource: [this.sqlDefineFetchModel.datasource, [Validators.required]],
-      version: [this.sqlDefineFetchModel.version],
-      pri: [this.sqlDefineFetchModel.pri],
-      tableName: [this.sqlDefineFetchModel.tableName],
-      state: [this.sqlDefineFetchModel.state],
-      manipulate: [this.sqlDefineFetchModel.manipulate, [Validators.required]],
-      isCache: [this.sqlDefineFetchModel.isCache, [Validators.required]],
-    });
 
+  ngOnInit(): void {
     if (this.record.id) {
       this.http
         .get<IResponse<SqlDefineFetchModel>>(SmServerConstant.sqldefine_fetch, {
@@ -101,12 +82,28 @@ export class SmSqldefineEditComponent implements OnInit {
         })
         .subscribe(resp => {
           if (IResponse.statuscode.SUCCESS === resp.code) {
-            this.form.setValue(resp.result);
+            // 校验字段是否存在再赋值
+            this.form.patchValue(resp.result);
           } else {
             this.msgSrv.error(resp.message);
           }
         });
     }
+    this.form = this.fb.group({
+      id: [this.sqlDefineFetchModel.id],
+      sqlName: [this.sqlDefineFetchModel.sqlName, [Validators.required]],
+      selectSql: [this.sqlDefineFetchModel.selectSql, [Validators.required]],
+      state: [this.sqlDefineFetchModel.state, [Validators.required]],
+      sqlType: [this.sqlDefineFetchModel.sqlType, [Validators.required]],
+      isCache: [this.sqlDefineFetchModel.isCache, [Validators.required]],
+      sqlExtra: [this.sqlDefineFetchModel.sqlExtra],
+      remark: [this.sqlDefineFetchModel.remark],
+      // datasource: [{value: this.sqlDefineFetchModel.datasource, disabled: this.record.id}, [Validators.required]],
+      datasource: [this.sqlDefineFetchModel.datasource, [Validators.required]],
+      version: [this.sqlDefineFetchModel.version],
+      pri: [this.sqlDefineFetchModel.pri],
+      tableName: [this.sqlDefineFetchModel.tableName],
+    });
 
     const instance = this;
     this.getItems('sqldefine-cache').then(function(value) {
@@ -116,9 +113,7 @@ export class SmSqldefineEditComponent implements OnInit {
   }
 
   isManipulationValue() {
-    return (
-      this.form.controls.manipulate.value === GoldbalConstant.manipulate.QUERY
-    );
+    return this.form.controls.sqlType.value === GoldbalConstant.SQL_TYPE.QUERY;
   }
 
   getDataSource() {
@@ -222,12 +217,12 @@ export class SmSqldefineEditComponent implements OnInit {
   typeChange($event) {
     // QUERY隐藏 对象，主键
     // console.info($event);
-    this.validatorsChange($event.target.value);
+    this.validatorsChange(parseInt($event.target.value, 10));
     this.form.controls.selectSql.setValue(null);
   }
 
   validatorsChange(type) {
-    if (this.manipulationQuery === type) {
+    if (GoldbalConstant.SQL_TYPE.QUERY === type) {
       // 清空所填写表单
       this.form.controls.tableName.setValue(null);
       this.form.controls.pri.setValue(null);
@@ -237,7 +232,7 @@ export class SmSqldefineEditComponent implements OnInit {
       this.form.controls.tableName.setValidators(Validators.required);
       this.form.controls.pri.setValidators(Validators.required);
     }
-    this.sqlReadonly = this.manipulationQuery !== type;
+    this.sqlReadonly = GoldbalConstant.SQL_TYPE.QUERY !== type;
     this.form.controls.tableName.updateValueAndValidity();
     this.form.controls.pri.updateValueAndValidity();
   }

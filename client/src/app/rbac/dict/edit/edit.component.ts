@@ -34,7 +34,9 @@ export class RbacDictEditComponent implements OnInit {
       id: [this.dictFetchModel.id],
     });
     this.getFormGroupTree();
+  }
 
+  findOne() {
     if (this.record.id) {
       this.http
         .get<IResponse<DictFetchModel>>(RbacApplication.dict_fetch, {
@@ -66,6 +68,7 @@ export class RbacDictEditComponent implements OnInit {
           resp.result.forEach(tnm => {
             this.formNodes.push(new NzTreeNode(tnm));
           });
+          this.findOne();
         } else {
           this.msgSrv.error(resp.message);
         }
