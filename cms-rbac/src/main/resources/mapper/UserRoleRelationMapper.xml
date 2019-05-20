@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sophia.cms.rbac.mapper.UserRoleRelationMapper">
-
-    <select id="deleteByRoleIdAndUserIdIn">
-        delete from t_rbac_user_role_relation where
+<mapper namespace="com.august.rbac.mapper.UserRoleRelationMapper">
+    <delete id="deleteByRoleIdAndUserIdIn">
+        delete from
+        t_rbac_user_role_relation
+        where
         role_id = #{roleId}
-        and
-        user_id in
-        <foreach collection="userIds" index="index" item="item" open="(" separator="," close=")">
+        and user_id in
+        <foreach collection="userIds" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-    </select>
-
-
-    <select id="deleteByUserIdAndRoleIdIn">
-        delete from t_rbac_user_role_relation where
+    </delete>
+    <delete id="deleteByUserIdAndRoleIdIn">
+        delete from
+        t_rbac_user_role_relation
+        where
         user_id = #{userId}
-        and
-        role_id in
-        <foreach collection="roleIds" index="index" item="item" open="(" separator="," close=")">
+        and role_id in
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </delete>
+    <select id="findByUserId" resultType="java.lang.Long">
+        select roleId from
+        t_rbac_user_role_relation
+        where
+        user_id = #{userId}
     </select>
-
+    <select id="findUserIdsByRoleId" resultType="java.lang.Long">
+        select user_id from
+        t_rbac_user_role_relation
+        where
+        role_id = #{roleId}
+    </select>
+    <select id="findByRoleId" resultType="com.august.rbac.domain.UserRoleRelation">
+        select * from
+        t_rbac_user_role_relation
+        where
+        role_id = #{roleId}
+    </select>
 </mapper>

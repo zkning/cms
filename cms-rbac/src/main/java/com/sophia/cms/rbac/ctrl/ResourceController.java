@@ -2,7 +2,6 @@ package com.sophia.cms.rbac.ctrl;
 
 import com.sophia.cms.rbac.model.*;
 import com.sophia.cms.framework.response.Response;
-import com.sophia.cms.rbac.service.ResourcesService;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

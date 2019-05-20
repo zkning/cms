@@ -1,9 +1,7 @@
 package com.sophia.cms.rbac.shiro;
 
 import com.sophia.cms.rbac.domain.RbacUserInfo;
-import com.sophia.cms.rbac.domain.Resources;
-import com.sophia.cms.rbac.service.RbacUserService;
-import com.sophia.cms.rbac.service.ResourcesService;
+import com.sophia.cms.rbac.domain.Res;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -40,8 +38,8 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
 
         //查询权限
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        List<Resources> resources = resourcesService.findAllResourcesByUserId(rbacUserInfo.getId());
-        for (Resources res : resources) {
+        List<Res> resources = resourcesService.findAllResourcesByUserId(rbacUserInfo.getId());
+        for (Res res : resources) {
             simpleAuthorizationInfo.addStringPermission(res.getCode());
         }
         return simpleAuthorizationInfo;

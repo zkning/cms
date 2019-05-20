@@ -5,21 +5,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sophia.cms.rbac.domain.Dict;
 import com.sophia.cms.rbac.model.DictFetchModel;
 import com.sophia.cms.rbac.model.DictSearchModel;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+@Mapper
 public interface DictMapper extends BaseMapper<Dict> {
 
     List<DictFetchModel> list(Page page, @Param("params") DictSearchModel dictSearchModel);
 
-    @Select("select * from t_rbac_dict where pid = #{pid} order by sort desc")
     List<Dict> findByPidOrderBySortDesc(@Param("pid") Long pid);
 
-    @Select("select * from t_rbac_dict where value = #{value}")
-    Dict findByValue(@Param("value") String value);
+    Dict findByPid(@Param("pid") Long pid);
 
-    @Select("select * from t_rbac_dict where pid = #{pid}")
-    List<Dict> selectValByPid(Long pId);
+    Dict findByValue(@Param("value") String value);
 }

@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @TableName(value = "t_rbac_resource")
-public class Resources extends Auditable {
+public class Res extends Auditable {
 
     @ApiModelProperty(value = "文本")
     private String text;
@@ -49,6 +49,6 @@ public class Resources extends Auditable {
      */
     @TableField(exist = false)
     @ApiModelProperty(value = "下级菜单")
-    private List<Resources> children;
+    private List<Res> children;
 
 }

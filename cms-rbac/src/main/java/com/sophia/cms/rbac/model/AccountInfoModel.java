@@ -1,6 +1,6 @@
 package com.sophia.cms.rbac.model;
 
-import com.sophia.cms.rbac.domain.Resources;
+import com.sophia.cms.rbac.domain.Res;
 import com.sophia.cms.rbac.security.OAuth2Principal;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class AccountInfoModel implements Serializable {
      */
     private Map<String, String> layout;
     private OAuth2Principal user;
-    private List<Resources> menu;
+    private List<Res> menu;
     private List<String> permits;
 
     //APP系统配置

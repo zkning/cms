@@ -7,9 +7,8 @@ import com.sophia.cms.framework.exception.ServiceException;
 import com.sophia.cms.framework.response.Response;
 import com.sophia.cms.framework.util.FastJsonUtils;
 import com.sophia.cms.orm.model.Pager;
-import com.sophia.cms.rbac.domain.Resources;
+import com.sophia.cms.rbac.domain.Res;
 import com.sophia.cms.rbac.model.ResourceEditModel;
-import com.sophia.cms.rbac.service.ResourcesService;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
 import com.sophia.cms.sm.constant.DataViewConst;
 import com.sophia.cms.sm.domain.DataView;
@@ -151,7 +150,7 @@ public class DataViewServiceImpl implements DataViewService {
                 .text(dataView.getDataViewName())
                 .resourceType(DataViewConst.menu)
                 .build();
-        Response<Resources> resp = resourcesService.edit(model);
+        Response<Res> resp = resourcesService.edit(model);
         if (!resp.checkSuccess()) {
             return resp;
         }

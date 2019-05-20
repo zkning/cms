@@ -1,6 +1,6 @@
 package com.sophia.cms.rbac.model;
 
-import com.sophia.cms.rbac.domain.Resources;
+import com.sophia.cms.rbac.domain.Res;
 import lombok.Data;
 import org.assertj.core.util.Lists;
 
@@ -14,5 +14,5 @@ import java.util.List;
 @Data
 public class GetMenuModel implements Serializable {
 
-    private List<Resources> resources = Lists.newArrayList();
+    private List<Res> resources = Lists.newArrayList();
 }

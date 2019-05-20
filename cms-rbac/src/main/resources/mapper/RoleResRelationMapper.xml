@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.august.rbac.mapper.RoleResRelationMapper">
+    <delete id="deleteByresIdIn">
+        delete from t_rbac_role_resource_relation
+        where res_id in
+        <foreach collection="resIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="findResourecesIdsByUserId" resultType="java.lang.Long">
+        SELECT
+            res_id
+        FROM
+            t_rbac_role_resource_relation
+        WHERE
+            role_id IN (
+              SELECT role_id FROM
+              t_rbac_user_role_relation
+              WHERE user_id = #{userId}
+            )
+    </select>
+    <select id="findByRoleId" resultType="com.august.rbac.domain.RoleResRelation">
+        SELECT  * FROM
+            t_rbac_role_resource_relation
+        where
+        role_id = #{roleId}
+    </select>
+</mapper>

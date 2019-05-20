@@ -6,8 +6,6 @@ import com.sophia.cms.orm.model.Pager;
 import com.sophia.cms.rbac.domain.RbacUserInfo;
 import com.sophia.cms.rbac.model.*;
 import com.sophia.cms.rbac.utils.SessionContextHolder;
-import com.sophia.cms.rbac.service.RbacUserService;
-import com.sophia.cms.rbac.service.ResourcesService;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

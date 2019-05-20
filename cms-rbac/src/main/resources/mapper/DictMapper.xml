@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sophia.cms.rbac.mapper.DictMapper">
+<mapper namespace="com.august.rbac.mapper.DictMapper">
 
-    <select id="list" parameterType="com.sophia.cms.rbac.model.DictSearchModel"
-            resultType="com.sophia.cms.rbac.model.DictFetchModel">
+    <select id="list" parameterType="com.august.rbac.dto.DictSearchDTO"
+            resultType="com.august.rbac.dto.DictFetchDTO">
         select t.id as id ,
         t.value as value,
         t.sort as sort,
@@ -31,5 +31,26 @@
             </if>
         </where>
         order by t.pid desc,t.create_time desc
+    </select>
+
+    <select id="findByPidOrderBySortDesc" resultType="com.august.rbac.domain.Dict">
+      select * from
+      t_rbac_dict
+      where
+      pid = #{pid}
+      order by sort desc
+    </select>
+
+    <select id="findByValue" resultType="com.august.rbac.domain.Dict">
+        select * from
+        t_rbac_dict
+        where
+        value = #{value}
+    </select>
+    <select id="findByPid" resultType="com.august.rbac.domain.Dict">
+          select * from
+          t_rbac_dict
+          where
+          pid = #{pid}
     </select>
 </mapper>

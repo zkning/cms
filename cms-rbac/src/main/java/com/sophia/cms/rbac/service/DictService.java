@@ -1,30 +1,27 @@
 package com.sophia.cms.rbac.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sophia.cms.framework.response.Response;
-import com.sophia.cms.orm.model.Pager;
-import com.sophia.cms.rbac.constants.CacheableConst;
-import com.sophia.cms.rbac.domain.Dict;
-import com.sophia.cms.rbac.mapper.DictMapper;
-import com.sophia.cms.rbac.model.DictEditModel;
-import com.sophia.cms.rbac.model.DictFetchModel;
-import com.sophia.cms.rbac.model.DictSearchModel;
-import com.sophia.cms.rbac.model.TreeNodeModel;
-import com.sophia.cms.rbac.utils.RecursiveTools;
+
+import com.august.rbac.domain.Dict;
+import com.august.rbac.dto.DictEditDTO;
+import com.august.rbac.dto.DictFetchDTO;
+import com.august.rbac.dto.DictSearchDTO;
+import com.august.rbac.dto.TreeNodeDTO;
+import com.august.rbac.mapper.DictMapper;
+import com.august.website.utils.RecursiveTools;
+import com.august.website.utils.Pager;
+import com.august.website.utils.Resp;
+import com.baomidou.mybatisplus.plugins.Page;
 import org.apache.commons.collections.CollectionUtils;
-import org.assertj.core.util.Lists;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ningzuokun
- * 数据字段服务
+ *         数据字段服务
  */
 @Service
 public class DictService {
@@ -33,86 +30,70 @@ public class DictService {
     @Autowired
     DictMapper dictMapper;
 
-    @Cacheable(cacheNames = CacheableConst.CacheableName, key = "#dictId")
-    public Map<String, String> getTextByPid(Long dictId) {
-        List<Dict> dicts = dictMapper.selectValByPid(dictId);
-        Map<String, String> dm = new HashMap<>();
-        for (Dict dict : dicts) {
-            dm.put(dict.getValue(), dict.getText());
+    public Resp edit(DictEditDTO editModel) {
+        Dict t = new Dict();
+        Boolean isEdit = null != editModel.getId();
+        if (isEdit) {
+            t = dictMapper.selectById(editModel.getId());
         }
-        return dm;
-    }
-
-    public Response edit(DictEditModel editModel) {
-        Dict entity = new Dict();
-        Boolean editFlag = null != editModel.getId();
-        if (editFlag) {
-            entity = dictMapper.selectById(editModel.getId());
-            entity.setId(editModel.getId());
-        }
-        entity.setPid(null != editModel.getPid() ? editModel.getPid() : 0L);
-        entity.setSort(editModel.getSort());
-        entity.setText(editModel.getText());
-        entity.setValue(editModel.getValue());
-        entity.setVersion(editModel.getVersion());
-        entity.setRemark(editModel.getRemark());
-        if (editFlag) {
-            dictMapper.updateById(entity);
+        new ModelMapper().map(editModel, t);
+        t.setPid(null != editModel.getPid() ? editModel.getPid() : TOP_NODE);
+        if (isEdit) {
+            dictMapper.updateById(t);
         } else {
-            dictMapper.insert(entity);
+            dictMapper.insert(t);
         }
-        return Response.SUCCESS();
+        return Resp.SUCCESS();
     }
 
-    public Response delete(Long id) {
+    public Resp delete(Long id) {
         dictMapper.deleteById(id);
-        return Response.SUCCESS();
+        return Resp.SUCCESS();
     }
 
-    @Cacheable(value = CacheableConst.CacheableName, key = "#root.method.name + #id", unless = "#result.code != 0")
-    public Response<DictFetchModel> fetch(Long id) {
-        Dict dict = dictMapper.selectById(id);
-        if (null == dict) {
-            return Response.FAILURE("记录不存在");
+    public Resp<DictFetchDTO> fetch(Long id) {
+        Dict t = dictMapper.selectById(id);
+        if (null == t) {
+            return Resp.FAILURE("记录不存在");
         }
-        DictFetchModel entity = new DictFetchModel();
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.map(dict, entity);
-        return Response.SUCCESS(entity);
+        DictFetchDTO d = new DictFetchDTO();
+        new ModelMapper().map(t, d);
+        return Resp.SUCCESS(d);
     }
 
-    public List<DictFetchModel> findByPValue(String value) {
+    public List<DictFetchDTO> findByPValue(String value) {
         Dict pDict = dictMapper.findByValue(value);
-        List<Dict> entitys = dictMapper.findByPidOrderBySortDesc(pDict.getId());
-        List<DictFetchModel> items = Lists.newArrayList();
-        ModelMapper modelMapper = new ModelMapper();
-        entitys.forEach(dict -> {
-            DictFetchModel dictFetchModel = new DictFetchModel();
-            modelMapper.map(dict, dictFetchModel);
-            items.add(dictFetchModel);
+        List<Dict> ds = dictMapper.findByPidOrderBySortDesc(pDict.getId());
+        List<DictFetchDTO> items = new ArrayList<>();
+        ds.forEach(dict -> {
+            DictFetchDTO dm = new DictFetchDTO();
+            new ModelMapper().map(dict, dm);
+            items.add(dm);
         });
         return items;
     }
 
-    public Pager<DictFetchModel> list(DictSearchModel dictSearchModel) {
-        Page page = new Page(dictSearchModel.getPageNo(), dictSearchModel.getPageSize());
-        List<DictFetchModel> list = dictMapper.list(page, dictSearchModel);
-        Pager<DictFetchModel> pager = new Pager<>();
-        pager.setPageNo(page.getCurrent());
-        pager.setPageSize(page.getSize());
-        pager.setTotalElements(page.getTotal());
+    public Pager<DictFetchDTO> list(DictSearchDTO dsm) {
+        Page p = new Page(dsm.getPageNo(), dsm.getPageSize());
+        List<DictFetchDTO> list = dictMapper.list(p, dsm);
+
+        // 分页响应
+        Pager<DictFetchDTO> pager = new Pager();
+        pager.setPageNo(p.getCurrent());
+        pager.setPageSize(p.getSize());
+        pager.setTotalElements(p.getTotal());
         pager.setContent(list);
         return pager;
     }
 
-    public List<TreeNodeModel> treeNodes() {
-        List<Dict> entityList = dictMapper.findByPidOrderBySortDesc(TOP_NODE);
-        if (CollectionUtils.isEmpty(entityList)) {
-            return Lists.newArrayList();
+    public List<TreeNodeDTO> treeNodes() {
+        List<Dict> dicts = dictMapper.findByPidOrderBySortDesc(TOP_NODE);
+        if (CollectionUtils.isEmpty(dicts)) {
+            return new ArrayList<>();
         }
-        List<TreeNodeModel> treeNodeModels = Lists.newArrayList();
-        entityList.forEach(group -> {
-            treeNodeModels.add(TreeNodeModel.builder()
+        List<TreeNodeDTO> nodes = new ArrayList<>();
+        dicts.forEach(group -> {
+            nodes.add(TreeNodeDTO.builder()
                     .key(group.getId() + "")
                     .pid(group.getPid() + "")
                     .selectable(true)
@@ -120,15 +101,15 @@ public class DictService {
                     .title(group.getText())
                     .build());
         });
-        return RecursiveTools.forEachTreeItems(treeNodeModels, (TreeNodeModel item) -> {
+        return RecursiveTools.forEachTreeItems(nodes, (TreeNodeDTO item) -> {
             List<Dict> entitys = dictMapper.findByPidOrderBySortDesc(Long.valueOf(item.getKey()));
             if (CollectionUtils.isEmpty(entitys)) {
                 item.setLeaf(true);
                 return null;
             }
-            List<TreeNodeModel> list = Lists.newArrayList();
+            List<TreeNodeDTO> list = new ArrayList<>();
             entitys.forEach(dict -> {
-                list.add(TreeNodeModel.builder()
+                list.add(TreeNodeDTO.builder()
                         .key(dict.getId() + "")
                         .selectable(true)
                         .title(dict.getText())

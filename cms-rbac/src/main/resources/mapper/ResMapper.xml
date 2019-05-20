@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.august.rbac.mapper.ResMapper">
+
+    <select id="findByCode" resultType="com.august.rbac.domain.Res">
+        SELECT * FROM
+        t_rbac_res
+        WHERE
+        code = #{code}
+    </select>
+    <select id="findResourceByRoleUserId" resultType="com.august.rbac.domain.Res">
+        SELECT
+            trr.*
+        FROM
+            t_rbac_res trr
+        WHERE
+            EXISTS (
+                SELECT
+                    ts.res_id
+                FROM
+                    (
+                        SELECT
+                            trrrr.res_id
+                        FROM
+                            t_rbac_role_resource_relation trrrr
+                        WHERE
+                            EXISTS ( SELECT trrur.role_id FROM t_rbac_user_role_relation trrur
+                            WHERE trrur.user_id = #{userId}
+                            AND trrur.role_id = trrrr.role_id )
+                    ) ts
+                    WHERE
+                    ts.res_id = trr.id
+                )
+    </select>
+    <select id="findByresType" resultType="com.august.rbac.domain.Res">
+        select * from
+        t_rbac_res
+        where
+        res_type = #{resType}
+    </select>
+    <select id="findResourceByRoleUserIdAndType" resultType="com.august.rbac.domain.Res">
+        SELECT
+            trr.*
+        FROM
+            t_rbac_res trr
+        WHERE
+            EXISTS (
+            SELECT
+                ts.res_id
+            FROM
+                (
+                SELECT
+                    trrrr.res_id
+                FROM
+                    t_rbac_role_resource_relation trrrr
+                WHERE
+                    EXISTS ( SELECT trrur.role_id FROM
+                    t_rbac_user_role_relation trrur
+                    WHERE
+                    trrur.role_id = trrrr.role_id )
+                    AND trrur.user_id = #{userId}
+                ) ts
+            WHERE
+                ts.res_id = trr.id
+            )
+            AND res_type = #{resType}
+    </select>
+    <select id="findByRoleId" resultType="com.august.rbac.domain.Res">
+      SELECT
+        t.*
+    FROM
+        t_rbac_res t
+        JOIN t_rbac_role_resource_relation r ON t.id = r.res_id
+    WHERE
+        r.role_id = #{roleId}
+    </select>
+    <select id="findByPid" resultType="com.august.rbac.domain.Res">
+        select * from
+        t_rbac_res
+        where
+        pid = #{pid}
+    </select>
+</mapper>

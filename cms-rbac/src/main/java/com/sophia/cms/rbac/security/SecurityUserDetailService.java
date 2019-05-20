@@ -1,10 +1,8 @@
 package com.sophia.cms.rbac.security;
 
 import com.sophia.cms.rbac.domain.RbacUserInfo;
-import com.sophia.cms.rbac.domain.Resources;
+import com.sophia.cms.rbac.domain.Res;
 import com.sophia.cms.rbac.domain.Role;
-import com.sophia.cms.rbac.service.RbacUserService;
-import com.sophia.cms.rbac.service.ResourcesService;
 import com.sophia.cms.rbac.service.RoleService;
 import org.apache.commons.collections.CollectionUtils;
 import org.assertj.core.util.Lists;
@@ -39,9 +37,9 @@ public class SecurityUserDetailService implements UserDetailsService {
 
         // 获取用户权限
         List<GrantedAuthority> auths = Lists.newArrayList();
-        List<Resources> resources = resourcesService.findAllResourcesByUserId(userInfo.getId());
+        List<Res> resources = resourcesService.findAllResourcesByUserId(userInfo.getId());
         if (CollectionUtils.isNotEmpty(resources)) {
-            for (Resources res : resources) {
+            for (Res res : resources) {
                 SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(res.getCode());
                 auths.add(simpleGrantedAuthority);
             }

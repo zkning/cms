@@ -1,12 +1,14 @@
 package com.sophia.cms.rbac.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.sophia.cms.rbac.domain.UserRoleRelation;
+
+import com.august.rbac.domain.UserRoleRelation;
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+@Mapper
 public interface UserRoleRelationMapper extends BaseMapper<UserRoleRelation> {
 
     /**
@@ -16,7 +18,6 @@ public interface UserRoleRelationMapper extends BaseMapper<UserRoleRelation> {
      * @param userId
      * @return
      */
-    @Select(value = "select role_id from t_rbac_user_role_relation where user_id = #{userId}")
     List<Long> findByUserId(@Param("userId") Long userId);
 
     /**
@@ -25,7 +26,6 @@ public interface UserRoleRelationMapper extends BaseMapper<UserRoleRelation> {
      * @param roleId 角色id
      * @return
      */
-    @Select(value = "select user_id from t_rbac_user_role_relation where role_id = #{roleId}")
     List<Long> findUserIdsByRoleId(@Param("roleId") Long roleId);
 
     /**
@@ -34,17 +34,16 @@ public interface UserRoleRelationMapper extends BaseMapper<UserRoleRelation> {
      * @param roleId
      * @return
      */
-    @Select(value = "select * from t_rbac_user_role_relation where role_id = #{roleId}")
     List<UserRoleRelation> findByRoleId(@Param("roleId") Long roleId);
 
     /**
      * 根据角色id跟用户id删除中间表
-     *
-     * @param RoleId
-     * @param userId
+     * @param roleId
+     * @param userIds
      */
-    void deleteByRoleIdAndUserIdIn(@Param("roleId") Long RoleId, @Param("userIds") List userIds);
+    void deleteByRoleIdAndUserIdIn(@Param("roleId") Long roleId, @Param("userIds") List userIds);
 
 
     void deleteByUserIdAndRoleIdIn(@Param("userId") Long userId, @Param("roleIds") List roleIds);
+
 }

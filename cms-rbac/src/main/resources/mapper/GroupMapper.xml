@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.august.rbac.mapper.GroupMapper">
+
+    <select id="findIdsByPid" resultType="java.lang.Long">
+      select id from t_rbac_group where pid = #{pid}
+    </select>
+    <select id="findByPid" resultType="com.august.rbac.domain.Group">
+        select * from
+        t_rbac_group
+        where
+        pid = #{pid}
+    </select>
+    <select id="findByIdIn" resultType="com.august.rbac.domain.Group">
+        select * from
+        t_rbac_group
+        where
+        <choose>
+            <when test="ids != null and ids.size() > 0">
+                id in
+                <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findByGroupName" resultType="com.august.rbac.domain.Group">
+        select * from
+        t_rbac_group
+        where
+        group_name = #{groupName}
+    </select>
+    <select id="findByIdAndPid" resultType="com.august.rbac.domain.Group">
+        select * from
+        t_rbac_group
+        where
+        id = #{id}
+        and pid = #{pid}
+    </select>
+    <select id="findRoleGroupIdByUserId" resultType="com.august.rbac.domain.Group">
+        SELECT
+            t.*
+        FROM
+            t_rbac_group t
+        WHERE
+	    id IN (
+            SELECT b.group_id FROM t_rbac_role b
+            JOIN t_rbac_user_role_relation r ON b.id = r.role_id
+            WHERE r.user_id = #{userId}
+	    )
+    </select>
+    <select id="findByUserId" resultType="com.august.rbac.domain.Group">
+        SELECT
+            t.*
+        FROM
+            t_rbac_group t
+            JOIN t_rbac_user r ON t.id = r.group_id
+        WHERE
+            r.id = #{userId}
+    </select>
+</mapper>
